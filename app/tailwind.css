@@ -1,0 +1,4 @@
+content: ['./app/**/*.{js,jsx,ts,tsx}'],
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
