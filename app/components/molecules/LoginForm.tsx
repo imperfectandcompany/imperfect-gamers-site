@@ -1,7 +1,6 @@
-// LoginForm.jsx
-import React from 'react';
+// components/molecule/LoginForm.tsx
 import Button from '~/components/atoms/Button/Button';
-import Paragraph from '~/components/atoms/Paragraph';
+import Paragraph from '~/components/atoms/Paragraph/Paragraph';
 
 
 const LoginForm = () => {
@@ -10,14 +9,6 @@ const LoginForm = () => {
         <Paragraph>
           Please login using your Imperfect Gamers account with your steam integrated so we can identify you in game.
         </Paragraph>
-        <div className="responsive-mx mt-6">
-          <Button
-            type="submit"
-            onClick={() => window.location.href = '/login'}
-          >
-            Login
-          </Button>
-        </div>
       </div>
     );
   };

@@ -1,7 +1,7 @@
 // components/organism/MembershipCard.tsx
 
 import React, { useState } from 'react';
-import { PriceToggle } from '../../molecule/PriceToggle/PriceToggle';
+import { PriceToggle } from '~/components/molecules/PriceToggle/PriceToggle';
 import styles from './MembershipCard.module.css';
 import { PriceLabel } from '~/components/atoms/PriceLabel/PriceLabel';
 

@@ -10,4 +10,3 @@ export { default as StoreEvents } from './StoreEvents';
 export { default as StoreFooter } from './StoreFooter';
 export { default as StorePartnership } from './StorePartnership';
 export { default as StoreHeader } from './StoreHeader';
-export { default as StoreLogin } from './StoreLogin';

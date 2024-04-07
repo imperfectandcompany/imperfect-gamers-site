@@ -1,5 +1,5 @@
 import React from 'react';
-import EventItem from '~/components/molecule/EventItem';
+import EventItem from '~/components/molecules/EventItem';
 
 const StoreEvents: React.FC = () => {
   return (

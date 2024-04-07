@@ -1,6 +1,6 @@
 // FAQSection.tsx
 import React from 'react';
-import FAQItem from '../molecule/FAQItem';
+import FAQItem from '~/components/molecules/FAQItem';
 
 interface FAQSectionProps {
   faqs: { question: string; answer: React.ReactNode }[];

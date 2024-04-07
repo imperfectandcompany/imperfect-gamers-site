@@ -1,6 +1,4 @@
 import React from 'react';
-import FeaturedItem from '../molecule/FeaturedItem';
-
 
 interface Feature {
     tooltip?: string;

@@ -1,7 +1,6 @@
 // Import necessary hooks and components from React and Remix
 import { MetaFunction, LinksFunction } from "@remix-run/node";
 import { useEffect } from 'react';
-import Button from "~/components/atoms/Button/Button";
 import {
   StoreContact,
   StoreFAQ,
@@ -13,7 +12,6 @@ import {
   StoreFooter,
   StorePartnership,
   StoreHeader,
-  StoreLogin
 } from '~/components/templates/store';
 import "~/styles/store.css";
 
@@ -46,7 +44,6 @@ export default function Store() {
     <>
       <div className="container mx-auto">
     <StoreHeader />
-    <StoreLogin />
         { /* Hidden while we focus on everything else */}
         <div className="flex flex-wrap justify-between hidden">
           <StoreStatistics />

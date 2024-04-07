@@ -1,6 +1,6 @@
 // StatisticsGroup.tsx
 import React from 'react';
-import StatisticItem from '../molecule/StatisticItem';
+import StatisticItem from '../molecules/StatisticItem';
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 
 interface Statistic {

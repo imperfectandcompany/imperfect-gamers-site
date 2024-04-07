@@ -1,5 +1,5 @@
 import React from 'react';
-import FeaturedItem from '../../molecule/FeaturedItem';
+import FeaturedItem from '../../molecules/FeaturedItem';
 import MembershipTier from '../../organism/MembershipTier';
 
 interface Featured {
