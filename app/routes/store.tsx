@@ -12,6 +12,7 @@ import StoreTiers from "~/components/templates/StoreTiers";
 import StoreTestimonials from "~/components/templates/StoreTestimonials";
 import StoreEvents from "~/components/templates/StoreEvents";
 import StoreFooter from "~/components/templates/StoreFooter";
+import StorePartnership from "~/components/templates/StorePartnership";
 
 
 
@@ -58,6 +59,7 @@ export default function Store() {
         <FeaturedSection />
         <StoreTestimonials />
         <StoreFAQ />
+        <StorePartnership />
         <StoreEvents />
         <StoreContact />
         <StoreFooter />
