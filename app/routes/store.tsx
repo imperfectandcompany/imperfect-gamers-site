@@ -3,6 +3,7 @@ import { MetaFunction, LinksFunction } from "@remix-run/node";
 import { useEffect } from 'react';
 import MembershipCard from "~/components/MembershipCard";
 import Button from "~/components/atoms/Button/Button";
+import FeaturedSection from "~/components/templates/StoreFeatured";
 import StoreStatistics from "~/components/templates/StoreStatistics";
 import "~/styles/store.css";
 
@@ -43,9 +44,11 @@ export default function Store() {
           </Button>
         </div>
 
-        <div className="flex flex-wrap justify-between">
+        <div className="flex flex-wrap justify-between hidden">
           <StoreStatistics />
         </div>
+
+        <FeaturedSection />
       </div >
       {/* Your converted JSX goes here */}
       {/* Remember to replace `class` with `className` */}
