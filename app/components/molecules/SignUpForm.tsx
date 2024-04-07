@@ -1,21 +1,23 @@
-// components/molecules/LoginForm.tsx
+// components/molecules/SignUpForm.tsx
 import React from 'react';
 import Button from '~/components/atoms/Button/Button';
 import Input from '~/components/atoms/Input/Input';
 
-const LoginForm: React.FC = () => {
+const SignUpForm: React.FC = () => {
   // Implement the form state and submission logic here
   
   return (
     <form className="flex flex-col items-center space-y-4">
-      {/* The input fields here, for example: */}
+      {/* Our input fields here */}
+      <Input type="text" placeholder="Username" /* other props */ />
       <Input type="email" placeholder="Email" /* other props */ />
       <Input type="password" placeholder="Password" /* other props */ />
+      <Input type="password" placeholder="Confirm Password" /* other props */ />
       
-      {/* The login button */}
-      <Button type="submit">Login</Button>
+      {/* Our sign up button */}
+      <Button type="submit">Sign Up</Button>
     </form>
   );
 };
 
-export default LoginForm;
+export default SignUpForm;

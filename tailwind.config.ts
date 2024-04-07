@@ -23,6 +23,11 @@ export default {
       },
       // Add any additional extensions here
     },
+    variants: {
+        extend: {
+          borderColor: ['hover', 'focus', 'valid', 'invalid', 'hover:valid', 'hover:invalid'],
+        }     
+    }
     // If we want to customize the existing styles without using `extend`
     // (not recommended unless we truly want to override),
     // we would place them outside the `extend` object.

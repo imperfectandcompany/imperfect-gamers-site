@@ -27,7 +27,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body className="bg-black text-white relative flex flex-col background-svg px-4 sm:px-8 md:px-12">
-        {children}
+      <main className="md:mx-72 space-y-24 md:space-y-12">
+      {children}
+      </main>
         <ScrollRestoration />
         <Scripts />
       </body>

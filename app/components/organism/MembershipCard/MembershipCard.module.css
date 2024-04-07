@@ -138,3 +138,27 @@
     opacity: 0.5;
     transition: opacity 300ms;
 }
+
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .price-toggle {
+                flex-direction: column;
+                padding-top: 12px;
+                align-items: center;
+            }
+
+            .price-toggle .price-label {
+                margin: 0;
+            }
+
+            .switch {
+                margin: 10px 0;
+            }
+
+            .membership-card__spinback-effect {
+                display: none;
+            }
+
+
+        }

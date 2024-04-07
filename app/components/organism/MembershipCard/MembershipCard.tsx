@@ -50,7 +50,7 @@ export const MembershipCard: React.FC<MembershipCardProps> = (props) => {
                         <PriceLabel isYearly={isYearly} />
                     </div>
                 </div>
-                <div className={styles['membership-card__spinback-effect']}></div>
+                <div className={`${styles['membership-card__spinback-effect']}`}></div>
             </div>
             <PriceToggle isYearly={isYearly} onToggle={handleToggle} />
         </>

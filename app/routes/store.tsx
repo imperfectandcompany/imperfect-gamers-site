@@ -42,7 +42,6 @@ export default function Store() {
 
   return (
     <>
-      <div className="container mx-auto">
     <StoreHeader />
         { /* Hidden while we focus on everything else */}
         <div className="flex flex-wrap justify-between hidden">
@@ -56,7 +55,6 @@ export default function Store() {
           <StoreContact />
           <StoreFooter />
         </div>
-      </div >
     </>
   );
 }

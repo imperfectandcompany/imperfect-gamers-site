@@ -19,7 +19,7 @@ const Button: React.FC<ButtonProps> = ({
   className,
 }) => {
   const baseStyles = `
-    text-white py-2 px-5 rounded-md font-bold tracking-wide shadow-custom transition-all duration-300 ease-in-out relative overflow-hidden mt-5 cursor-pointer
+    button text-white py-2 px-5 rounded-md font-bold tracking-wide shadow-custom transition-all duration-300 ease-in-out relative overflow-hidden mt-5 cursor-pointer
   `;
 
   const variantClasses = buttonVariants[variant] || buttonVariants.primary;
