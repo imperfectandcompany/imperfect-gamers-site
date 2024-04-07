@@ -2,6 +2,8 @@
 import { MetaFunction, LinksFunction } from "@remix-run/node";
 import { useEffect } from 'react';
 import MembershipCard from "~/components/MembershipCard";
+import Button from "~/components/atoms/Button/Button";
+import StoreStatistics from "~/components/templates/StoreStatistics";
 import "~/styles/store.css";
 
 
@@ -31,11 +33,20 @@ export default function Store() {
 
   return (
     <>
-                    <div className="container mx-auto">
-                    <h1 className="title">Imperfect Gamers Club</h1>
-                    <p className="subtitle">Join now through the exclusive access member pass</p>
-      <MembershipCard />
-      </div>
+      <div className="container mx-auto">
+        <h1 className="title">Imperfect Gamers Club</h1>
+        <p className="subtitle">Join now through the exclusive access member pass</p>
+        <MembershipCard />
+        <div className="flex justify-center fade-down">
+          <Button onClick={() => { }}>
+            Join Now
+          </Button>
+        </div>
+
+        <div className="flex flex-wrap justify-between">
+          <StoreStatistics />
+        </div>
+      </div >
       {/* Your converted JSX goes here */}
       {/* Remember to replace `class` with `className` */}
       {/* Example element: <header className="text-center mt-8">...</header> */}
