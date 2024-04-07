@@ -3,6 +3,8 @@ import { MetaFunction, LinksFunction } from "@remix-run/node";
 import { useEffect } from 'react';
 import MembershipCard from "~/components/MembershipCard";
 import Button from "~/components/atoms/Button/Button";
+import MembershipTier from "~/components/organism/MembershipTier";
+import MembershipTiers from "~/components/templates/MembershipTiers";
 import FeaturedSection from "~/components/templates/StoreFeatured";
 import StoreStatistics from "~/components/templates/StoreStatistics";
 import "~/styles/store.css";
@@ -47,6 +49,9 @@ export default function Store() {
         <div className="flex flex-wrap justify-between hidden">
           <StoreStatistics />
         </div>
+
+
+        <MembershipTiers />
 
         <FeaturedSection />
       </div >
