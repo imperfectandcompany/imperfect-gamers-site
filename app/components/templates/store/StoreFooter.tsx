@@ -1,4 +1,4 @@
-import FooterLink from "../molecule/FooterLink";
+import FooterLink from "../../molecule/FooterLink";
 
 const StoreFooter: React.FC = () => {
     

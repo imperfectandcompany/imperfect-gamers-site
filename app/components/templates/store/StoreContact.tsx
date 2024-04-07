@@ -1,8 +1,8 @@
 // ContactSection.tsx
 
 import React, { useState } from 'react';
-import ContactForm from '../organism/ContactForm';
-import Button from '../atoms/Button/Button';
+import Button from '../../atoms/Button/Button';
+import ContactForm from '~/components/organism/ContactForm';
 
 const StoreContact: React.FC = () => {
   const [showContactForm, setShowContactForm] = useState(false);

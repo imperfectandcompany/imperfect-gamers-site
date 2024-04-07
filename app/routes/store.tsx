@@ -2,19 +2,20 @@
 import { MetaFunction, LinksFunction } from "@remix-run/node";
 import { useEffect } from 'react';
 import Button from "~/components/atoms/Button/Button";
-import StoreContact from "~/components/templates/StoreContact";
-import StoreFAQ from "~/components/templates/StoreFAQ";
-import FeaturedSection from "~/components/templates/StoreFeatured";
-import StoreStatistics from "~/components/templates/StoreStatistics";
+import {
+  StoreContact,
+  StoreFAQ,
+  FeaturedSection,
+  StoreStatistics,
+  StoreTiers,
+  StoreTestimonials,
+  StoreEvents,
+  StoreFooter,
+  StorePartnership,
+  StoreHeader,
+  StoreLogin
+} from '~/components/templates/store';
 import "~/styles/store.css";
-import StoreTiers from "~/components/templates/StoreTiers";
-import StoreTestimonials from "~/components/templates/StoreTestimonials";
-import StoreEvents from "~/components/templates/StoreEvents";
-import StoreFooter from "~/components/templates/StoreFooter";
-import StorePartnership from "~/components/templates/StorePartnership";
-import MembershipCard from "~/components/organism/MembershipCard";
-import { StoreHeader } from "~/components/templates/StoreHeader";
-
 
 
 export const meta: MetaFunction = () => {
@@ -45,6 +46,7 @@ export default function Store() {
     <>
       <div className="container mx-auto">
     <StoreHeader />
+    <StoreLogin />
         { /* Hidden while we focus on everything else */}
         <div className="flex flex-wrap justify-between hidden">
           <StoreStatistics />

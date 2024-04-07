@@ -1,7 +1,6 @@
 // StoreFeatured.tsx
 import React from 'react';
-import FeaturedSection from '../organism/FeaturedSection';
-import FeaturedItem from '../molecule/FeaturedItem';
+import FeaturedItem from '../../molecule/FeaturedItem';
 
 // Data definition
 const featuredData = [

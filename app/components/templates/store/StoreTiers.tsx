@@ -1,6 +1,6 @@
 import React from 'react';
-import FeaturedItem from '../molecule/FeaturedItem';
-import MembershipTier from '../organism/MembershipTier';
+import FeaturedItem from '../../molecule/FeaturedItem';
+import MembershipTier from '../../organism/MembershipTier';
 
 interface Featured {
     imageSrc: string;

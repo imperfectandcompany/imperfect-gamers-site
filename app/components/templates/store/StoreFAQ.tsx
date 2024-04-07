@@ -1,5 +1,5 @@
 import React from 'react';
-import FAQSection from '../organism/FAQSection';
+import FAQSection from '~/components/organism/FAQSection';
 
 const faqs = [
   {

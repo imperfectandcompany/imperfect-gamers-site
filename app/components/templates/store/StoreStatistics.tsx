@@ -1,8 +1,8 @@
 // App.tsx
 import React from 'react';
-import StatisticsGroup from '../organism/StatisticsGroup';
 
 import { faUser, faCalendarAlt, faEye, faUsers } from '@fortawesome/free-solid-svg-icons';
+import StatisticsGroup from '~/components/organism/StatisticsGroup';
 
 const statisticsData = [
     { iconName: faUser, metric: "20%", description: "MEMBERSHIP IN GLOBAL RECORDS" },

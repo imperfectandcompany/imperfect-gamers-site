@@ -7,7 +7,7 @@ interface EventItemProps {
   link: string;
 }
 
-const Event: React.FC<EventItemProps> = ({ title, description, link }) => {
+const EventItem: React.FC<EventItemProps> = ({ title, description, link }) => {
   return (
     <div className="bg-gradient-to-br from-white/40 to-black/30 p-6 rounded-lg shadow-xl transform transition duration-500 hover:scale-105">
       <h3 className="text-xl font-bold mb-3">{title}</h3>
@@ -17,4 +17,4 @@ const Event: React.FC<EventItemProps> = ({ title, description, link }) => {
   );
 };
 
-export default Event;
+export default EventItem;

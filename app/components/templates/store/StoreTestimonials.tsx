@@ -1,6 +1,6 @@
 // TestimonialsSection.tsx
 import React from 'react';
-import Testimonial from '../organism/Testimonial';
+import Testimonial from '../../organism/Testimonial';
 
 const StoreTestimonials: React.FC = () => {
   return (

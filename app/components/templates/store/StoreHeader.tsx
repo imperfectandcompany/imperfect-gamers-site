@@ -1,9 +1,9 @@
 // Templates/StoreHeader.jsx
 
-import Button from "../atoms/Button/Button";
-import MembershipCard from "../organism/MembershipCard";
+import Button from "../../atoms/Button/Button";
+import { MembershipCard } from "../../organism/MembershipCard/MembershipCard";
 
-export const StoreHeader = () => {
+const StoreHeader: React.FC = () => {
   return (
     <div className="container">
       <h1 className="title">Imperfect Gamers Club</h1>
@@ -15,3 +15,5 @@ export const StoreHeader = () => {
     </div>
   );
 };
+
+export default StoreHeader;

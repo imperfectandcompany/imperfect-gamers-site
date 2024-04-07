@@ -1,4 +1,4 @@
-import FeaturedPartnership from "../organism/FeaturedPartnership";
+import FeaturedPartnership from "../../organism/FeaturedPartnership";
 
 const FeaturedPartnershipSection: React.FC = () => {
     return (
