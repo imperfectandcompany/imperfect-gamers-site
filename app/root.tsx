@@ -13,6 +13,10 @@ export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesheet },
 ];
 
+
+// http://localhost:5173/store/
+
+
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">

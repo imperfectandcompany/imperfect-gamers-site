@@ -10,6 +10,8 @@ import StoreStatistics from "~/components/templates/StoreStatistics";
 import "~/styles/store.css";
 import StoreTiers from "~/components/templates/StoreTiers";
 import StoreTestimonials from "~/components/templates/StoreTestimonials";
+import StoreEvents from "~/components/templates/StoreEvents";
+import StoreFooter from "~/components/templates/StoreFooter";
 
 
 
@@ -34,6 +36,7 @@ export default function Store() {
   useEffect(() => {
     // Example: Adding an event listener
     // document.getElementById('someElement').addEventListener('click', () => {});
+    // http://localhost:5173/store/
   }, []);
 
   return (
@@ -55,7 +58,9 @@ export default function Store() {
         <FeaturedSection />
         <StoreTestimonials />
         <StoreFAQ />
+        <StoreEvents />
         <StoreContact />
+        <StoreFooter />
       </div >
     </>
   );
