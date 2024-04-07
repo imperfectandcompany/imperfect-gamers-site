@@ -24,9 +24,8 @@ const premiumFeatures = [
     { name: 'Access to Premium Servers', included: true },
     { name: 'Slot Reservation', included: true },
     // ... other features
-    { name: 'Personal IG Server', included: false },
+    { name: 'Personal IG Server', included: false, tooltip: 'To access a custom IG server, please reach out to us directly. This exclusive service is available to our VIP clients only and cannot be obtained through the standard store. Ensure you are logged in as a VIP for more details.' },
 ];
-
 
 const MembershipTiers: React.FC = () => (
     <div className="relative">

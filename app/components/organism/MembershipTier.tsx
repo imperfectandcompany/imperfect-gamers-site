@@ -3,6 +3,7 @@ import FeaturedItem from '../molecule/FeaturedItem';
 
 
 interface Feature {
+    tooltip?: string;
     name: string;
     included: boolean;
 }
@@ -15,6 +16,22 @@ interface MembershipTierProps {
     additionalInfo?: string;
 }
 
+function Tooltip({ children, content }: { children: React.ReactNode, content: string }) {
+    const [show, setShow] = React.useState(false);
+
+    return (
+        <div className="relative flex items-center gap-1.5" onMouseEnter={() => setShow(true)} onMouseLeave={() => setShow(false)}>
+            {children}
+            {show && (
+                <div className="absolute bottom-full mb-2 px-3 py-1 bg-black text-white text-xs rounded shadow-lg z-10">
+                    {content}
+                </div>
+            )}
+        </div>
+    );
+}
+
+
 const MembershipTier: React.FC<MembershipTierProps> = ({ planType, planName, features, trialInfo, additionalInfo }) => (
             <div className="w-full max-w-md py-10 px-8 bg-black bg-opacity-50 rounded-md border border-gray-700/50 flex flex-col">
                 {trialInfo && (
@@ -26,14 +43,20 @@ const MembershipTier: React.FC<MembershipTierProps> = ({ planType, planName, fea
                     {planName}
                 </h3>
                 <div className="flex-1 mt-6 flex flex-col justify-between">
-                    <div className="space-y-4">
-                        {features.map((feature, index) => (
-                            <div key={index} className="flex items-center gap-2 group cursor-pointer transition duration-150 ease-in-out">
-                                <i className={`fas ${feature.included ? 'fa-check' : 'fa-times'} ${planType === 'Basic' ? 'text-gray-400' : 'text-red-400'} transition filter group-hover:brightness-150 group-hover:drop-shadow-[0_0_4px_rgba(255,255,255,0.5)]`}></i>
-                                <span className={`text-white ${!feature.included && 'line-through'} group-hover:text-${planType === 'Basic' ? 'gray-400' : 'red-400'}`}>{feature.name}</span>
-                            </div>
-                        ))}
-                    </div>
+                <div className="space-y-4">
+            {features.map((feature, index) => (
+                <div key={index} className="flex items-center gap-2 group cursor-pointer transition duration-150 ease-in-out">
+                    <i className={`fas ${feature.included ? 'fa-check' : 'fa-times'} ${planType === 'Basic' ? 'text-gray-400' : 'text-red-400'} transition filter group-hover:brightness-150 group-hover:drop-shadow-[0_0_4px_rgba(255,255,255,0.5)]`}></i>
+                    {feature.tooltip ? (
+                        <Tooltip content={feature.tooltip}>
+                            <span className={`text-white/50 ${!feature.included && 'line-through'} group-hover:text-${planType === 'Basic' ? 'gray-400' : 'red-400'}`}>{feature.name}</span>
+                        </Tooltip>
+                    ) : (
+                        <span className={`text-white ${!feature.included && 'line-through'} group-hover:text-${planType === 'Basic' ? 'gray-400' : 'red-400'}`}>{feature.name}</span>
+                    )}
+                </div>
+            ))}
+        </div>
                     <div className="mt-10 text-xs text-gray-500">
                         {additionalInfo}
                     </div>

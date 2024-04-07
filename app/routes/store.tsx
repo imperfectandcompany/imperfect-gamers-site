@@ -3,8 +3,10 @@ import { MetaFunction, LinksFunction } from "@remix-run/node";
 import { useEffect } from 'react';
 import MembershipCard from "~/components/MembershipCard";
 import Button from "~/components/atoms/Button/Button";
+import FAQSection from "~/components/organism/FAQSection";
 import MembershipTier from "~/components/organism/MembershipTier";
 import MembershipTiers from "~/components/templates/MembershipTiers";
+import StoreFAQ from "~/components/templates/StoreFAQ";
 import FeaturedSection from "~/components/templates/StoreFeatured";
 import StoreStatistics from "~/components/templates/StoreStatistics";
 import "~/styles/store.css";
@@ -50,15 +52,11 @@ export default function Store() {
           <StoreStatistics />
         </div>
 
-
         <MembershipTiers />
 
         <FeaturedSection />
+        <StoreFAQ/>
       </div >
-      {/* Your converted JSX goes here */}
-      {/* Remember to replace `class` with `className` */}
-      {/* Example element: <header className="text-center mt-8">...</header> */}
-      {/* More of your component's JSX content... */}
     </>
   );
 }
