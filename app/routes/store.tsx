@@ -1,8 +1,8 @@
 // Import necessary hooks and components from React and Remix
 import { MetaFunction, LinksFunction } from "@remix-run/node";
 import { useEffect } from 'react';
-import stylesUrl from "~/styles/store.css";
-import MembershipCard from './MembershipCard'; // adjust the path as necessary
+import MembershipCard from "~/components/MembershipCard";
+import "~/styles/store.css";
 
 
 
@@ -18,7 +18,6 @@ export const links: LinksFunction = () => {
   return [
     { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" },
     { rel: "stylesheet", href: "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" },
-  { rel: "stylesheet", href: stylesUrl }
   ];
 };
 
@@ -31,11 +30,16 @@ export default function Store() {
   }, []);
 
   return (
-    <div className="bg-black text-white relative flex flex-col background-svg px-4 sm:px-8 md:px-12">
+    <>
+                    <div className="container mx-auto">
+                    <h1 className="title">Imperfect Gamers Club</h1>
+                    <p className="subtitle">Join now through the exclusive access member pass</p>
+      <MembershipCard />
+      </div>
       {/* Your converted JSX goes here */}
       {/* Remember to replace `class` with `className` */}
       {/* Example element: <header className="text-center mt-8">...</header> */}
       {/* More of your component's JSX content... */}
-    </div>
+    </>
   );
 }
