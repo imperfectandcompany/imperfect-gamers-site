@@ -3,13 +3,13 @@ import { MetaFunction, LinksFunction } from "@remix-run/node";
 import { useEffect } from 'react';
 import MembershipCard from "~/components/MembershipCard";
 import Button from "~/components/atoms/Button/Button";
-import FAQSection from "~/components/organism/FAQSection";
-import MembershipTier from "~/components/organism/MembershipTier";
-import MembershipTiers from "~/components/templates/MembershipTiers";
+import StoreContact from "~/components/templates/StoreContact";
 import StoreFAQ from "~/components/templates/StoreFAQ";
 import FeaturedSection from "~/components/templates/StoreFeatured";
 import StoreStatistics from "~/components/templates/StoreStatistics";
 import "~/styles/store.css";
+import StoreTiers from "~/components/templates/StoreTiers";
+import StoreTestimonials from "~/components/templates/StoreTestimonials";
 
 
 
@@ -51,11 +51,11 @@ export default function Store() {
         <div className="flex flex-wrap justify-between hidden">
           <StoreStatistics />
         </div>
-
-        <MembershipTiers />
-
+        <StoreTiers />
         <FeaturedSection />
-        <StoreFAQ/>
+        <StoreTestimonials />
+        <StoreFAQ />
+        <StoreContact />
       </div >
     </>
   );
