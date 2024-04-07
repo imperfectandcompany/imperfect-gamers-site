@@ -1,7 +1,6 @@
 // Import necessary hooks and components from React and Remix
 import { MetaFunction, LinksFunction } from "@remix-run/node";
 import { useEffect } from 'react';
-import MembershipCard from "~/components/MembershipCard";
 import Button from "~/components/atoms/Button/Button";
 import StoreContact from "~/components/templates/StoreContact";
 import StoreFAQ from "~/components/templates/StoreFAQ";
@@ -13,6 +12,8 @@ import StoreTestimonials from "~/components/templates/StoreTestimonials";
 import StoreEvents from "~/components/templates/StoreEvents";
 import StoreFooter from "~/components/templates/StoreFooter";
 import StorePartnership from "~/components/templates/StorePartnership";
+import MembershipCard from "~/components/organism/MembershipCard";
+import { StoreHeader } from "~/components/templates/StoreHeader";
 
 
 
@@ -43,26 +44,19 @@ export default function Store() {
   return (
     <>
       <div className="container mx-auto">
-        <h1 className="title">Imperfect Gamers Club</h1>
-        <p className="subtitle">Join now through the exclusive access member pass</p>
-        <MembershipCard />
-        <div className="flex justify-center fade-down">
-          <Button onClick={() => { }}>
-            Join Now
-          </Button>
-        </div>
-
+    <StoreHeader />
+        { /* Hidden while we focus on everything else */}
         <div className="flex flex-wrap justify-between hidden">
           <StoreStatistics />
+          <StoreTiers />
+          <FeaturedSection />
+          <StoreTestimonials />
+          <StoreFAQ />
+          <StorePartnership />
+          <StoreEvents />
+          <StoreContact />
+          <StoreFooter />
         </div>
-        <StoreTiers />
-        <FeaturedSection />
-        <StoreTestimonials />
-        <StoreFAQ />
-        <StorePartnership />
-        <StoreEvents />
-        <StoreContact />
-        <StoreFooter />
       </div >
     </>
   );
