@@ -1,0 +1,828 @@
+html {
+    scroll-behavior: smooth;
+    height: calc(var(--vh, 1vh) * 100);
+}
+
+/* Custom scrollbar styles */
+::-webkit-scrollbar {
+    width: 12px;
+}
+
+::-webkit-scrollbar-track {
+    background: #111;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #a83232;
+    border-radius: 20px;
+    border: 3px solid #111;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    color: #fff;
+    height: 100%;
+    min-height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+.bg-grid-pattern {
+    background-image: url('data:image/svg+xml,%3Csvg width="100" height="100" xmlns="http://www.w3.org/2000/svg"%3E%3Cg%3E%3Cline stroke="%23ffffff" stroke-width="0.5" y2="100" x2="100" y1="100" x1="0" stroke-dasharray="4, 4"/%3E%3Cline stroke="%23ffffff" stroke-width="0.5" y2="100" x2="0" y1="0" x1="0" stroke-dasharray="4, 4"/%3E%3C/g%3E%3C/svg%3E') !important;
+    background-size: 100px 100px;
+}
+
+
+.background-svg {
+    background-image: url('https://imperfectgamers.org/assets/store/bg.svg');
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeOutDown {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+@keyframes fadeOutIn {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.title {
+    font-size: 3rem;
+    color: #fff;
+    margin-bottom: 2rem;
+    text-transform: uppercase;
+    letter-spacing: 5px;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+    animation: fadeInDown 1s ease-in-out;
+}
+
+.subtitle {
+    font-size: 1.25rem;
+    color: #aaa;
+    margin-bottom: 3rem;
+    animation: fadeInUp 1s ease-in-out;
+}
+
+
+.tooltip-content {
+    position: absolute;
+    bottom: 105px;
+    /* Increased to create more separation from the card */
+    left: 20%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.85);
+    /* Semi-transparent dark background for contrast */
+    color: #fff;
+    /* White text for readability */
+    padding: 8px 16px;
+    /* A bit more padding for a roomier feel */
+    border-radius: 8px;
+    /* Rounded corners for a modern look */
+    font-size: 15px;
+    /* Slightly larger font for clarity */
+    font-weight: 500;
+    /* Medium font weight for a touch of boldness */
+    white-space: nowrap;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    /* More pronounced shadow for depth */
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    /* Smooth transition for both opacity and a slight movement */
+    transform: translate(-50%, 10px);
+    /* Initial transform state for animation */
+}
+
+.membership-card:hover .tooltip-content {
+    opacity: 1;
+    visibility: visible;
+}
+
+.membership-card {
+    width: 384px;
+    height: 224px;
+    background: #000;
+    border-radius: 20px;
+    color: #fff;
+    padding: 20px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0 0 100px rgba(255, 255, 255, 0.3);
+    transform: perspective(1000px) rotateY(10deg);
+    transition: transform 0.5s, box-shadow 0.5s, background 0.5s, background-color 1s ease-in-out;
+    background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1));
+    background-size: 200% 200%;
+    animation: shimmer-effect 8s ease infinite;
+}
+
+.membership-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.3) 50%, rgba(255, 255, 255, 0) 100%);
+    animation: shimmer 2s infinite;
+    background-repeat: no-repeat;
+    background-size: 200% 100%;
+    z-index: 1;
+    border-radius: 20px;
+}
+
+.membership-card:hover {
+    transform: perspective(1000px) rotateY(0deg);
+    background: linear-gradient(145deg, #640000, #ae0000);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+}
+
+
+
+@keyframes shimmer-effect {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+
+
+.membership-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 1;
+    transition: opacity 0.5s, transform 0.5s;
+    border-radius: 20px;
+}
+
+.membership-card:hover::after {
+    opacity: 0;
+}
+
+.spinback-effect {
+    width: 100px;
+    height: 100px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.1));
+    border-radius: 50%;
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    background-blend-mode: overlay;
+    backdrop-filter: blur(5px);
+}
+
+.spinback-effect::before,
+.spinback-effect::after {
+    content: '';
+    position: absolute;
+    top: 10%;
+    left: 10%;
+    right: 10%;
+    bottom: 10%;
+    border-radius: 50%;
+}
+
+.spinback-effect::before {
+    background: linear-gradient(45deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0));
+}
+
+.spinback-effect::after {
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(0deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    animation: spin-disk 5s linear infinite;
+}
+
+@keyframes spin-disk {
+    100% {
+        transform: rotate(1turn);
+    }
+}
+
+.logo-image {
+    width: 60px;
+    height: 60px;
+}
+
+.membership-tier {
+    position: absolute;
+    top: 72.5%;
+    left: 13.75%;
+    transform: translate(-50%, -50%);
+    width: 150px;
+}
+
+#showMask {
+    transition: opacity 300ms;
+}
+
+.membership-tier:hover #showMask {
+    opacity: 0.5;
+}
+
+.card-price {
+    font-size: 0.725rem;
+    color: #aaa;
+}
+
+.card-price-change {
+    animation: fadeOutIn 0.8s ease forwards;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+    margin: 20px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 34px;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+
+}
+
+input:checked+.slider {
+    background-color: #7f1d1d;
+}
+
+input:focus+.slider {
+    box-shadow: 0 0 1px #7f1d1d;
+}
+
+input:checked+.slider:before {
+    transform: translateX(26px);
+}
+
+.slider.round {
+    border-radius: 34px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}
+
+.price-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 1s ease-in-out;
+}
+
+.price-label {
+    color: #fff;
+    font-size: 0.9rem;
+    margin: 0 10px;
+}
+
+
+@keyframes heartbeat {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 0.7;
+    }
+
+    25%,
+    75% {
+        transform: scale(1.1);
+        opacity: 1;
+    }
+}
+
+@keyframes hoverInEffect {
+    from {
+        transform: scale(1);
+        opacity: 0.7;
+    }
+
+    to {
+        transform: scale(1.2);
+        opacity: 1;
+    }
+}
+
+@keyframes hoverOutEffect {
+    from {
+        transform: scale(1.2);
+        opacity: 1;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 0.7;
+    }
+}
+
+.animate-heartbeat {
+    transition: transform 0.5s ease, opacity 0.5s ease;
+}
+
+.heart:hover {
+    animation: hoverInEffect 0.5s forwards;
+}
+
+.button {
+    background: linear-gradient(145deg, #640000, #ae0000);
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    margin-top: 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+.button:hover {
+    background: linear-gradient(145deg, #ae0000, #640000);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    transform: translateY(-2px);
+}
+
+.button:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.button:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px #fff, 0 0 0 4px #ae0000;
+}
+
+.button i {
+    margin-right: 8px;
+}
+
+.button span {
+    position: relative;
+    top: 1px;
+}
+
+.button:before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.1) 70%, rgba(255, 255, 255, 0) 100%);
+    transform: translate(-50%, -50%) scale(0);
+    transition: transform 0.5s;
+    border-radius: 50%;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.button:hover:before {
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.button:after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.button:hover:after {
+    opacity: 1;
+}
+
+.button span {
+    position: relative;
+    z-index: 1;
+}
+
+.background-animation {
+    position: fixed;
+    top: 0;
+    opacity: 5%;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: linear-gradient(45deg, #640000, #ae0000, #640000, #ae0000);
+    background-size: 400% 400%;
+    animation: moveBackground 10s ease infinite;
+    z-index: -1;
+}
+
+@keyframes moveBackground {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* FAQ Section Styles */
+.faq-section {
+    width: 100%;
+    max-width: 800px;
+    margin-top: 4rem;
+    margin-bottom: 4rem;
+}
+
+.faq-title {
+    font-size: 2rem;
+    color: #fff;
+    margin-bottom: 1.5rem;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+}
+
+.faq-item {
+    background: #202020;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    transition: background 0.3s ease;
+}
+
+.faq-item:hover {
+    background: #333333;
+}
+
+.faq-question {
+    font-size: 1.25rem;
+    color: #fff;
+    cursor: pointer;
+    position: relative;
+    padding-right: 2rem;
+}
+
+.faq-question:hover {
+    color: #ccc;
+    /* Slight color shift to indicate interactivity */
+}
+
+.faq-question::after {
+    content: '\f107';
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: transform 0.3s ease;
+}
+
+.faq-answer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease, padding 0.3s ease;
+    color: #aaa;
+    margin-top: 0.5rem;
+    padding: 0 1rem;
+    transition: max-height 0.5s ease, padding 0.5s ease, opacity 0.5s ease;
+    opacity: 0;
+    /* Start with the answer fully transparent */
+}
+
+.faq-item.active .faq-answer {
+    max-height: 1000px;
+    /* Arbitrary large height for smooth animation */
+    padding: 1rem;
+    opacity: 1;
+    /* Fade in the answer text */
+}
+
+.faq-item.active .faq-question::after {
+    transform: translateY(-50%) rotate(180deg);
+}
+
+.contact-form-container {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 20px;
+    margin-top: 40px;
+    width: 384px;
+    box-shadow: 0 0 100px rgba(255, 255, 255, 0.3);
+    transition: all 0.5s ease-in-out;
+    overflow: hidden;
+}
+
+.contact-section-transition {
+    transition: all 0.5s ease-in-out;
+}
+
+.luxury-input:focus {
+    background-color: #1a202c;
+    color: #f3d9e0;
+}
+
+.luxury-input:invalid:hover,
+.luxury-input:invalid:focus {
+    border-color: #e3342f;
+}
+
+.luxury-input:valid:hover,
+.luxury-input:valid:focus {
+    border-color: #38c172;
+}
+
+.luxury-input::placeholder {
+    color: #cbd5e0;
+}
+
+.luxury-label {
+    letter-spacing: 0.05em;
+    color: #f3d9e0;
+}
+
+.luxury-title {
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #f7fafc;
+}
+
+.luxury-label.focused {
+    color: #f6ad55;
+}
+
+.contact-section {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 20px;
+    margin-top: 40px;
+    width: 384px;
+    box-shadow: 0 0 100px rgba(255, 255, 255, 0.3);
+}
+
+.contact-section h2 {
+    color: #fff;
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.contact-section p {
+    color: #aaa;
+    margin-bottom: 20px;
+}
+
+.contact-section button {
+    background: linear-gradient(145deg, #640000, #ae0000);
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.contact-section button:hover {
+    background: linear-gradient(145deg, #ae0000, #640000);
+}
+
+.hidden {
+    display: none;
+}
+
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .faq-section {
+        padding: 0 1rem;
+    }
+
+    .faq-title {
+        font-size: 1.5rem;
+    }
+
+    .faq-question {
+        font-size: 1rem;
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .faq-section {
+        padding: 0 1rem;
+    }
+
+    .faq-title {
+        font-size: 1.5rem;
+    }
+
+    .faq-question {
+        font-size: 1rem;
+    }
+
+    .button {
+        padding: 8px 16px;
+    }
+
+    .main {
+        padding: 0 4px;
+    }
+
+    .nav {
+        display: block;
+    }
+
+    .nav a {
+        display: block;
+        margin: 5px 0;
+    }
+
+    .container {
+        padding: 0 4px;
+    }
+
+    .price-toggle {
+        flex-direction: column;
+        padding-top: 12px;
+        align-items: center;
+    }
+
+    .price-toggle .price-label {
+        margin: 0;
+    }
+
+    .switch {
+        margin: 10px 0;
+    }
+
+    .faq-section {
+        width: 100%;
+        padding: 0;
+    }
+
+    .faq-item {
+        padding: 0.5rem;
+    }
+
+    .faq-question {
+        padding-right: 1rem;
+    }
+
+    .membership-card .spinback-effect {
+        display: none;
+    }
+
+    .testimonial {
+        grid-template-columns: 1fr;
+    }
+
+    .testimonial-item {
+        width: 100%;
+        padding: 1rem;
+    }
+
+    .event {
+        grid-template-columns: 1fr;
+    }
+
+    .event-item {
+        width: 100%;
+        padding: 1rem;
+    }
+
+    .footer {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .footer .footer-section {
+        margin-bottom: 1rem;
+    }
+
+    .footer .footer-section a {
+        margin: 0 0.5rem;
+    }
+}
