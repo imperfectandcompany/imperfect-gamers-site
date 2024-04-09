@@ -1,10 +1,17 @@
 import React, { useState } from 'react';
+import { useField } from "remix-validated-form";
 
-interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {}
 
-const Input: React.FC<InputProps> = ({ type, onBlur, ...props }) => {
+interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+  name: string; // This is required by useField
+}
+
+const Input: React.FC<InputProps> = ({ name, type, onBlur, ...props }) => {
   const [isTouched, setIsTouched] = useState(false);
   const [hasValue, setHasValue] = useState(false);
+  
+  const { error, getInputProps } = useField(name);
+  const inputProps = getInputProps({ id: name, ...props });
 
   const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     if (onBlur) onBlur(e); // If there's an onBlur prop, call it
@@ -18,8 +25,9 @@ const Input: React.FC<InputProps> = ({ type, onBlur, ...props }) => {
   };
 
   return (
-    <input
-      {...props}
+<>
+<input
+        {...inputProps}
       type={type}
       onBlur={handleBlur}
       onChange={handleChange}
@@ -29,6 +37,8 @@ const Input: React.FC<InputProps> = ({ type, onBlur, ...props }) => {
           : 'focus:outline-none focus:border-white/30 hover:border-white'
       }`}
     />
+      {error && <div className="text-red-600">{error}</div>}
+</>
   );
 };
 

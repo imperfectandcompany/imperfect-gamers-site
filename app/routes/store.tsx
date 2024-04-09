@@ -1,6 +1,7 @@
-// Import necessary hooks and components from React and Remix
-import { MetaFunction, LinksFunction } from "@remix-run/node";
+import { getSession } from '~/auth/storage.server'; // Make sure this matches your file structure
+import { MetaFunction, LinksFunction, ActionFunction, json, LoaderFunction } from "@remix-run/node";
 import { useEffect } from 'react';
+import { login } from "~/auth/authenticator.server";
 import {
   StoreContact,
   StoreFAQ,
@@ -14,6 +15,8 @@ import {
   StoreHeader,
 } from '~/components/templates/store';
 import "~/styles/store.css";
+import { checkUserSession } from '~/auth/session';
+
 
 
 export const meta: MetaFunction = () => {
@@ -31,20 +34,25 @@ export const links: LinksFunction = () => {
   ];
 };
 
-// Main component
-export default function Store() {
-  // Place your JavaScript code inside useEffect if necessary
-  useEffect(() => {
-    // Example: Adding an event listener
-    // document.getElementById('someElement').addEventListener('click', () => {});
-    // http://localhost:5173/store/
-  }, []);
+// In the loader of the parent route of StoreHeader.tsx
 
+export const loader: LoaderFunction = async ({ request }) => {
+  // 'userToken' presence indicates authentication
+  return checkUserSession(request);
+};
+
+
+
+
+// Your component
+export default function Store() {
   return (
     <>
-    <StoreHeader />
-        { /* Hidden while we focus on everything else */}
-        <div className="flex flex-wrap justify-between hidden">
+      <StoreHeader />
+      
+      { /* Hidden while we focus on everything else 
+
+        <div className="flex flex-wrap justify-between">
           <StoreStatistics />
           <StoreTiers />
           <FeaturedSection />
@@ -55,6 +63,9 @@ export default function Store() {
           <StoreContact />
           <StoreFooter />
         </div>
+        
+        */}
+
     </>
   );
 }
