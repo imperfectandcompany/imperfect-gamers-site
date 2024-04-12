@@ -7,7 +7,7 @@ export async function action({
 
     const result = await login(request);
     if (result?.ok) {
-        // If login is successful, redirect or indicate success somehow.
+        // If login is successful indicate success somehow.
         return json({ success: 'Login successful' }, {
             headers: {
                 'Set-Cookie': await result.cookieHeader,
