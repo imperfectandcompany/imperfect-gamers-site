@@ -15,7 +15,7 @@ import {
   StoreHeader,
 } from '~/components/templates/store';
 import "~/styles/store.css";
-import { checkUserSession } from '~/auth/session';
+import { checkSteamIntegration, checkUserSession } from '~/auth/session';
 
 
 
@@ -34,18 +34,21 @@ export const links: LinksFunction = () => {
   ];
 };
 
-// In the loader of the parent route of StoreHeader.tsx
+
+
 
 export const loader: LoaderFunction = async ({ request }) => {
-  // 'userToken' presence indicates authentication
-  return checkUserSession(request);
+  const session = await getSession(request.headers.get("Cookie"));
+  return json({
+    isAuthenticated: session.has('userToken'),
+    isSteamLinked: session.has('steamId')
+  });
 };
-
-
-
-
 // Your component
 export default function Store() {
+
+
+
   return (
     <>
       <StoreHeader />

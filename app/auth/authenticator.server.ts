@@ -2,7 +2,7 @@
 import { commitSession, getSession } from './storage.server';
 
 
-const API_ENDPOINT = 'https://api.imperfectgamers.org/auth';
+const API_BASE = 'https://api.imperfectgamers.org';
 
 
 // Define the user type for your application
@@ -14,9 +14,10 @@ interface User {
 
 // Function to authenticate a user with the external API
 async function authenticateUser(email: string, password: string): Promise<User | null> {
+
     try {
         // Send the request to your API
-        const response = await fetch(API_ENDPOINT, {
+        const response = await fetch(`${API_BASE}/auth`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -51,7 +52,35 @@ export async function login(request: Request) {
 
         const session = await getSession();
         session.set("userToken", user?.userToken);
+
+        // Check if user has a linked Steam account
+        const hasSteamAccount = await checkSteamAccount(user?.userToken);
+        if (hasSteamAccount.hasSteam === true) {
+            session.set("steamId", hasSteamAccount.steamId);
+        }
+
         const cookieHeader = await commitSession(session);
         return { ok: true, cookieHeader };
+    }
+}
+
+// Function to check if user has a linked Steam account
+async function checkSteamAccount(token: string): Promise<{ status: string, hasSteam: boolean, steamId: string }> {
+    
+    try {
+        // Send the request to API
+        const response = await fetch(`${API_BASE}/user/verifySteam`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `${token}`
+            },
+        });
+        const text = await response.text(); // First get the response as text
+        const data = JSON.parse(text); // Safely parse the text as JSON
+        return { status: data.status, hasSteam: data.hasSteam, steamId: data.steamId };
+    } catch (error) {
+        console.error(error);
+        return { status: 'error', hasSteam: false, steamId: '' };
     }
 }

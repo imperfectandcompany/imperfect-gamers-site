@@ -1,5 +1,6 @@
 // app/routes/auth/steam/callback.tsx
-import { LoaderFunction } from '@remix-run/node';
+import { LoaderFunction, json } from '@remix-run/node';
+import { commitSession, getSession } from '~/auth/storage.server';
 import { verifySteamAssertion } from '~/utils/steamAuth';
 
 export const loader: LoaderFunction = async ({ request }) => {
@@ -11,8 +12,45 @@ export const loader: LoaderFunction = async ({ request }) => {
     throw new Response('Steam authentication failed', { status: 400 });
   }
 
-  // Proceed to link Steam ID with the user's account in your system
-  // Redirect the user to their profile or dashboard after successful linking
+  // Get the existing session
+  const session = await getSession(request.headers.get("Cookie"));
 
-  return new Response(`Steam ID: ${steamId}`, { status: 200 });
+  if (session) {
+    session.set("steamId", steamId);
+    await commitSession(session);
+    
+    // Send a message to the parent window
+    //TODO: SETUP PROCESS.ENV ORIGIN INSTEAD OF * FOR SECURITY
+    const script = `
+      <script>
+        window.opener.postMessage({ type: 'steam-auth-success' }, '*');
+        window.close();
+      </script>
+    `;
+
+    return new Response(script, {
+      headers: {
+        "Content-Type": "text/html",
+        "Set-Cookie": await commitSession(session), // Ensure the cookie is set
+      },
+    });
+  } else {
+    throw new Response('Session not found', { status: 400 });
+  }
 };
+
+//   // Return a script that sends a message to the parent window
+//   const script = `
+//     <script>
+//       window.opener.postMessage({
+//         type: 'steam-auth-success',
+//         steamId: '${steamId}'
+//       }, '*');
+//       window.close();
+//     </script>
+//   `;
+//   return new Response(script, {
+//     headers: { 'Content-Type': 'text/html' },
+//     status: 200
+//   });
+// };

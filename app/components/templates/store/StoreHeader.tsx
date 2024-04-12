@@ -11,7 +11,7 @@ import ModalWrapper from '~/components/organism/ModalWrapper/ModalWrapper';
 
 
 export default function StoreHeader() {
-  const { isAuthenticated } = useLoaderData<{ isAuthenticated: boolean }>();
+  const { isAuthenticated } = useLoaderData<{ isAuthenticated: boolean}>();
 
   return (
     <div>
