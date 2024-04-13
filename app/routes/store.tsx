@@ -42,6 +42,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     userToken: session.get('userToken') || null,
     isSteamLinked: session.has('steamId'),
     steamId: session.get('steamId') || null,
+    isOnboarded: session.has('username'),
     username: session.get('username') || null
   });
 };

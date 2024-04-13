@@ -66,6 +66,23 @@ export async function login(request: Request) {
     }
 }
 
+// @/app/auth/authenticator.server.ts
+export async function registerUser(email: string, password: string) {
+    try {
+      const response = await fetch(`${API_BASE}/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await response.json();
+      return { status: response.ok ? 'success' : 'error', message: data.message };
+    } catch (error) {
+      console.error('Register error:', error);
+      return { status: 'error', message: 'Network or server error' };
+    }
+  }
+  
+
 
 export async function logout(token: string) {
     try {
