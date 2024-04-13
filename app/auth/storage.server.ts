@@ -4,6 +4,7 @@ import { createCookieSessionStorage } from "@remix-run/node";
 type SessionData = {
     userToken?: string;
     steamId?: string;
+    username?: string;
   };
 
 export const sessionStorage = createCookieSessionStorage<SessionData>({

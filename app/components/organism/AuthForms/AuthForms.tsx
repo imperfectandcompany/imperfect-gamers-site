@@ -7,13 +7,21 @@ import AuthorizeForm from '~/components/molecules/AuthorizeForm';
 import LoginForm from '~/components/molecules/LoginForm';
 import SignUpForm from '~/components/molecules/SignUpForm';
 
+interface LoaderData {
+  isAuthenticated: boolean;
+  userToken: string | null;
+  isSteamLinked: boolean;
+  steamId: string | null;
+  username: string | null;
+}
+
 const AuthForms: React.FC = () => {
   const [isLoginForm, setIsLoginForm] = useState(true);
   const { revalidate } = useRevalidator();
 
 
   const switchForm = () => setIsLoginForm(!isLoginForm);
-  const { isAuthenticated, isSteamLinked } = useLoaderData<{ isAuthenticated: boolean; isSteamLinked?: boolean }>();
+  const { isAuthenticated, userToken, isSteamLinked, steamId, username } = useLoaderData<LoaderData>();
   const fetcher = useFetcher();
   // isAuthorize is a pre-check for membership purchase under condition user has satisfied 3 requirements. 1. Completed onboarding (set a user), 2. Verified Email 3.
   // mock value for now
@@ -38,13 +46,18 @@ const AuthForms: React.FC = () => {
 
   return (
     <>
-      <div className="flex flex-col space-y-6">
+    <div className="flex flex-col space-y-6">
         {isAuthenticated ? (
           <>
             {isSteamLinked ? (
-              <>Authenticated, Authorized, and Steam Linked</>
+              <div>Steam Linked with ID: {steamId}</div>
             ) : (
               <AuthorizeForm />
+            )}
+            {username ? (
+              <div>Onboarded as: {username}</div>
+            ) : (
+              "User not onboarded"
             )}
           </>
         ) : isLoginForm ? (
@@ -56,7 +69,7 @@ const AuthForms: React.FC = () => {
       <div className="flex flex-row justify-between items-baseline space-x-8 mt-4 text-center text-sm text-white">
         {isAuthenticated ? (
           <>
-            You are currently signed in
+            You are currently signed{" in as "+username || "."}.
             <button onClick={handleLogout} className="underline">Log out</button>
           </>
         ) : isLoginForm ? (

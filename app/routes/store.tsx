@@ -35,16 +35,18 @@ export const links: LinksFunction = () => {
 };
 
 
-
-
 export const loader: LoaderFunction = async ({ request }) => {
   const session = await getSession(request.headers.get("Cookie"));
   return json({
     isAuthenticated: session.has('userToken'),
-    isSteamLinked: session.has('steamId')
+    userToken: session.get('userToken') || null,
+    isSteamLinked: session.has('steamId'),
+    steamId: session.get('steamId') || null,
+    username: session.get('username') || null
   });
 };
-// Your component
+
+
 export default function Store() {
 
 
