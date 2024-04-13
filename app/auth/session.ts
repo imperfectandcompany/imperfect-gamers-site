@@ -19,8 +19,8 @@ import { sessionStorage } from "./storage.server";
   export async function checkUsername(request: Request) {
     // get the session
     const session = await sessionStorage.getSession(request.headers.get('Cookie'));
-    const isUserOnboarded = session.has('username'); // Check if the userToken exists in the session
-    return isUserOnboarded;
+    const isOnboarded = session.has('username'); // Check if the userToken exists in the session
+    return isOnboarded;
   }
 
 

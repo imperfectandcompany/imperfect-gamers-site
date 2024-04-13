@@ -10,8 +10,20 @@ import { MembershipCard } from '~/components/organism/MembershipCard/MembershipC
 import ModalWrapper from '~/components/organism/ModalWrapper/ModalWrapper';
 
 
+interface LoaderData {
+  isAuthenticated: boolean;
+  userToken: string | null;
+  isSteamLinked: boolean;
+  steamId: string | null;
+  username: string | null;
+}
+
 export default function StoreHeader() {
-  const { isAuthenticated } = useLoaderData<{ isAuthenticated: boolean}>();
+  const { isAuthenticated, userToken, isSteamLinked, steamId, username } = useLoaderData<LoaderData>();
+
+  const title = isAuthenticated && username && isSteamLinked
+    ? `Join The Club, ${username}`
+    : `Unauthorized Action`;
 
   return (
     <div>
@@ -19,18 +31,9 @@ export default function StoreHeader() {
       <p className="subtitle">Join now through the exclusive access member pass</p>
       <MembershipCard />
       <div className="mt-8 flex justify-center">
-        {false ? (
-          // Show content for logged-in users
-          <div>Welcome back!</div>
-        ) : (
-          // Show the modal wrapper for unauthenticated users
-          <ModalWrapper
-            title={`${isAuthenticated ? 'Join The Club' : 'Unauthorized Action'}`}
-            content={<AuthForms />}
-          >
+          <ModalWrapper title={title} content={<AuthForms />}>
             <Button>Join Now</Button>
           </ModalWrapper>
-        )}
       </div>
       {!isAuthenticated && (
         <p className="mt-4 text-sm text-center text-white">

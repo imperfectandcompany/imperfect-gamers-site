@@ -66,6 +66,28 @@ export async function login(request: Request) {
     }
 }
 
+
+export async function logout(token: string) {
+    try {
+        const response = await fetch(`${API_BASE}/logout`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `${token}`,
+                'Content-Type': 'application/json',
+            },
+        });
+        if (!response.ok) {
+            console.log(response.status);
+            throw new Error('Logout failed at API level');
+        }
+        return { ok: true };
+    } catch (error) {
+        console.error('Logout error:', error);
+        return { ok: false };
+    }
+}
+
+
 // Function to check if user has a linked Steam account
 async function checkSteamAccount(token: string): Promise<{ status: string, hasSteam: boolean, steamId: string }> {
     
