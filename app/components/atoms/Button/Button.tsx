@@ -10,6 +10,19 @@ const buttonVariants = {
   danger: 'bg-red-500 hover:bg-red-700',
 };
 
+/**
+ * Button component.
+ *
+ * @component
+ * @param {Object} props - The component props.
+ * @param {string} [props.variant='primary'] - The variant of the button.
+ * @param {string} [props.type='button'] - The type of the button.
+ * @param {React.ReactNode} [props.icon] - The icon to be displayed before the button text.
+ * @param {React.ReactNode} [props.children] - The content of the button.
+ * @param {Function} [props.onClick] - The click event handler for the button.
+ * @param {string} [props.className] - Additional CSS classes for the button.
+ * @returns {JSX.Element} The rendered Button component.
+ */
 const Button: React.FC<ButtonProps> = ({
   variant = 'primary',
   type = 'button',

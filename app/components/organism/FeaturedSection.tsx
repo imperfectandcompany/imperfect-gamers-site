@@ -14,6 +14,15 @@ interface FeaturedSectionProps {
     className?: string;
 }
 
+/**
+ * Renders a featured section component.
+ *
+ * @component
+ * @param {Object} props - The component props.
+ * @param {Array} props.featured - The array of featured items to render.
+ * @param {string} props.className - The additional CSS class name for the component.
+ * @returns {JSX.Element} The rendered component.
+ */
 const FeaturedSection: React.FC<FeaturedSectionProps> = ({ featured, className }) => (
     <div className={`featured-section ${className || ''}`.trim()}>
         {featured ? featured.map((featuredSingle, index) => (

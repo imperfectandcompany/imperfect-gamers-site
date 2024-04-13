@@ -1,3 +1,15 @@
+/**
+ * 
+ * This CSS file contains styles for a custom Tailwind button component with hover effects and responsive behavior.
+ * 
+ * The button component has the following styles:
+ * - On hover, it applies a gradient background, a custom hover shadow, and a slight vertical translation.
+ * - It has a pseudo-element before it that creates a radial gradient background with a scale animation.
+ * - On hover, the pseudo-element scales up to full size.
+ * - On screens with a maximum width of 768px, the button has additional padding.
+ * 
+ * Note: This file uses Tailwind CSS utility classes.
+ */
 /* styles.css */
 @tailwind base;
 @tailwind components;

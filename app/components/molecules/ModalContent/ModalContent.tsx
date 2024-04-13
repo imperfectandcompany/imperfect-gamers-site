@@ -9,6 +9,15 @@ interface ModalContentProps {
     content: ReactNode;
 }
 
+/**
+ * Renders the content of a modal.
+ *
+ * @component
+ * @param {Object} props - The component props.
+ * @param {string} props.title - The title of the modal.
+ * @param {string | React.ReactNode} props.content - The content of the modal.
+ * @returns {React.ReactNode} The rendered modal content.
+ */
 const ModalContent: React.FC<ModalContentProps> = ({ title, content }) => {
     return (
         <>

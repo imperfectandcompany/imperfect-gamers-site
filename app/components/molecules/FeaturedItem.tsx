@@ -9,6 +9,14 @@ interface FeaturedItemProps {
     imageAlt?: string;
 }
 
+/**
+ * Represents a featured item component.
+ * @param discount - The discount value.
+ * @param title - The title of the item.
+ * @param description - The description of the item.
+ * @param imageUrl - The URL of the item's image.
+ * @param imageAlt - The alt text for the item's image.
+ */
 const FeaturedItem: React.FC<FeaturedItemProps> = ({ discount, title, description, imageUrl, imageAlt }) => (
     <div className="flex justify-end">
         <div className="flex justify-end">

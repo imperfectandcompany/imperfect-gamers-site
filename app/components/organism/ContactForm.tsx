@@ -1,9 +1,44 @@
 import React, { useState } from 'react';
 
+
+/**
+ * Props for the ContactForm component.
+ */
 interface ContactFormProps {
+  /**
+   * A callback function to handle the sign-in action.
+   * This function will be called when the user clicks the "Sign In" button.
+   * It should handle the logic for signing in the user.
+   *
+   * @param username - The username entered by the user.
+   * @param password - The password entered by the user.
+   */
   onSignIn: () => void;
 }
 
+
+/**
+ * ContactForm component for displaying a contact form.
+ *
+ * @component
+ * @example
+ * ```tsx
+ * import ContactForm from './ContactForm';
+ *
+ * const App = () => {
+ *   const handleSignIn = () => {
+ *     // handle sign in logic
+ *   };
+ *
+ *   return (
+ *     <div>
+ *       <h1>Welcome to Imperfect Gamers</h1>
+ *       <ContactForm onSignIn={handleSignIn} />
+ *     </div>
+ *   );
+ * };
+ * ```
+ */
 const ContactForm: React.FC<ContactFormProps> = ({ onSignIn }) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');

@@ -7,18 +7,38 @@ import Button from '~/components/atoms/Button/Button';
 import Input from '~/components/atoms/Input/Input';
 import { getSteamLoginURL } from '~/utils/steamAuth';
 
+/**
+ * Represents the login schema for the authorization form.
+ */
 const loginSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
   password: z.string().min(1, "Password is required"),
 });
 
+/**
+ * Creates a validator function using the provided login schema.
+ * 
+ * @param {ZodSchema<T>} schema - The login schema to use for validation.
+ * @returns {Validator<T>} - The validator function.
+ */
 const validator = withZod(loginSchema);
 
+/**
+ * Represents a form component for authorizing a Steam account.
+ */
 const AuthorizeForm: React.FC = () => {
   const fetcher = useFetcher();
   const [showFallback, setShowFallback] = useState(false);
   const [fallbackUrl, setFallbackUrl] = useState('');
 
+  /**
+   * Initiates the process of linking the Steam account.
+   * Instead of opening the popup immediately, it fetches the URL first.
+   * If the URL is available, it opens a popup window for Steam linking.
+   * If the popup window fails to open, it sets the fallback URL.
+   * If the URL is not available, it displays an error message.
+   * If there is an error while fetching the URL, it sets the fallback URL using the client-side function getSteamLoginURL.
+   */
   const initiateSteamLinking = async () => {
     // Instead of opening the popup immediately, fetch the URL first
     try {

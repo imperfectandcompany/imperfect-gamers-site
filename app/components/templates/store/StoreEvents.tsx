@@ -1,6 +1,9 @@
 import React from 'react';
 import EventItem from '~/components/molecules/EventItem';
 
+/**
+ * Represents the component for displaying exclusive events in the store.
+ */
 const StoreEvents: React.FC = () => {
   return (
     <section className="py-12 bg-black bg-opacity-50">

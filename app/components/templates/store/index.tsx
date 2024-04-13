@@ -1,5 +1,14 @@
 // Path: ~/components/templates/store/index.tsx
 
+/**
+ * This file represents the store template component.
+ * It is responsible for rendering the store page of the application.
+ * The store page displays various products available for purchase.
+ * 
+ * @remarks
+ * This component is part of the templates module.
+ * It is used by the main application to render the store page.
+ */
 export { default as StoreContact } from './StoreContact';
 export { default as StoreFAQ } from './StoreFAQ';
 export { default as FeaturedSection } from './StoreFeatured';

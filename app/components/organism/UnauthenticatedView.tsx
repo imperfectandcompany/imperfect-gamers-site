@@ -4,6 +4,10 @@ import LoginForm from '~/components/molecules/LoginForm';
 import Button from '~/components/atoms/Button/Button';
 import Paragraph from '../atoms/Paragraph/Paragraph';
 
+/**
+ * Renders the view for unauthenticated users.
+ * This component displays a message prompting the user to log in and provides a login button.
+ */
 const UnauthenticatedView = () => {
     return (
         <div className="flex flex-col items-center justify-center text-white">

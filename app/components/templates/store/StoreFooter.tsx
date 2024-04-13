@@ -1,5 +1,10 @@
 import FooterLink from "~/components/molecules/FooterLink";
 
+/**
+ * Renders the footer component for the store page.
+ * 
+ * @returns The rendered StoreFooter component.
+ */
 const StoreFooter: React.FC = () => {
     
     return (

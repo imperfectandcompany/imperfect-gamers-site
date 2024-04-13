@@ -1,5 +1,27 @@
 /* MembershipCard.module.css */
 
+/**
+ * CSS styles for the MembershipCard component.
+ *
+ * @class membership-card
+ * @description Represents the styling for a membership card component.
+ * @cssprop {number} width - The width of the membership card.
+ * @cssprop {number} height - The height of the membership card.
+ * @cssprop {string} background - The background color of the membership card.
+ * @cssprop {number} border-radius - The border radius of the membership card.
+ * @cssprop {string} color - The text color of the membership card.
+ * @cssprop {number} padding - The padding around the content of the membership card.
+ * @cssprop {string} position - The positioning of the membership card.
+ * @cssprop {string} display - The display type of the membership card.
+ * @cssprop {string} flex-direction - The flex direction of the membership card.
+ * @cssprop {string} justify-content - The alignment of the content along the main axis of the membership card.
+ * @cssprop {string} box-shadow - The shadow effect of the membership card.
+ * @cssprop {string} transform - The 3D transformation of the membership card.
+ * @cssprop {string} transition - The transition effect of the membership card.
+ * @cssprop {string} background-image - The background image of the membership card.
+ * @cssprop {string} background-size - The size of the background image of the membership card.
+ * @cssprop {string} animation - The animation effect of the membership card.
+ */
 .membership-card {
     width: 384px;
     height: 224px;
@@ -19,6 +41,15 @@
     animation: shimmer-effect 8s ease infinite;
 }
 
+/**
+ * CSS styles for the membership card tooltip.
+ *
+ * This CSS class defines the styles for the tooltip that appears when hovering over the membership card.
+ * It positions the tooltip at the bottom of the card, with a background color, text color, padding, and border radius.
+ * The tooltip is initially hidden and transitions in with opacity and transform effects.
+ *
+ * @class membership-card__tooltip
+ */
 .membership-card__tooltip {
     position: absolute;
     bottom: 105px;
@@ -37,12 +68,21 @@
     transition: opacity 0.5s ease, transform 0.5s ease;
 }
 
+/**
+ * 
+ * This CSS code defines the hover effect for the membership card component and its tooltip.
+ * When the membership card is hovered over, the tooltip becomes visible with a fade-in effect.
+ * The tooltip is positioned above the membership card and slightly shifted downwards.
+ */
 .membership-card:hover .membership-card__tooltip {
     opacity: 1;
     visibility: visible;
     transform: translate(-50%, 10px);
 }
 
+/**
+ * Styles for the shimmer effect before the membership card.
+ */
 .membership-card__shimmer-effect--before {
     content: '';
     position: absolute;
@@ -58,6 +98,9 @@
     border-radius: 20px;
 }
 
+/**
+ * Styles for the membership card on hover.
+ */
 .membership-card:hover {
     transform: perspective(1000px) rotateY(0deg);
     background: linear-gradient(145deg, #640000, #ae0000);
@@ -106,6 +149,14 @@
     background: linear-gradient(45deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0));
 }
 
+/**
+ * CSS styles for the spinback effect of the membership card.
+ *
+ * This CSS code defines the styles for the ::after pseudo-element of the .membership-card__spinback-effect class.
+ * The pseudo-element is positioned at -50% from the top and left of its container, and has a width and height of 200%.
+ * It has a background that creates a linear gradient effect using transparent and rgba(255, 255, 255, 0.2) colors.
+ * The spin-disk animation is applied to the pseudo-element, with a duration of 5 seconds, linear timing function, and infinite repetition.
+ */
 .membership-card__spinback-effect::after {
     top: -50%;
     left: -50%;
@@ -126,6 +177,18 @@
     height: 60px;
 }
 
+/**
+ * 
+ * CSS class for the membership card tier.
+ * 
+ * @class membership-card__tier
+ * @description Represents the styling for the membership card tier.
+ * @cssprop position - Specifies the positioning method for the membership card tier.
+ * @cssprop top - Specifies the distance from the top edge of the positioned element to the top edge of its containing block.
+ * @cssprop left - Specifies the distance from the left edge of the positioned element to the left edge of its containing block.
+ * @cssprop transform - Specifies a 2D or 3D transformation to be applied to the membership card tier.
+ * @cssprop width - Specifies the width of the membership card tier.
+ */
 .membership-card__tier {
     position: absolute;
     top: 72.5%;
@@ -140,25 +203,23 @@
 }
 
 
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .price-toggle {
-                flex-direction: column;
-                padding-top: 12px;
-                align-items: center;
-            }
+/* Responsive Design */
+@media (max-width: 768px) {
+    .price-toggle {
+        flex-direction: column;
+        padding-top: 12px;
+        align-items: center;
+    }
 
-            .price-toggle .price-label {
-                margin: 0;
-            }
+    .price-toggle .price-label {
+        margin: 0;
+    }
 
-            .switch {
-                margin: 10px 0;
-            }
+    .switch {
+        margin: 10px 0;
+    }
 
-            .membership-card__spinback-effect {
-                display: none;
-            }
-
-
-        }
+    .membership-card__spinback-effect {
+        display: none;
+    }
+}

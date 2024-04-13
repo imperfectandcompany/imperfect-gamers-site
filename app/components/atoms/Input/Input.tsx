@@ -2,10 +2,35 @@ import React, { useState } from 'react';
 import { useField } from "remix-validated-form";
 
 
+/**
+ * Props for the Input component.
+ */
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   name: string; // This is required by useField
 }
 
+/**
+ * Input component for form fields.
+ *
+ * @component
+ * @example
+ * ```tsx
+ * <Input
+ *   name="username"
+ *   type="text"
+ *   onBlur={handleBlur}
+ *   onChange={handleChange}
+ *   placeholder="Enter your username"
+ * />
+ * ```
+ *
+ * @param {InputProps} props - The input component props.
+ * @param {string} props.name - The name of the input field.
+ * @param {string} props.type - The type of the input field.
+ * @param {Function} props.onBlur - The onBlur event handler for the input field.
+ * @param {Function} props.onChange - The onChange event handler for the input field.
+ * @returns {JSX.Element} The rendered Input component.
+ */
 const Input: React.FC<InputProps> = ({ name, type, onBlur, ...props }) => {
   const [isTouched, setIsTouched] = useState(false);
   const [hasValue, setHasValue] = useState(false);

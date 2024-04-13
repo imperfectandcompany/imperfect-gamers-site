@@ -1,3 +1,21 @@
+/**
+ * 
+ * This CSS file contains styles for the store section of the website.
+ * It includes styles for the HTML structure, custom scrollbar, background patterns, animations, FAQ section, contact form, and responsive design.
+ * 
+ * Order of Contents:
+ * 1. HTML Styles
+ * 2. Custom Scrollbar Styles
+ * 3. Background Patterns
+ * 4. Animations
+ * 5. Title and Subtitle Styles
+ * 6. Heartbeat Animation
+ * 7. Hover Effects
+ * 8. Background Animation
+ * 9. FAQ Section Styles
+ * 10. Contact Form Styles
+ * 11. Responsive Design Styles
+ */
 html {
     scroll-behavior: smooth;
     height: calc(var(--vh, 1vh) * 100);

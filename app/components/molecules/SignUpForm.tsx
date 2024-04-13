@@ -7,7 +7,9 @@ import { useFetcher } from '@remix-run/react';
 import { withZod } from '@remix-validated-form/with-zod';
 import { ValidatedForm } from 'remix-validated-form';
 
-// Schema for form validation using Zod
+/**
+ * Represents the sign up schema for the form.
+ */
 const signUpSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
   password: z.string().min(6, { message: "Password must be at least 6 characters" }),
@@ -17,12 +19,27 @@ const signUpSchema = z.object({
   path: ["confirmPassword"],
 });
 
+/**
+ * Validates the sign-up form using the provided schema.
+ * 
+ * @param schema - The schema to validate the form against.
+ * @returns A function that can be used to validate the form.
+ */
 const validate = withZod(signUpSchema);
 
 interface SignUpResponse {
   success: boolean;
 }
 
+/**
+ * Sign up form component.
+ * 
+ * This component renders a sign-up form using the Remix framework, React Router Fetcher,
+ * and Remix Validated Form flavor. It allows users to enter their email and password,
+ * and submits the form data to the "/register" endpoint.
+ * 
+ * @returns The sign up form component.
+ */
 const SignUpForm: React.FC = () => {
   const fetcher = useFetcher<SignUpResponse>();
 

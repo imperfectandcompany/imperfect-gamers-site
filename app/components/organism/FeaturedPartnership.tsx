@@ -10,6 +10,16 @@ interface FeaturedPartnershipProps {
   linkText: string;
 }
 
+/**
+ * Represents a featured partnership component.
+ * @component
+ * @param {string} logoSrc - The source URL of the logo image.
+ * @param {string} logoAlt - The alternative text for the logo image.
+ * @param {string} title - The title of the partnership.
+ * @param {string} description - The description of the partnership.
+ * @param {string} link - The URL of the partnership link.
+ * @param {string} linkText - The text for the partnership link.
+ */
 const FeaturedPartnership: React.FC<FeaturedPartnershipProps> = ({ logoSrc, logoAlt, title, description, link, linkText }) => {
   return (
     <section>

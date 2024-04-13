@@ -9,6 +9,15 @@ interface IconTextProps {
   text: string;
 }
 
+/**
+ * A component that displays an icon and accompanying text.
+ *
+ * @component
+ * @param {Object} props - The component props.
+ * @param {IconDefinition} props.icon - The icon to display.
+ * @param {string} props.text - The text to display.
+ * @returns {JSX.Element} The rendered IconText component.
+ */
 const IconText: React.FC<IconTextProps> = ({ icon, text }) => {
   return (
     <div>

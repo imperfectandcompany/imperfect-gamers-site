@@ -1,4 +1,5 @@
 // components/organism/AuthForms/AuthForms.tsx
+
 import { useFetcher, useLoaderData } from '@remix-run/react';
 import React, { useEffect, useState } from 'react';
 import { useRevalidator } from "react-router-dom";
@@ -15,17 +16,47 @@ interface LoaderData {
   username: string | null;
 }
 
+/**
+ * Renders the authentication forms based on the user's authentication status.
+ *
+ * @remarks
+ * This component follows the atomic design methodology, where it is categorized as an organism component.
+ * It is built using Remix React, a framework for building server-rendered React applications.
+ *
+ * @example
+ * ```tsx
+ * import AuthForms from '~/components/organism/AuthForms/AuthForms';
+ *
+ * const App: React.FC = () => {
+ *   return (
+ *     <div>
+ *       <h1>Welcome to My App</h1>
+ *       <AuthForms />
+ *     </div>
+ *   );
+ * };
+ * ```
+ *
+ * @concept Atomic Design Methodology
+ * The `AuthForms` component follows the atomic design methodology, which is a way of organizing components based on their complexity and reusability. In atomic design, components are categorized into atoms, molecules, organisms, templates, and pages. The `AuthForms` component is categorized as an organism component, which represents a combination of molecules and atoms to form a more complex UI element.
+ *
+ * @concept Remix React
+ * Remix React is a framework for building server-rendered React applications. It provides a set of tools and conventions to simplify the development of server-rendered React applications. The `AuthForms` component is built using Remix React and leverages its features such as server-side rendering and data loading.
+ *
+ * @concept Modal
+ * The `AuthForms` component is designed to be consumed inside a modal. A modal is a UI component that overlays the main content and is used to display additional information or perform specific actions. By integrating the `AuthForms` component inside a modal, users can interact with the authentication forms without leaving the current context or page.
+ */
 const AuthForms: React.FC = () => {
   const [isLoginForm, setIsLoginForm] = useState(true);
   const { revalidate } = useRevalidator();
 
-
   const switchForm = () => setIsLoginForm(!isLoginForm);
   const { isAuthenticated, userToken, isSteamLinked, steamId, username } = useLoaderData<LoaderData>();
   const fetcher = useFetcher();
-  // isAuthorize is a pre-check for membership purchase under condition user has satisfied 3 requirements. 1. Completed onboarding (set a user), 2. Verified Email 3.
-  // mock value for now
-  // const isAuthorized = false;
+
+  /**
+   * Handles the logout action by submitting a POST request to the "/logout" endpoint.
+   */
   const handleLogout = () => {
     fetcher.submit({}, { method: "post", action: "/logout" });
   };
@@ -46,7 +77,7 @@ const AuthForms: React.FC = () => {
 
   return (
     <>
-    <div className="flex flex-col space-y-6">
+      <div className="flex flex-col space-y-6">
         {isAuthenticated ? (
           <>
             {isSteamLinked ? (

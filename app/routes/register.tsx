@@ -1,23 +1,13 @@
 // app/routes/register.tsx
-import { ActionFunction, LoaderFunction, json, redirect } from "@remix-run/node";
+import { ActionFunction, json } from "@remix-run/node";
 import { registerUser } from "~/auth/authenticator.server";  // Assuming you export it similarly to login function.
 
-// export const loader: LoaderFunction = ({ request }) => {
-//     return (
-//         <>
-//             <div style={{ display: 'none' }}>
-//                 ⚠️ This page is intentionally hidden. ⚠️
-//             </div>
-//             <div>
-//                 POWERED BY IMPERFECT AND COMPANY LLC
-//                 <br />
-//                 © 2024 Imperfect and Company LLC. All rights reserved.
-//             </div>
-//         </>
-//     );
-// };
-  
-
+/**
+ * Handles the registration action.
+ * 
+ * @param request - The request object.
+ * @returns The response object.
+ */
 export const action: ActionFunction = async ({ request }) => {
     const formData = await request.formData();
     const email = formData.get('email') as string;

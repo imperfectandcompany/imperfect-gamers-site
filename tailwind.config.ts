@@ -1,5 +1,13 @@
 import type { Config } from 'tailwindcss'
 
+/**
+ * Represents the configuration for the Tailwind CSS framework.
+ *
+ * @remarks
+ * This configuration file is used to customize the theme, colors, background images, box shadows, and variants of Tailwind CSS.
+ *
+ * @see {@link https://tailwindcss.com/docs/configuration|Tailwind CSS Configuration}
+ */
 export default {
   content: ['./app/**/*.{js,jsx,ts,tsx}'],
   theme: {

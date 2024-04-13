@@ -15,6 +15,15 @@ interface StatisticsGroupProps {
   className?: string;
 }
 
+/**
+ * Renders a group of statistics.
+ *
+ * @component
+ * @param {StatisticsGroupProps} props - The component props.
+ * @param {Statistic[]} props.statistics - The array of statistics to render.
+ * @param {string} props.className - The additional CSS class name for the component.
+ * @returns {JSX.Element} The rendered StatisticsGroup component.
+ */
 const StatisticsGroup: React.FC<StatisticsGroupProps> = ({ statistics, className }) => (
   <div className={`flex flex-wrap justify-between ${className}`}>
     {statistics.map((stat, index) => (

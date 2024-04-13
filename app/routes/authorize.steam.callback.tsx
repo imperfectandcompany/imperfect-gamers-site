@@ -3,8 +3,19 @@ import { LoaderFunction, json } from '@remix-run/node';
 import { commitSession, getSession } from '~/auth/storage.server';
 import { verifySteamAssertion } from '~/utils/steamAuth';
 
+/**
+ * This file contains the loader function for handling the callback from the Steam authorization process.
+ * It verifies the Steam assertion, sets the steamId in the session, and sends a message to the parent window.
+ *
+ * @param request - The incoming request object.
+ * @returns A Response object with the appropriate content and headers.
+ * @throws {Response} If Steam authentication fails or the session is not found.
+ */
 export const loader: LoaderFunction = async ({ request }) => {
+  // Parse the request URL
   const url = new URL(request.url);
+
+  // Verify the Steam assertion
   const steamId = await verifySteamAssertion(url.toString(), url.searchParams);
 
   if (!steamId) {
@@ -16,11 +27,12 @@ export const loader: LoaderFunction = async ({ request }) => {
   const session = await getSession(request.headers.get("Cookie"));
 
   if (session) {
+    // Set the steamId in the session
     session.set("steamId", steamId);
     await commitSession(session);
-    
+
     // Send a message to the parent window
-    //TODO: SETUP PROCESS.ENV ORIGIN INSTEAD OF * FOR SECURITY
+    // TODO: Setup process.env.ORIGIN instead of * for security
     const script = `
       <script>
         window.opener.postMessage({ type: 'steam-auth-success' }, '*');
@@ -38,19 +50,3 @@ export const loader: LoaderFunction = async ({ request }) => {
     throw new Response('Session not found', { status: 400 });
   }
 };
-
-//   // Return a script that sends a message to the parent window
-//   const script = `
-//     <script>
-//       window.opener.postMessage({
-//         type: 'steam-auth-success',
-//         steamId: '${steamId}'
-//       }, '*');
-//       window.close();
-//     </script>
-//   `;
-//   return new Response(script, {
-//     headers: { 'Content-Type': 'text/html' },
-//     status: 200
-//   });
-// };

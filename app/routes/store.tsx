@@ -35,6 +35,11 @@ export const links: LinksFunction = () => {
 };
 
 
+/**
+ * Retrieves the necessary data for the store route.
+ * @param request - The incoming request object.
+ * @returns An object containing information about the user's authentication status, user token, Steam linking status, Steam ID, and onboarding status.
+ */
 export const loader: LoaderFunction = async ({ request }) => {
   const session = await getSession(request.headers.get("Cookie"));
   return json({
@@ -48,10 +53,12 @@ export const loader: LoaderFunction = async ({ request }) => {
 };
 
 
+/**
+ * Renders the Store component.
+ * 
+ * @returns The rendered Store component.
+ */
 export default function Store() {
-
-
-
   return (
     <>
       <StoreHeader />

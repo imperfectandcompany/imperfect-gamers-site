@@ -12,7 +12,12 @@ interface User {
     userToken: string;
 }
 
-// Function to authenticate a user with the external API
+/**
+ * Authenticates a user by sending a request to the API with the provided email and password.
+ * @param email - The email of the user.
+ * @param password - The password of the user.
+ * @returns A Promise that resolves to a User object if authentication is successful, or null if there is an error.
+ */
 async function authenticateUser(email: string, password: string): Promise<User | null> {
 
     try {
@@ -34,6 +39,15 @@ async function authenticateUser(email: string, password: string): Promise<User |
     }
 }
 
+/**
+ * Authenticates a user's login request.
+ * 
+ * @param request - The login request object.
+ * @returns An object containing the result of the login request.
+ *          - ok: A boolean indicating if the login was successful.
+ *          - cookieHeader: The cookie header to be returned in the response.
+ * @throws An error if the user fails to authenticate.
+ */
 export async function login(request: Request) {
     const formData = await request.formData();
     const email = formData.get('email');
@@ -66,7 +80,12 @@ export async function login(request: Request) {
     }
 }
 
-// @/app/auth/authenticator.server.ts
+/**
+ * Registers a user by sending a POST request to the API with the provided email and password.
+ * @param email - The email of the user to register.
+ * @param password - The password of the user to register.
+ * @returns A promise that resolves to an object containing the status and message of the registration.
+ */
 export async function registerUser(email: string, password: string) {
     try {
       const response = await fetch(`${API_BASE}/register`, {
@@ -82,8 +101,11 @@ export async function registerUser(email: string, password: string) {
     }
   }
   
-
-
+/**
+ * Logs out the user by sending a request to the API.
+ * @param token - The user's authentication token.
+ * @returns A promise that resolves to an object indicating the success of the logout operation.
+ */
 export async function logout(token: string) {
     try {
         const response = await fetch(`${API_BASE}/logout`, {
@@ -104,8 +126,11 @@ export async function logout(token: string) {
     }
 }
 
-
-// Function to check if user has a linked Steam account
+/**
+ * Checks the Steam account associated with the provided token.
+ * @param token - The authentication token.
+ * @returns A promise that resolves to an object containing the status, hasSteam, and steamId.
+ */
 async function checkSteamAccount(token: string): Promise<{ status: string, hasSteam: boolean, steamId: string }> {
     
     try {
@@ -125,14 +150,18 @@ async function checkSteamAccount(token: string): Promise<{ status: string, hasSt
         return { status: 'error', hasSteam: false, steamId: '' };
     }
 }
+
 interface OnboardedResponse {
     status: string;
     onboarded: boolean;
     username?: string;
 }
 
-
-// Function to check if user has onboarded
+/**
+ * Checks the onboarded status of a user using the provided token.
+ * @param token - The authentication token for the user.
+ * @returns A promise that resolves to an object containing the onboarded status and additional information.
+ */
 async function checkOnboarded(token: string): Promise<OnboardedResponse> {
     try {
         const response = await fetch(`${API_BASE}/user/onboarded`, {

@@ -5,17 +5,31 @@ import { PriceToggle } from '~/components/molecules/PriceToggle/PriceToggle';
 import styles from './MembershipCard.module.css';
 import { PriceLabel } from '~/components/atoms/PriceLabel/PriceLabel';
 
+/**
+ * Props for the MembershipCard component.
+ */
 interface MembershipCardProps {
     // Define props here if needed, for example:
     // monthlyPrice: string;
     // yearlyPrice: string;
 }
 
-export const MembershipCard: React.FC<MembershipCardProps> = (props) => {
+/**
+ * A card component that displays membership information.
+ *
+ * @component
+ * @example
+ * ```tsx
+ * <MembershipCard />
+ * ```
+ */
+export const MembershipCard: React.FC<MembershipCardProps> = () => {
     const [isYearly, setIsYearly] = useState(false);
     const uniqueFilterId = `gooey-${Math.random()}`; // Unique ID for the filter
 
-    // Function to toggle between monthly and yearly pricing
+    /**
+     * Toggles between monthly and yearly pricing.
+     */
     const handleToggle = () => setIsYearly(!isYearly);
 
     return (

@@ -1,6 +1,11 @@
 import { ActionFunctionArgs, json } from "@remix-run/node";
 import { login } from "~/auth/authenticator.server";
 
+/**
+ * Handles the login action.
+ * @param {ActionFunctionArgs} options - The options for the action.
+ * @returns {Promise<import('express').Response>} The response object.
+ */
 export async function action({
     request,
 }: ActionFunctionArgs) {

@@ -7,6 +7,16 @@ interface EventItemProps {
   link: string;
 }
 
+/**
+ * Renders an event item component.
+ *
+ * @component
+ * @param {Object} props - The component props.
+ * @param {string} props.title - The title of the event.
+ * @param {string} props.description - The description of the event.
+ * @param {string} props.link - The link to learn more about the event.
+ * @returns {JSX.Element} The rendered EventItem component.
+ */
 const EventItem: React.FC<EventItemProps> = ({ title, description, link }) => {
   return (
     <div className="bg-gradient-to-br from-white/40 to-black/30 p-6 rounded-lg shadow-xl transform transition duration-500 hover:scale-105">
