@@ -23,7 +23,7 @@ module.exports = {
   ignorePatterns: ["!**/.server", "!**/.client"],
 
   // Base config
-  extends: ["eslint:recommended", "plugin:@typescript-eslint/recommended", "plugin:tailwindcss/recommended"],
+  extends: ["eslint:recommended", "plugin:@typescript-eslint/recommended", "plugin:tailwindcss/recommended", "plugin:prettier/recommended"],
 
   overrides: [
     // React
