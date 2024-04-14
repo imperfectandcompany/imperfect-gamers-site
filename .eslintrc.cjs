@@ -17,12 +17,13 @@ module.exports = {
   env: {
     browser: true,
     commonjs: true,
+    node: true,
     es6: true,
   },
   ignorePatterns: ["!**/.server", "!**/.client"],
 
   // Base config
-  extends: ["eslint:recommended"],
+  extends: ["eslint:recommended", "plugin:@typescript-eslint/recommended", "plugin:tailwindcss/recommended"],
 
   overrides: [
     // React
