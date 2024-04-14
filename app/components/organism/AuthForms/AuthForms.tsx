@@ -70,7 +70,7 @@ const AuthForms: React.FC = () => {
         revalidate(); // This re-triggers the loader
       }
     };
-  
+
     window.addEventListener('message', handleMessage);
     return () => window.removeEventListener('message', handleMessage);
   }, [revalidate]);
@@ -97,21 +97,24 @@ const AuthForms: React.FC = () => {
           <SignUpForm />
         )}
       </div>
-      <div className="flex flex-row justify-between items-baseline space-x-8 mt-4 text-center text-sm text-white">
-        {isAuthenticated ? (
-          <>
-            You are currently signed{" in as "+username || "."}.
-            <button onClick={handleLogout} className="underline">Log out</button>
-          </>
-        ) : isLoginForm ? (
-          <>
-            Don't have an account? <button onClick={() => switchForm()} className="underline">Sign up</button>
-          </>
-        ) : (
-          <>
-            Already have an account?<button onClick={() => switchForm()} className="underline">Sign in</button>
-          </>
-        )}
+      <div className="flex flex-col text-center mt-4 text-sm text-white mx-auto">
+        <div>
+          {isAuthenticated ? (
+            <>
+              You are currently signed{" in as " + username || "."}.
+              <button onClick={handleLogout} className="underline">Log out</button>
+            </>
+          ) : isLoginForm ? (
+            <>
+              Don't have an account? <button onClick={() => switchForm()} className="underline ml-2">Sign up</button>
+            </>
+          ) : (
+            <>
+              Already have an account?<button onClick={() => switchForm()} className="underline ml-2">Sign in</button>
+            </>
+          )}
+        </div>
+        {!isAuthenticated && (<div className="underline">Forgot password</div>)}
       </div>
     </>
   );

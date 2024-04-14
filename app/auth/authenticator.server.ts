@@ -5,11 +5,15 @@ import { commitSession, getSession } from './storage.server';
 const API_BASE = 'https://api.imperfectgamers.org';
 
 
-// Define the user type for your application
 interface User {
-    status: string;
     email: string;
     userToken: string;
+}
+
+interface ApiResponse<T> {
+    status: 'success' | 'error';
+    message?: string;
+    data?: T;
 }
 
 /**
@@ -18,7 +22,7 @@ interface User {
  * @param password - The password of the user.
  * @returns A Promise that resolves to a User object if authentication is successful, or null if there is an error.
  */
-async function authenticateUser(email: string, password: string): Promise<User | null> {
+async function authenticateUser(email: string, password: string): Promise<ApiResponse<User | null>> {
 
     try {
         // Send the request to your API
@@ -29,16 +33,39 @@ async function authenticateUser(email: string, password: string): Promise<User |
             },
             body: JSON.stringify({ username: email, password }), // Ensure mapping to "username"
         });
-        const text = await response.text(); // First get the response as text
-        const data = JSON.parse(text); // Safely parse the text as JSON
-        // For simplicity, returning a simplified user object
-        return { status: data.status, email: email, userToken: data.token };
+        try {
+            const data = await response.json();
+            // For simplicity, returning a simplified user object
+            if (response.ok) {
+                return { status: 'success', data: { email, userToken: data.token } };
+            } else if (response.status === 404) {
+                return { status: 'error', message: 'User not found' };
+            } else if (response.status === 500) {
+                if (data.message === 'Token could not be saved.') {
+                    return { status: 'error', message: 'Token could not be saved' };
+                } else if (data.message === 'Device of user could not be associated with login.') {
+                    return { status: 'error', message: 'Device of user could not be associated with login' };
+                } else if (data.message === 'Device of user could not be saved.') {
+                    return { status: 'error', message: 'Device of user could not be saved' };
+                } else {
+                    return { status: 'error', message: 'An unexpected error occurred' };
+                }
+            } else if (response.status === 401) {
+                return { status: 'error', message: 'Invalid Username or Password' };
+            } else if (response.status === 400) {
+                return { status: 'error', message: 'One oor more expected required inputs were missing' };
+            } else {
+                return { status: 'error', message: 'An unexpected error occurred' };
+            }
+        } catch (error) {
+            console.error('Authentication request failed:', error);
+            return { status: 'error', message: 'Network or server error' };
+        }
     } catch (error) {
-        console.error(error);
-        return null;
+        console.error('Authentication request failed:', error);
+        return { status: 'error', message: 'Network or server error' };
     }
 }
-
 /**
  * Authenticates a user's login request.
  * 
@@ -52,31 +79,39 @@ export async function login(request: Request) {
     const formData = await request.formData();
     const email = formData.get('email');
     const password = formData.get('password');
-    // Ensure email and password are not null and are of type string
-    if (typeof email === 'string' && typeof password === 'string') {
-        // Authenticate against external API
+
+    if (typeof email !== 'string' || typeof password !== 'string') {
+        return { ok: false, error: "Invalid input data provided." };
+    }
+
+    try {
         const user = await authenticateUser(email, password);
-        // Authenticate against external API
-        // TODO add catch
         if (!user || user.status !== "success") {
-            throw new Error("Failed to authenticate user");
+            return { ok: false, error: "Authentication failed, please check your credentials." };
         }
+
         const session = await getSession();
-        session.set("userToken", user?.userToken);
-        // Check if user has a linked Steam account
-        const hasSteamAccount = await checkSteamAccount(user?.userToken);
-        if (hasSteamAccount.hasSteam === true) {
-            session.set("steamId", hasSteamAccount.steamId);
-        }
-        // Check if user has a username set
-        const OnboardingDetails = await checkOnboarded(user?.userToken);
+        if (user.data && user.data.userToken) {
+            session.set("userToken", user.data.userToken);
 
-        if(OnboardingDetails && OnboardingDetails.onboarded === true) {
-            session.set("username", OnboardingDetails.username);
+            const hasSteamAccount = await checkSteamAccount(user.data?.userToken);
+            if (hasSteamAccount.hasSteam) {
+                session.set("steamId", hasSteamAccount.steamId);
+            }
+    
+            const OnboardingDetails = await checkOnboarded(user.data?.userToken);
+            if (OnboardingDetails && OnboardingDetails.onboarded) {
+                session.set("username", OnboardingDetails.username);
+            }
+    
+            const cookieHeader = await commitSession(session);
+            return { ok: true, cookieHeader };
+        } else {
+            return { ok: false, error: "Authentication failed, please check your credentials." };
         }
-
-        const cookieHeader = await commitSession(session);
-        return { ok: true, cookieHeader };
+    } catch (error) {
+        console.error("Login error:", error);
+        return { ok: false, error: "An unexpected error occurred during login." };
     }
 }
 
@@ -88,19 +123,19 @@ export async function login(request: Request) {
  */
 export async function registerUser(email: string, password: string) {
     try {
-      const response = await fetch(`${API_BASE}/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
-      const data = await response.json();
-      return { status: response.ok ? 'success' : 'error', message: data.message };
+        const response = await fetch(`${API_BASE}/register`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password }),
+        });
+        const data = await response.json();
+        return { status: response.ok ? 'success' : 'error', message: data.message };
     } catch (error) {
-      console.error('Register error:', error);
-      return { status: 'error', message: 'Network or server error' };
+        console.error('Register error:', error);
+        return { status: 'error', message: 'Network or server error' };
     }
-  }
-  
+}
+
 /**
  * Logs out the user by sending a request to the API.
  * @param token - The user's authentication token.
@@ -132,7 +167,7 @@ export async function logout(token: string) {
  * @returns A promise that resolves to an object containing the status, hasSteam, and steamId.
  */
 async function checkSteamAccount(token: string): Promise<{ status: string, hasSteam: boolean, steamId: string }> {
-    
+
     try {
         // Send the request to API
         const response = await fetch(`${API_BASE}/user/verifySteam`, {

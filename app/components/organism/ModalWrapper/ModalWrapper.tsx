@@ -3,6 +3,7 @@ import React, { ReactElement, useState } from 'react';
 import Modal from '../../atoms/Modal/Modal';
 import ModalContent from '~/components/molecules/ModalContent/ModalContent';
 import Button from '~/components/atoms/Button/Button';
+import modal from './ModalWrapper.module.css';
 
 interface ModalWrapperProps {
   title: string;
@@ -37,9 +38,9 @@ const ModalWrapper: React.FC<ModalWrapperProps> = ({ title, content, children })
       <Modal isOpen={isOpen} onClose={closeModal}>
         <ModalContent title={title} content={content} />
         <div className="mt-5 flex justify-end">
-          <Button onClick={closeModal} variant="secondary">
-            Close
-          </Button>
+          <div className={modal.close__button} onClick={closeModal}>
+          &times; 
+          </div>
         </div>
       </Modal>
     </>

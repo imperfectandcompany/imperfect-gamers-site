@@ -1,6 +1,6 @@
 // components/organism/MembershipCard.tsx
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { PriceToggle } from '~/components/molecules/PriceToggle/PriceToggle';
 import styles from './MembershipCard.module.css';
 import { PriceLabel } from '~/components/atoms/PriceLabel/PriceLabel';
@@ -14,6 +14,8 @@ interface MembershipCardProps {
     // yearlyPrice: string;
 }
 
+export let filterIdCounter = 0;
+
 /**
  * A card component that displays membership information.
  *
@@ -25,8 +27,11 @@ interface MembershipCardProps {
  */
 export const MembershipCard: React.FC<MembershipCardProps> = () => {
     const [isYearly, setIsYearly] = useState(false);
-    const uniqueFilterId = `gooey-${Math.random()}`; // Unique ID for the filter
+    const [uniqueFilterId, setUniqueFilterId] = useState(`gooey-${filterIdCounter}`);
 
+    useEffect(() => {
+        setUniqueFilterId(`gooey-${++filterIdCounter}`);
+    }, []);
     /**
      * Toggles between monthly and yearly pricing.
      */

@@ -27,10 +27,6 @@ const signUpSchema = z.object({
  */
 const validate = withZod(signUpSchema);
 
-interface SignUpResponse {
-  success: boolean;
-}
-
 /**
  * Sign up form component.
  * 
@@ -41,11 +37,15 @@ interface SignUpResponse {
  * @returns The sign up form component.
  */
 const SignUpForm: React.FC = () => {
-  const fetcher = useFetcher<SignUpResponse>();
+  const fetcher = useFetcher();
 
   // React to the fetcher's state after submission
-  if (fetcher.data?.success) {
+  if ((fetcher.data as { success: boolean })?.success) {
     return <p>Registration Successful!</p>;
+  }
+
+  if (fetcher.state === 'submitting') {
+    return <div>Registering...</div>;
   }
 
   return (
@@ -58,12 +58,13 @@ const SignUpForm: React.FC = () => {
         // Handle the form submission with the data
         fetcher.submit(data);
       }}
-      className="flex flex-col items-center space-y-4"
+      className="flex flex-col space-y-4"
     >
       <Input name="email" type="email" placeholder="Email" required />
       <Input name="password" type="password" placeholder="Password" required />
       <Input name="confirmPassword" type="password" placeholder="Confirm Password" required />
-      <Button type="submit">Sign Up</Button>
+      {(fetcher.data as { error: string })?.error && <div className="mr-0 text-red-700">{(fetcher.data as { error: string }).error}</div>}
+      <div className="items-right justify-right ml-auto"><Button type="submit">Sign Up</Button></div>
     </ValidatedForm>
   );
 };

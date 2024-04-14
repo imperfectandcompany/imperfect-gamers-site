@@ -20,7 +20,7 @@ export const action: ActionFunction = async ({ request }) => {
             return json({ success: 'Registration successful' });
         } else {
             // Return error message from API
-            return json({ message: result.message }, { status: 400 });
+            return json({ error: result.message }, { status: 400 });
         }
     } catch (error) {
         const message = (error as Error).message || 'Unable to register';
