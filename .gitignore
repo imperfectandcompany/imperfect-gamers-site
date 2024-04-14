@@ -3,3 +3,10 @@ node_modules
 /.cache
 /build
 .env
+app/components/organism/.DS_Store
+app/components/molecules/.DS_Store
+app/components/templates/.DS_Store
+app/components/atoms/.DS_Store
+app/components/.DS_Store
+app/.DS_Store
+.DS_Store

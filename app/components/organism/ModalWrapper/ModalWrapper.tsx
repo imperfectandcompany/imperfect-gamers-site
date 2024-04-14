@@ -1,10 +1,10 @@
 // components/organism/ModalWrapper/ModalWrapper.tsx
-import React, { type ReactElement, useState } from 'react'
-import ModalContent from '~/components/molecules/ModalContent/ModalContent'
+import React, { ReactElement, useState } from 'react'
 import Modal from '../../atoms/Modal/Modal'
+import ModalContent from '~/components/molecules/ModalContent/ModalContent'
 import modal from './ModalWrapper.module.css'
 
-type ModalWrapperProps = {
+interface ModalWrapperProps {
 	title: string
 	content: ReactElement
 	children: ReactElement

@@ -65,14 +65,14 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
 
 	return (
 		<div
-			className={`bg-opacity/50 fixed inset-0 z-50 flex items-center justify-center overflow-auto bg-black text-white/95 ${
+			className={`fixed inset-0 z-50 flex items-center justify-center overflow-auto bg-black/50 text-white/95 ${
 				isOpen ? 'opacity-100' : 'pointer-events-none opacity-0'
 			}`}
 		>
 			{/* Use the ref here */}
 			<div
 				ref={modalRef}
-				className="border-card mx-4 w-full max-w-md rounded-lg bg-black/50 p-5 shadow-lg md:mx-0"
+				className="border-card mx-4 w-full max-w-md rounded-lg bg-black border border-gray-900 shadow-xl p-5 md:mx-0"
 			>
 				{children}
 			</div>

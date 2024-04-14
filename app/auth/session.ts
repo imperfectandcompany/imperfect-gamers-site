@@ -49,17 +49,3 @@ export async function returnUserModel(request: Request) {
 	const steamId = session.get('steamId')
 	return json({ userToken, steamId })
 }
-
-// export async function linkSteamAccount(request: Request) {
-//   // get the session
-//   const session = await sessionStorage.getSession(request.headers.get('Cookie'));
-//   const userToken = session.get('userToken');
-//   const steamId = session.get('steamId');
-
-//   // Assuming linkSteam is a function you create to call your backend's /user/linkSteam endpoint
-//   const response = await linkSteam(userToken, steamId, steamToken);
-//   if (response.ok) {
-//     return json({ success: true });
-//   }
-//   return json({ success: false });
-// }

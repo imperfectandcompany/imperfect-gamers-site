@@ -111,7 +111,7 @@ const AuthForms: React.FC = () => {
 					{isAuthenticated ? (
 						<>
 							You are currently signed{' in as ' + username || '.'}.
-							<button onClick={handleLogout} className="underline">
+							<button onClick={handleLogout} className="ml-1 underline">
 								Log out
 							</button>
 						</>
