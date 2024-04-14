@@ -1,12 +1,12 @@
 // Testimonial.tsx
-import React from 'react';
+import type React from 'react'
 
 type TestimonialProps = {
-	name: string;
-	role: string;
-	imageSrc: string;
-	children: React.ReactNode;
-};
+	name: string
+	role: string
+	imageSrc: string
+	children: React.ReactNode
+}
 
 /**
  * Testimonial component displays a testimonial with a name, role, image, and content.
@@ -26,12 +26,12 @@ const Testimonial: React.FC<TestimonialProps> = ({
 	children,
 }) => {
 	return (
-		<div className="bg-gradient-to-br from-black/50 to-red-900/20 p-6 rounded-lg shadow-xl transform transition duration-500 hover:scale-105">
-			<div className="flex items-center mb-4">
+		<div className="rounded-lg bg-gradient-to-br from-black/50 to-red-900/20 p-6 shadow-xl transition duration-500 hover:scale-105">
+			<div className="mb-4 flex items-center">
 				<img
 					src={imageSrc}
 					alt={`Portrait of ${name}`}
-					className="w-16 h-16 rounded-full mr-4 border-2 border-red-500"
+					className="mr-4 size-16 rounded-full border-2 border-red-500"
 				/>
 				<div>
 					<p className="font-bold">{name}</p>
@@ -40,7 +40,7 @@ const Testimonial: React.FC<TestimonialProps> = ({
 			</div>
 			<blockquote className="text-gray-400">{children}</blockquote>
 		</div>
-	);
-};
+	)
+}
 
-export default Testimonial;
+export default Testimonial

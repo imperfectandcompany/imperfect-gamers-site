@@ -1,4 +1,4 @@
-import type {Config} from 'tailwindcss';
+import type { Config } from 'tailwindcss'
 
 /**
  * Represents the configuration for the Tailwind CSS framework.
@@ -22,7 +22,7 @@ export default {
 			},
 			backgroundImage: {
 				'radial-at-c':
-          'radial-gradient(circle at center, var(--tw-gradient-stops))',
+					'radial-gradient(circle at center, var(--tw-gradient-stops))',
 			},
 			boxShadow: {
 				// Custom shadow styles specifically for our design
@@ -49,4 +49,4 @@ export default {
 		// we would place them outside the `extend` object.
 	},
 	plugins: [],
-} satisfies Config;
+} satisfies Config

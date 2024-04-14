@@ -1,4 +1,4 @@
-import FooterLink from '~/components/molecules/FooterLink';
+import FooterLink from '~/components/molecules/FooterLink'
 
 /**
  * Renders the footer component for the store page.
@@ -8,71 +8,71 @@ import FooterLink from '~/components/molecules/FooterLink';
 const StoreFooter: React.FC = () => {
 	return (
 		<>
-			<footer className="text-sm mt-24">
-				<div className="max-w-screen-xl mx-auto px-4 py-8">
-					<div className="flex flex-col md:flex-row justify-between items-center">
-						<div className="text-center md:text-left text-gray-400">
+			<footer className="mt-24 text-sm">
+				<div className="mx-auto max-w-screen-xl px-4 py-8">
+					<div className="flex flex-col items-center justify-between md:flex-row">
+						<div className="text-center text-gray-400 md:text-left">
 							<p>2024 © Imperfect Gamers - All rights Reserved</p>
 							<p className="mt-2 md:mt-0">We are not affiliated with Valve</p>
 						</div>
-						<div className="flex justify-center mt-4 md:mt-0">
+						<div className="mt-4 flex justify-center md:mt-0">
 							<FooterLink href="https://imperfectgamers.org/discord/" external>
 								<i className="fab fa-discord"></i>
 							</FooterLink>
 						</div>
-						<div className="text-center md:text-right md:flex md:items-center mt-4 md:mt-0">
+						<div className="mt-4 text-center md:mt-0 md:flex md:items-center md:text-right">
 							<p className="text-gray-400">Imperfect and Company</p>
 							<FooterLink href="https://imperfectandcompany.com" external>
 								<img
 									src="https://imperfectdesignsystem.com/assets/img/imperfectandcompany/umbrella.png"
 									alt="parent company logo"
-									className="h-5 inline md:block"
+									className="inline h-5 md:block"
 								/>
 							</FooterLink>
 						</div>
 					</div>
 				</div>
 			</footer>
-			<div className="px-4 py-4 border-t border-gray-700">
-				<div className="flex flex-col md:flex-row justify-between items-center">
+			<div className="border-t border-gray-700 p-4">
+				<div className="flex flex-col items-center justify-between md:flex-row">
 					<FooterLink href="#" external>
 						<img
 							src="https://example.tebex.io/assets/img/tebex.png"
 							alt="Tebex logo"
-							className="h-5 hidden md:block"
+							className="hidden h-5 md:block"
 						/>
 					</FooterLink>
-					<p className="text-gray-400 text-xs text-center md:text-left">
-            This website and its checkout process is owned &amp; operated by
-            Tebex Limited, who handle product fulfilment, billing support and
-            refunds.
+					<p className="text-center text-xs text-gray-400 md:text-left">
+						This website and its checkout process is owned &amp; operated by
+						Tebex Limited, who handle product fulfilment, billing support and
+						refunds.
 					</p>
-					<div className="flex flex-col text-sm md:flex-row items-center mt-4 md:mt-0">
+					<div className="mt-4 flex flex-col items-center text-sm md:mt-0 md:flex-row">
 						<FooterLink
 							href="https://imperfectgamers.org/imprint"
 							external
 							className="mb-2 md:mb-0 md:mr-4"
 						>
-              Impressum
+							Impressum
 						</FooterLink>
 						<FooterLink
 							href="https://imperfectgamers.org/terms-of-service"
 							external
 							className="mb-2 md:mb-0 md:mr-4"
 						>
-              Terms &amp; Conditions
+							Terms &amp; Conditions
 						</FooterLink>
 						<FooterLink
 							href="https://imperfectgamers.org/privacy-policy"
 							external
 						>
-              Privacy Policy
+							Privacy Policy
 						</FooterLink>
 					</div>
 				</div>
 			</div>
 		</>
-	);
-};
+	)
+}
 
-export default StoreFooter;
+export default StoreFooter

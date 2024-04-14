@@ -1,5 +1,5 @@
 // Atoms/ToggleSwitch.tsx
-import toggle from './ToggleSwitch.module.css';
+import toggle from './ToggleSwitch.module.css'
 
 /**
  * A toggle switch component.
@@ -12,20 +12,22 @@ export const ToggleSwitch = ({
 	isYearly,
 	onToggle,
 }: {
-	isYearly: boolean;
-	onToggle: () => void;
+	isYearly: boolean
+	onToggle: () => void
 }): JSX.Element => {
 	return (
-		<label className={toggle.switch}>
+		<label className={toggle.switch} htmlFor="toggle-switch">
+			{/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
 			<input
 				className={`${toggle.switch__input}`}
 				type="checkbox"
 				checked={isYearly}
 				onChange={onToggle}
+				id="toggle-switch"
 			/>
 			<span
 				className={`${toggle.switch__slider} ${toggle.switch__slider_round}`}
 			></span>
 		</label>
-	);
-};
+	)
+}

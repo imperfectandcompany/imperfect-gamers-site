@@ -1,38 +1,23 @@
-import React from 'react';
-import MembershipTier from '../../organism/MembershipTier';
+import type React from 'react'
+import MembershipTier from '../../organism/MembershipTier'
 
-type Featured = {
-	imageSrc: string;
-	title: string;
-	description: string;
-	notice?: string;
-	className?: string;
-};
-
-type FeaturedSectionProps = {
-	featured: Featured[];
-	className?: string;
-};
-
-const basicFeatures = [
-	{name: 'Access to all public servers', included: true},
-];
+const basicFeatures = [{ name: 'Access to all public servers', included: true }]
 
 /**
  * Represents the premium features available in the store.
  */
 const premiumFeatures = [
-	{name: 'Access to all public servers', included: true},
-	{name: 'Access to Premium Servers', included: true},
-	{name: 'Slot Reservation', included: true},
+	{ name: 'Access to all public servers', included: true },
+	{ name: 'Access to Premium Servers', included: true },
+	{ name: 'Slot Reservation', included: true },
 	// ... other features
 	{
 		name: 'Personal IG Server',
 		included: false,
 		tooltip:
-      'To access a custom IG server, please reach out to us directly. This exclusive service is available to our VIP clients only and cannot be obtained through the standard store. Ensure you are logged in as a VIP for more details.',
+			'To access a custom IG server, please reach out to us directly. This exclusive service is available to our VIP clients only and cannot be obtained through the standard store. Ensure you are logged in as a VIP for more details.',
 	},
-];
+]
 
 /**
  * Renders the store tiers component.
@@ -44,7 +29,7 @@ const StoreTiers: React.FC = () => (
 		<svg
 			xmlns="http://www.w3.org/2000/svg"
 			viewBox="0 0 16 16"
-			className="absolute left-4 top-4 z-0 h-36 w-36 -translate-x-1/2 -translate-y-1/2 text-white/[0.085]"
+			className="absolute left-4 top-4 z-0 size-36 -translate-x-1/2 -translate-y-1/2 text-white/[0.085]"
 		>
 			{/* SVG path */}
 			<path
@@ -56,14 +41,14 @@ const StoreTiers: React.FC = () => (
 			{/* Heading */}
 			<h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl">
 				{' '}
-        Available <span className="text-red-400">Membership</span> Tiers{' '}
+				Available <span className="text-red-400">Membership</span> Tiers{' '}
 			</h2>
 			{/* Description */}
-			<p className="block font-display text-white/60">
-        Premium is currently in <span className="text-white/65">BETA</span>
+			<p className="font-display block text-white/60">
+				Premium is currently in <span className="text-white/65">BETA</span>
 			</p>
 		</div>
-		<div className="flex flex-col relative md:flex-row md:space-x-4 space-y-4 md:space-y-0 justify-center">
+		<div className="relative flex flex-col justify-center space-y-4 md:flex-row md:space-x-4 md:space-y-0">
 			{/* Basic Membership Tier */}
 			<MembershipTier
 				planType="Basic"
@@ -81,6 +66,6 @@ const StoreTiers: React.FC = () => (
 			/>
 		</div>
 	</div>
-);
+)
 
-export default StoreTiers;
+export default StoreTiers

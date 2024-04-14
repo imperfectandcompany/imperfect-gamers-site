@@ -1,11 +1,11 @@
 // Event.tsx
-import React from 'react';
+import type React from 'react'
 
 type EventItemProps = {
-	title: string;
-	description: string;
-	link: string;
-};
+	title: string
+	description: string
+	link: string
+}
 
 /**
  * Renders an event item component.
@@ -17,16 +17,16 @@ type EventItemProps = {
  * @param {string} props.link - The link to learn more about the event.
  * @returns {JSX.Element} The rendered EventItem component.
  */
-const EventItem: React.FC<EventItemProps> = ({title, description, link}) => {
+const EventItem: React.FC<EventItemProps> = ({ title, description, link }) => {
 	return (
-		<div className="bg-gradient-to-br from-white/40 to-black/30 p-6 rounded-lg shadow-xl transform transition duration-500 hover:scale-105">
-			<h3 className="text-xl font-bold mb-3">{title}</h3>
-			<p className="text-gray-400 mb-4">{description}</p>
+		<div className="rounded-lg bg-gradient-to-br from-white/40 to-black/30 p-6 shadow-xl transition duration-500 hover:scale-105">
+			<h3 className="mb-3 text-xl font-bold">{title}</h3>
+			<p className="mb-4 text-gray-400">{description}</p>
 			<a href={link} className="text-rose-600 hover:text-rose-400">
-        Learn More
+				Learn More
 			</a>
 		</div>
-	);
-};
+	)
+}
 
-export default EventItem;
+export default EventItem

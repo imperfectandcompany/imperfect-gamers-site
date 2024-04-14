@@ -1,18 +1,18 @@
 // @/app/auth/authenticator.server.ts
-import {commitSession, getSession} from './storage.server';
+import { commitSession, getSession } from './storage.server'
 
-const API_BASE = 'https://api.imperfectgamers.org';
+const apiBase = 'https://api.imperfectgamers.org'
 
 type User = {
-	email: string;
-	userToken: string;
-};
+	email: string
+	userToken?: string
+}
 
 type ApiResponse<T> = {
-	status: 'success' | 'error';
-	message?: string;
-	data?: T;
-};
+	status: 'success' | 'error'
+	message?: string
+	data?: T
+}
 
 /**
  * Authenticates a user by sending a request to the API with the provided email and password.
@@ -26,55 +26,55 @@ async function authenticateUser(
 ): Promise<ApiResponse<User | undefined>> {
 	try {
 		// Send the request to your API
-		const response = await fetch(`${API_BASE}/auth`, {
+		const response = await fetch(`${apiBase}/auth`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
 			},
-			body: JSON.stringify({username: email, password}), // Ensure mapping to "username"
-		});
+			body: JSON.stringify({ username: email, password }), // Ensure mapping to "username"
+		})
 		try {
-			const data = await response.json();
+			const data = await response.json()
 			// For simplicity, returning a simplified user object
 			if (response.ok) {
-				return {status: 'success', data: {email, userToken: data.token}};
+				return { status: 'success', data: { email, userToken: data.token } }
 			} else if (response.status === 404) {
-				return {status: 'error', message: 'User not found'};
+				return { status: 'error', message: 'User not found' }
 			} else if (response.status === 500) {
 				if (data.message === 'Token could not be saved.') {
-					return {status: 'error', message: 'Token could not be saved'};
+					return { status: 'error', message: 'Token could not be saved' }
 				} else if (
 					data.message === 'Device of user could not be associated with login.'
 				) {
 					return {
 						status: 'error',
 						message: 'Device of user could not be associated with login',
-					};
+					}
 				} else if (data.message === 'Device of user could not be saved.') {
 					return {
 						status: 'error',
 						message: 'Device of user could not be saved',
-					};
+					}
 				} else {
-					return {status: 'error', message: 'An unexpected error occurred'};
+					return { status: 'error', message: 'An unexpected error occurred' }
 				}
 			} else if (response.status === 401) {
-				return {status: 'error', message: 'Invalid Username or Password'};
+				return { status: 'error', message: 'Invalid Username or Password' }
 			} else if (response.status === 400) {
 				return {
 					status: 'error',
-					message: 'One oor more expected required inputs were missing',
-				};
+					message: 'One or more expected required inputs were missing',
+				}
 			} else {
-				return {status: 'error', message: 'An unexpected error occurred'};
+				return { status: 'error', message: 'An unexpected error occurred' }
 			}
 		} catch (error) {
-			console.error('Authentication request failed:', error);
-			return {status: 'error', message: 'Network or server error'};
+			console.error('Authentication request failed:', error)
+			return { status: 'error', message: 'Network or server error' }
 		}
 	} catch (error) {
-		console.error('Authentication request failed:', error);
-		return {status: 'error', message: 'Network or server error'};
+		console.error('Authentication request failed:', error)
+		return { status: 'error', message: 'Network or server error' }
 	}
 }
 
@@ -88,48 +88,48 @@ async function authenticateUser(
  * @throws An error if the user fails to authenticate.
  */
 export async function login(request: Request) {
-	const formData = await request.formData();
-	const email = formData.get('email');
-	const password = formData.get('password');
+	const formData = await request.formData()
+	const email = formData.get('email')
+	const password = formData.get('password')
 
 	if (typeof email !== 'string' || typeof password !== 'string') {
-		return {ok: false, error: 'Invalid input data provided.'};
+		return { ok: false, error: 'Invalid input data provided.' }
 	}
 
 	try {
-		const user = await authenticateUser(email, password);
+		const user = await authenticateUser(email, password)
 		if (!user || user.status !== 'success') {
 			return {
 				ok: false,
 				error: 'Authentication failed, please check your credentials.',
-			};
+			}
 		}
 
-		const session = await getSession();
+		const session = await getSession()
 		if (user.data?.userToken) {
-			session.set('userToken', user.data.userToken);
+			session.set('userToken', user.data.userToken)
 
-			const hasSteamAccount = await checkSteamAccount(user.data?.userToken);
+			const hasSteamAccount = await checkSteamAccount(user.data?.userToken)
 			if (hasSteamAccount.hasSteam) {
-				session.set('steamId', hasSteamAccount.steamId);
+				session.set('steamId', hasSteamAccount.steamId)
 			}
 
-			const OnboardingDetails = await checkOnboarded(user.data?.userToken);
-			if (OnboardingDetails && OnboardingDetails.onboarded) {
-				session.set('username', OnboardingDetails.username);
+			const onboardingDetails = await checkOnboarded(user.data?.userToken)
+			if (onboardingDetails && onboardingDetails.onboarded) {
+				session.set('username', onboardingDetails.username)
 			}
 
-			const cookieHeader = await commitSession(session);
-			return {ok: true, cookieHeader};
+			const cookieHeader = await commitSession(session)
+			return { ok: true, cookieHeader }
 		} else {
 			return {
 				ok: false,
 				error: 'Authentication failed, please check your credentials.',
-			};
+			}
 		}
 	} catch (error) {
-		console.error('Login error:', error);
-		return {ok: false, error: 'An unexpected error occurred during login.'};
+		console.error('Login error:', error)
+		return { ok: false, error: 'An unexpected error occurred during login.' }
 	}
 }
 
@@ -141,16 +141,16 @@ export async function login(request: Request) {
  */
 export async function registerUser(email: string, password: string) {
 	try {
-		const response = await fetch(`${API_BASE}/register`, {
+		const response = await fetch(`${apiBase}/register`, {
 			method: 'POST',
-			headers: {'Content-Type': 'application/json'},
-			body: JSON.stringify({email, password}),
-		});
-		const data = await response.json();
-		return {status: response.ok ? 'success' : 'error', message: data.message};
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ email, password }),
+		})
+		const data = await response.json()
+		return { status: response.ok ? 'success' : 'error', message: data.message }
 	} catch (error) {
-		console.error('Register error:', error);
-		return {status: 'error', message: 'Network or server error'};
+		console.error('Register error:', error)
+		return { status: 'error', message: 'Network or server error' }
 	}
 }
 
@@ -161,22 +161,22 @@ export async function registerUser(email: string, password: string) {
  */
 export async function logout(token: string) {
 	try {
-		const response = await fetch(`${API_BASE}/logout`, {
+		const response = await fetch(`${apiBase}/logout`, {
 			method: 'POST',
 			headers: {
-				Authorization: `${token}`,
+				authorization: `${token}`,
 				'Content-Type': 'application/json',
 			},
-		});
+		})
 		if (!response.ok) {
-			console.log(response.status);
-			throw new Error('Logout failed at API level');
+			console.log(response.status)
+			throw new Error('Logout failed at API level')
 		}
 
-		return {ok: true};
+		return { ok: true }
 	} catch (error) {
-		console.error('Logout error:', error);
-		return {ok: false};
+		console.error('Logout error:', error)
+		return { ok: false }
 	}
 }
 
@@ -187,34 +187,34 @@ export async function logout(token: string) {
  */
 async function checkSteamAccount(
 	token: string,
-): Promise<{status: string; hasSteam: boolean; steamId: string}> {
+): Promise<{ status: string; hasSteam: boolean; steamId: string }> {
 	try {
 		// Send the request to API
-		const response = await fetch(`${API_BASE}/user/verifySteam`, {
+		const response = await fetch(`${apiBase}/user/verifySteam`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
-				Authorization: `${token}`,
+				authorization: `${token}`,
 			},
-		});
-		const text = await response.text(); // First get the response as text
-		const data = JSON.parse(text); // Safely parse the text as JSON
+		})
+		const text = await response.text() // First get the response as text
+		const data = JSON.parse(text) // Safely parse the text as JSON
 		return {
 			status: data.status,
 			hasSteam: data.hasSteam,
 			steamId: data.steamId,
-		};
+		}
 	} catch (error) {
-		console.error(error);
-		return {status: 'error', hasSteam: false, steamId: ''};
+		console.error(error)
+		return { status: 'error', hasSteam: false, steamId: '' }
 	}
 }
 
 type OnboardedResponse = {
-	status: string;
-	onboarded: boolean;
-	username?: string;
-};
+	status: string
+	onboarded: boolean
+	username?: string
+}
 
 /**
  * Checks the onboarded status of a user using the provided token.
@@ -223,32 +223,32 @@ type OnboardedResponse = {
  */
 async function checkOnboarded(token: string): Promise<OnboardedResponse> {
 	try {
-		const response = await fetch(`${API_BASE}/user/onboarded`, {
+		const response = await fetch(`${apiBase}/user/onboarded`, {
 			method: 'GET',
 			headers: {
 				'Content-Type': 'application/json',
-				Authorization: token,
+				authorization: token,
 			},
-		});
+		})
 
 		if (!response.ok) {
 			// Assuming the API sends a message in the response on error
-			const errorData = await response.json();
-			throw new Error(errorData.message || 'Error fetching onboard status.');
+			const errorData = await response.json()
+			throw new Error(errorData.message || 'Error fetching onboard status.')
 		}
 
-		const data = await response.json(); // This needs to be after checking response.ok
+		const data = await response.json() // This needs to be after checking response.ok
 
 		// Check if the user has successfully onboarded
 		if (data.status === 'success' && data.onboarded) {
-			return {status: data.status, username: data.username, onboarded: true};
+			return { status: data.status, username: data.username, onboarded: true }
 		} else {
 			// Handle scenarios where data.status isn't 'success' or onboarded isn't true
-			return {status: data.status, onboarded: false};
+			return { status: data.status, onboarded: false }
 		}
 	} catch (error) {
-		console.error('Error checking onboarded status:', error);
+		console.error('Error checking onboarded status:', error)
 		// Provide a default error message if none was included with the thrown error
-		return {status: 'error', onboarded: false};
+		return { status: 'error', onboarded: false }
 	}
 }

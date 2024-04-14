@@ -1,18 +1,18 @@
-import React from 'react';
-import FeaturedItem from '../molecules/FeaturedItem';
+import type React from 'react'
+import FeaturedItem from '../molecules/FeaturedItem'
 
 type Featured = {
-	imageSrc: string;
-	title: string;
-	description: string;
-	notice?: string;
-	className?: string;
-};
+	imageSrc: string
+	title: string
+	description: string
+	notice?: string
+	className?: string
+}
 
 type FeaturedSectionProps = {
-	featured: Featured[];
-	className?: string;
-};
+	featured: Featured[]
+	className?: string
+}
 
 /**
  * Renders a featured section component.
@@ -33,13 +33,13 @@ const FeaturedSection: React.FC<FeaturedSectionProps> = ({
 				<FeaturedItem
 					key={index}
 					{...featuredSingle}
-					className={`mr-8 mb-4 ${featuredSingle.className || ''}`.trim()}
+					className={`mb-4 mr-8 ${featuredSingle.className || ''}`.trim()}
 				/>
 			))
 		) : (
 			<p>No featured items available.</p>
 		)}
 	</div>
-);
+)
 
-export default FeaturedSection;
+export default FeaturedSection

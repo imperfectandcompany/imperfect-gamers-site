@@ -1,27 +1,27 @@
 // components/molecules/SignUpForm.tsx
-import React from 'react';
-import {z} from 'zod';
-import Button from '~/components/atoms/Button/Button';
-import Input from '~/components/atoms/Input/Input';
-import {useFetcher} from '@remix-run/react';
-import {withZod} from '@remix-validated-form/with-zod';
-import {ValidatedForm} from 'remix-validated-form';
+import { useFetcher } from '@remix-run/react'
+import { withZod } from '@remix-validated-form/with-zod'
+import type React from 'react'
+import { ValidatedForm } from 'remix-validated-form'
+import { z } from 'zod'
+import Button from '~/components/atoms/Button/Button'
+import Input from '~/components/atoms/Input/Input'
 
 /**
  * Represents the sign up schema for the form.
  */
 const signUpSchema = z
 	.object({
-		email: z.string().email({message: 'Invalid email address'}),
+		email: z.string().email({ message: 'Invalid email address' }),
 		password: z
 			.string()
-			.min(6, {message: 'Password must be at least 6 characters'}),
+			.min(6, { message: 'Password must be at least 6 characters' }),
 		confirmPassword: z.string(),
 	})
-	.refine((data) => data.password === data.confirmPassword, {
-		message: 'Passwords don\'t match',
+	.refine(data => data.password === data.confirmPassword, {
+		message: "Passwords don't match",
 		path: ['confirmPassword'],
-	});
+	})
 
 /**
  * Validates the sign-up form using the provided schema.
@@ -29,7 +29,7 @@ const signUpSchema = z
  * @param schema - The schema to validate the form against.
  * @returns A function that can be used to validate the form.
  */
-const validate = withZod(signUpSchema);
+const validate = withZod(signUpSchema)
 
 /**
  * Sign up form component.
@@ -41,15 +41,15 @@ const validate = withZod(signUpSchema);
  * @returns The sign up form component.
  */
 const SignUpForm: React.FC = () => {
-	const fetcher = useFetcher();
+	const fetcher = useFetcher()
 
 	// React to the fetcher's state after submission
-	if ((fetcher.data as {success: boolean})?.success) {
-		return <p>Registration Successful!</p>;
+	if ((fetcher.data as { success: boolean })?.success) {
+		return <p>Registration Successful!</p>
 	}
 
 	if (fetcher.state === 'submitting') {
-		return <div>Registering...</div>;
+		return <div>Registering...</div>
 	}
 
 	return (
@@ -58,9 +58,9 @@ const SignUpForm: React.FC = () => {
 			method="post"
 			action="/register"
 			fetcher={fetcher}
-			onSubmit={(data) => {
+			onSubmit={data => {
 				// Handle the form submission with the data
-				fetcher.submit(data);
+				fetcher.submit(data)
 			}}
 			className="flex flex-col space-y-4"
 		>
@@ -72,16 +72,16 @@ const SignUpForm: React.FC = () => {
 				placeholder="Confirm Password"
 				required
 			/>
-			{(fetcher.data as {error: string})?.error && (
+			{(fetcher.data as { error: string })?.error ? (
 				<div className="mr-0 text-red-700">
-					{(fetcher.data as {error: string}).error}
+					{(fetcher.data as { error: string }).error}
 				</div>
-			)}
-			<div className="items-right justify-right ml-auto">
+			) : null}
+			<div className="ml-auto">
 				<Button type="submit">Sign Up</Button>
 			</div>
 		</ValidatedForm>
-	);
-};
+	)
+}
 
-export default SignUpForm;
+export default SignUpForm

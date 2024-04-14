@@ -1,12 +1,12 @@
 // FooterLink.tsx
-import React from 'react';
+import type React from 'react'
 
 type FooterLinkProps = {
-	href: string;
-	children: React.ReactNode;
-	external?: boolean;
-	className?: string; // Add this line to include a className prop
-};
+	href: string
+	children: React.ReactNode
+	external?: boolean
+	className?: string // Add this line to include a className prop
+}
 
 /**
  * Renders a footer link component.
@@ -31,11 +31,11 @@ const FooterLink: React.FC<FooterLinkProps> = ({
 			href={href}
 			target={external ? '_blank' : '_self'}
 			rel={external ? 'noopener noreferrer' : undefined}
-			className={`text-gray-400 hover:text-white underline ${className}`}
+			className={`text-gray-400 underline hover:text-white ${className}`}
 		>
 			{children}
 		</a>
-	);
-};
+	)
+}
 
-export default FooterLink;
+export default FooterLink

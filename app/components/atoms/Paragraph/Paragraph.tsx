@@ -1,10 +1,11 @@
 // components/atoms/Paragraph/Paragraph.tsx
-import React, {type ReactNode} from 'react';
+import type React from 'react'
+import { type ReactNode } from 'react'
 
 type ParagraphProps = {
-	children: ReactNode;
-	className?: string;
-};
+	children: ReactNode
+	className?: string
+}
 
 /**
  * Renders a paragraph element.
@@ -14,8 +15,8 @@ type ParagraphProps = {
  * @param {string} className - Additional CSS class name(s) to be applied to the paragraph element.
  * @returns {React.ReactElement} The rendered paragraph element.
  */
-const Paragraph: React.FC<ParagraphProps> = ({children, className}) => {
-	return <p className={`mt-4 ${className}`}>{children}</p>;
-};
+const Paragraph: React.FC<ParagraphProps> = ({ children, className }) => {
+	return <p className={`mt-4 ${className}`}>{children}</p>
+}
 
-export default Paragraph;
+export default Paragraph

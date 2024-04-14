@@ -1,13 +1,13 @@
 // components/molecules/ModalContent/ModalContent.tsx
-import React, {type ReactNode} from 'react';
-import Heading from '~/components/atoms/Heading/Heading';
-import Link from '~/components/atoms/Link/Link';
-import Paragraph from '~/components/atoms/Paragraph/Paragraph';
+import type React from 'react'
+import { type ReactNode } from 'react'
+import Heading from '~/components/atoms/Heading/Heading'
+import Paragraph from '~/components/atoms/Paragraph/Paragraph'
 
 type ModalContentProps = {
-	title: string;
-	content: ReactNode;
-};
+	title: string
+	content: ReactNode
+}
 
 /**
  * Renders the content of a modal.
@@ -18,7 +18,7 @@ type ModalContentProps = {
  * @param {string | React.ReactNode} props.content - The content of the modal.
  * @returns {React.ReactNode} The rendered modal content.
  */
-const ModalContent: React.FC<ModalContentProps> = ({title, content}) => {
+const ModalContent: React.FC<ModalContentProps> = ({ title, content }) => {
 	return (
 		<>
 			<Heading>{title}</Heading>
@@ -44,7 +44,7 @@ const ModalContent: React.FC<ModalContentProps> = ({title, content}) => {
 				content
 			)}
 		</>
-	);
-};
+	)
+}
 
-export default ModalContent;
+export default ModalContent

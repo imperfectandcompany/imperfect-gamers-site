@@ -1,4 +1,4 @@
-import FeaturedPartnership from '../../organism/FeaturedPartnership';
+import FeaturedPartnership from '../../organism/FeaturedPartnership'
 
 /**
  * Renders the featured partnership section.
@@ -12,15 +12,15 @@ const FeaturedPartnershipSection: React.FC = () => {
 			title="We are trusted"
 			description={
 				<>
-          Proud partners of Tebex, we were the first to launch with them in
-          CS:GO. Piloting their initial launch in the new CS2 space. You can
-          read more about it{' '}
+					Proud partners of Tebex, we were the first to launch with them in
+					CS:GO. Piloting their initial launch in the new CS2 space. You can
+					read more about it{' '}
 				</>
 			}
 			link="#"
 			linkText="here"
 		/>
-	);
-};
+	)
+}
 
-export default FeaturedPartnershipSection;
+export default FeaturedPartnershipSection

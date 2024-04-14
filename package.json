@@ -1,24 +1,63 @@
 {
-  "name": "",
+  "name": "imperfect-gamers-site",
+  "type": "module",
   "private": true,
   "sideEffects": false,
-  "type": "module",
   "scripts": {
     "build": "remix vite:build",
     "dev": "remix vite:dev",
-    "lint": "eslint . --cache --cache-location ./node_modules/.cache/eslint",
+    "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint .",
     "lint:fix": "eslint . --cache --cache-location ./node_modules/.cache/eslint --fix",
-    "start": "remix-serve ./build/server/index.js",
     "prettier": "prettier --write .",
+    "lint-and-format": "npm run lint:fix && npm run prettier",
+    "start": "remix-serve ./build/server/index.js",
     "typecheck": "tsc"
   },
+  "prettier": {
+    "arrowParens": "avoid",
+    "bracketSameLine": false,
+    "bracketSpacing": true,
+    "embeddedLanguageFormatting": "auto",
+    "endOfLine": "lf",
+    "htmlWhitespaceSensitivity": "css",
+    "insertPragma": false,
+    "jsxSingleQuote": false,
+    "printWidth": 80,
+    "proseWrap": "always",
+    "quoteProps": "as-needed",
+    "requirePragma": false,
+    "semi": false,
+    "singleAttributePerLine": false,
+    "singleQuote": true,
+    "tabWidth": 2,
+    "trailingComma": "all",
+    "useTabs": true,
+    "overrides": [
+      {
+        "files": [
+          "**/*.json"
+        ],
+        "options": {
+          "useTabs": false
+        }
+      }
+    ],
+    "plugins": [
+      "prettier-plugin-tailwindcss"
+    ]
+  },
+  "eslintIgnore": [
+    "/node_modules",
+    "/build",
+    "/public/build"
+  ],
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.5.2",
     "@fortawesome/free-solid-svg-icons": "^6.5.2",
     "@fortawesome/react-fontawesome": "^0.2.0",
-    "@remix-run/node": "^2.8.1",
-    "@remix-run/react": "^2.8.1",
-    "@remix-run/serve": "^2.8.1",
+    "@remix-run/node": "2.8.1",
+    "@remix-run/react": "2.8.1",
+    "@remix-run/serve": "2.8.1",
     "@remix-validated-form/with-zod": "^2.0.7",
     "bcryptjs": "^2.4.3",
     "isbot": "^4.1.0",
@@ -28,9 +67,9 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.0.2",
-    "@eslint/js": "^9.0.0",
-    "@remix-run/dev": "^2.8.1",
-    "@remix-run/eslint-config": "^2.8.1",
+    "@remix-run/dev": "2.8.1",
+    "@remix-run/eslint-config": "2.8.1",
+    "@types/eslint": "^8.56.6",
     "@types/react": "^18.2.20",
     "@types/react-dom": "^18.2.7",
     "@typescript-eslint/eslint-plugin": "^7.6.0",
@@ -40,15 +79,21 @@
     "eslint-config-prettier": "^9.1.0",
     "eslint-config-xo-typescript": "^4.0.0",
     "eslint-import-resolver-typescript": "^3.6.1",
-    "eslint-plugin-import": "^2.28.1",
-    "eslint-plugin-jsx-a11y": "^6.7.1",
+    "eslint-plugin-cypress": "^2.15.1",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-jest": "^27.9.0",
+    "eslint-plugin-jest-dom": "^5.2.0",
+    "eslint-plugin-jsx-a11y": "^6.8.0",
+    "eslint-plugin-markdown": "^3.0.1",
     "eslint-plugin-prettier": "^5.1.3",
     "eslint-plugin-react": "^7.34.1",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-tailwindcss": "^3.15.1",
+    "eslint-plugin-testing-library": "^6.2.0",
     "globals": "^15.0.0",
     "postcss": "^8.4.38",
     "prettier": "^3.2.5",
+    "prettier-plugin-tailwindcss": "^0.5.13",
     "tailwindcss": "^3.4.3",
     "typescript": "^5.4.5",
     "typescript-eslint": "^7.6.0",

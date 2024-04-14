@@ -1,19 +1,19 @@
 // StatisticsGroup.tsx
-import React from 'react';
-import StatisticItem from '../molecules/StatisticItem';
-import {type IconDefinition} from '@fortawesome/fontawesome-svg-core';
+import { type IconDefinition } from '@fortawesome/fontawesome-svg-core'
+import type React from 'react'
+import StatisticItem from '../molecules/StatisticItem'
 
 type Statistic = {
-	iconName?: IconDefinition; // Keep as is
-	svgSrc?: string; // Optional source for an SVG icon
-	description: string; // Changed from 'text' to 'description'
-	metric?: string; // Optional metric
-};
+	iconName?: IconDefinition // Keep as is
+	svgSrc?: string // Optional source for an SVG icon
+	description: string // Changed from 'text' to 'description'
+	metric?: string // Optional metric
+}
 
 type StatisticsGroupProps = {
-	statistics: Statistic[];
-	className?: string;
-};
+	statistics: Statistic[]
+	className?: string
+}
 
 /**
  * Renders a group of statistics.
@@ -30,9 +30,9 @@ const StatisticsGroup: React.FC<StatisticsGroupProps> = ({
 }) => (
 	<div className={`flex flex-wrap justify-between ${className}`}>
 		{statistics.map((stat, index) => (
-			<StatisticItem key={index} {...stat} className="mr-8 mb-4" />
+			<StatisticItem key={index} {...stat} className="mb-4 mr-8" />
 		))}
 	</div>
-);
+)
 
-export default StatisticsGroup;
+export default StatisticsGroup

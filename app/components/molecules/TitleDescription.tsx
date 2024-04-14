@@ -1,11 +1,11 @@
 // TitleDescription.tsx
-import React from 'react';
-import Text from '../atoms/Text';
+import type React from 'react'
+import Text from '../atoms/Text'
 
 type TitleDescriptionProps = {
-	title: string;
-	description: string;
-};
+	title: string
+	description: string
+}
 
 /**
  * Renders a component with a title and description.
@@ -25,7 +25,7 @@ const TitleDescription: React.FC<TitleDescriptionProps> = ({
 			<h2>{title}</h2>
 			<Text>{description}</Text>
 		</div>
-	);
-};
+	)
+}
 
-export default TitleDescription;
+export default TitleDescription

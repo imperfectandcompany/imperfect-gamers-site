@@ -1,13 +1,13 @@
 // App.tsx
-import React from 'react';
-
 import {
 	faUser,
 	faCalendarAlt,
 	faEye,
 	faUsers,
-} from '@fortawesome/free-solid-svg-icons';
-import StatisticsGroup from '~/components/organism/StatisticsGroup';
+} from '@fortawesome/free-solid-svg-icons'
+import type React from 'react'
+
+import StatisticsGroup from '~/components/organism/StatisticsGroup'
 
 /**
  * Represents the statistics data for the store.
@@ -33,12 +33,12 @@ const statisticsData = [
 		metric: '100K',
 		description: 'USERS OVER IN THE PAST MONTH',
 	},
-];
+]
 
 const StoreStatistics: React.FC = () => (
 	<>
 		<StatisticsGroup statistics={statisticsData} />
 	</>
-);
+)
 
-export default StoreStatistics;
+export default StoreStatistics

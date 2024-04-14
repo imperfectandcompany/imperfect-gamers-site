@@ -1,5 +1,5 @@
-import {json} from '@remix-run/node';
-import {sessionStorage} from './storage.server';
+import { json } from '@remix-run/node'
+import { sessionStorage } from './storage.server'
 
 /**
  * Checks if the user session is authenticated.
@@ -8,11 +8,9 @@ import {sessionStorage} from './storage.server';
  */
 export async function checkUserSession(request: Request) {
 	// get the session
-	const session = await sessionStorage.getSession(
-		request.headers.get('Cookie'),
-	);
-	const isAuthenticated = session.has('userToken'); // Check if the userToken exists in the session
-	return isAuthenticated;
+	const session = await sessionStorage.getSession(request.headers.get('Cookie'))
+	const isAuthenticated = session.has('userToken') // Check if the userToken exists in the session
+	return isAuthenticated
 }
 
 /**
@@ -22,11 +20,9 @@ export async function checkUserSession(request: Request) {
  */
 export async function checkSteamIntegration(request: Request) {
 	// get the session
-	const session = await sessionStorage.getSession(
-		request.headers.get('Cookie'),
-	);
-	const isSteamLinked = session.has('steamId'); // Check if the userToken exists in the session
-	return isSteamLinked;
+	const session = await sessionStorage.getSession(request.headers.get('Cookie'))
+	const isSteamLinked = session.has('steamId') // Check if the userToken exists in the session
+	return isSteamLinked
 }
 
 /**
@@ -36,11 +32,9 @@ export async function checkSteamIntegration(request: Request) {
  */
 export async function checkUsername(request: Request) {
 	// get the session
-	const session = await sessionStorage.getSession(
-		request.headers.get('Cookie'),
-	);
-	const isOnboarded = session.has('username'); // Check if the userToken exists in the session
-	return isOnboarded;
+	const session = await sessionStorage.getSession(request.headers.get('Cookie'))
+	const isOnboarded = session.has('username') // Check if the userToken exists in the session
+	return isOnboarded
 }
 
 /**
@@ -50,12 +44,10 @@ export async function checkUsername(request: Request) {
  */
 export async function returnUserModel(request: Request) {
 	// get the session
-	const session = await sessionStorage.getSession(
-		request.headers.get('Cookie'),
-	);
-	const userToken = session.get('userToken');
-	const steamId = session.get('steamId');
-	return json({userToken, steamId});
+	const session = await sessionStorage.getSession(request.headers.get('Cookie'))
+	const userToken = session.get('userToken')
+	const steamId = session.get('steamId')
+	return json({ userToken, steamId })
 }
 
 // export async function linkSteamAccount(request: Request) {

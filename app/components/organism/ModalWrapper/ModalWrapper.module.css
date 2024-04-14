@@ -1,11 +1,11 @@
 .close__button {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  font-size: 1.5rem;
-  color: white;
-  cursor: pointer;
+	position: absolute;
+	top: 1rem;
+	right: 1rem;
+	font-size: 1.5rem;
+	color: white;
+	cursor: pointer;
 }
 .close__button:hover {
-  color: #a50000; /* Darker red on hover */
+	color: #a50000; /* Darker red on hover */
 }

@@ -1,40 +1,40 @@
 // components/atoms/Button/ButtonProps.tsx
-import {type ReactNode} from 'react';
-import {type IconDefinition} from '@fortawesome/fontawesome-svg-core';
+import { type IconDefinition } from '@fortawesome/fontawesome-svg-core'
+import { type ReactNode } from 'react'
 
 /**
  * Represents the props for the Button component.
  */
 export type ButtonProps = {
 	/**
-   * The variant of the button.
-   * @default 'primary'
-   */
-	variant?: 'primary' | 'secondary' | 'danger';
+	 * The variant of the button.
+	 * @default 'primary'
+	 */
+	variant?: 'primary' | 'secondary' | 'danger'
 
 	/**
-   * The type of the button.
-   * @default 'button'
-   */
-	type?: 'button' | 'submit' | 'reset';
+	 * The type of the button.
+	 * @default 'button'
+	 */
+	type?: 'button' | 'submit' | 'reset'
 
 	/**
-   * The icon to be displayed on the button.
-   */
-	icon?: IconDefinition;
+	 * The icon to be displayed on the button.
+	 */
+	icon?: IconDefinition
 
 	/**
-   * The content to be displayed inside the button.
-   */
-	children: ReactNode;
+	 * The content to be displayed inside the button.
+	 */
+	children: ReactNode
 
 	/**
-   * The function to be called when the button is clicked.
-   */
-	onClick?: () => void;
+	 * The function to be called when the button is clicked.
+	 */
+	onClick?: () => void
 
 	/**
-   * The CSS class name for the button.
-   */
-	className?: string;
-};
+	 * The CSS class name for the button.
+	 */
+	className?: string
+}

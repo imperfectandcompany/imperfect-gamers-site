@@ -1,15 +1,15 @@
 // StatisticItem.tsx
-import React from 'react';
-import IconElement from '../atoms/IconElement';
-import {type IconDefinition} from '@fortawesome/fontawesome-svg-core';
+import { type IconDefinition } from '@fortawesome/fontawesome-svg-core'
+import type React from 'react'
+import IconElement from '../atoms/IconElement'
 
 type StatisticItemProps = {
-	iconName?: IconDefinition;
-	svgSrc?: string;
-	metric?: string;
-	description: string;
-	className?: string;
-};
+	iconName?: IconDefinition
+	svgSrc?: string
+	metric?: string
+	description: string
+	className?: string
+}
 
 /**
  * A component that represents a statistic item.
@@ -31,13 +31,15 @@ const StatisticItem: React.FC<StatisticItemProps> = ({
 	className,
 }) => (
 	<div className={`statistic-item ${className}`}>
-		{iconName && <IconElement iconName={iconName} />}{' '}
+		{iconName ? <IconElement iconName={iconName} /> : null}{' '}
 		{/* Only renders if iconName is provided */}
-		{svgSrc && <img src={svgSrc} alt="icon" className="icon-class" />}{' '}
+		{svgSrc ? (
+			<img src={svgSrc} alt="icon" className="icon-class" />
+		) : null}{' '}
 		{/* // Adjust as needed */}
-		{metric && <p className="text-4xl font-bold">{metric}</p>}
+		{metric ? <p className="text-4xl font-bold">{metric}</p> : null}
 		<p>{description}</p>
 	</div>
-);
+)
 
-export default StatisticItem;
+export default StatisticItem

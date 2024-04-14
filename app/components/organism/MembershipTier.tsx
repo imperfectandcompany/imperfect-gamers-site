@@ -1,18 +1,18 @@
-import React from 'react';
+import React from 'react'
 
 type Feature = {
-	tooltip?: string;
-	name: string;
-	included: boolean;
-};
+	tooltip?: string
+	name: string
+	included: boolean
+}
 
 type MembershipTierProps = {
-	planType: string;
-	planName: string;
-	features: Feature[];
-	trialInfo?: string;
-	additionalInfo?: string;
-};
+	planType: string
+	planName: string
+	features: Feature[]
+	trialInfo?: string
+	additionalInfo?: string
+}
 
 /**
  * Renders a tooltip component that displays additional content when hovered over.
@@ -25,29 +25,29 @@ function Tooltip({
 	children,
 	content,
 }: {
-	children: React.ReactNode;
-	content: string;
+	children: React.ReactNode
+	content: string
 }) {
-	const [show, setShow] = React.useState(false);
+	const [show, setShow] = React.useState(false)
 
 	return (
 		<div
 			className="relative flex items-center gap-1.5"
 			onMouseEnter={() => {
-				setShow(true);
+				setShow(true)
 			}}
 			onMouseLeave={() => {
-				setShow(false);
+				setShow(false)
 			}}
 		>
 			{children}
-			{show && (
-				<div className="absolute bottom-full mb-2 px-3 py-1 bg-black text-white text-xs rounded shadow-lg z-10">
+			{show ? (
+				<div className="absolute bottom-full z-10 mb-2 rounded bg-black px-3 py-1 text-xs text-white shadow-lg">
 					{content}
 				</div>
-			)}
+			) : null}
 		</div>
-	);
+	)
 }
 
 /**
@@ -69,28 +69,28 @@ const MembershipTier: React.FC<MembershipTierProps> = ({
 	trialInfo,
 	additionalInfo,
 }) => (
-	<div className="w-full max-w-md py-10 px-8 bg-black bg-opacity-50 rounded-md border border-gray-700/50 flex flex-col">
-		{trialInfo && (
+	<div className="bg-opacity/50 flex w-full max-w-md flex-col rounded-md border border-gray-700/50 bg-black px-8 py-10">
+		{trialInfo ? (
 			<div className="mb-3">
-				<span className="text-xs p-1.5 bg-red-200 bg-opacity-20 text-red-400 rounded">
+				<span className="bg-opacity/20 rounded bg-red-200 p-1.5 text-xs text-red-400">
 					{trialInfo}
 				</span>
 			</div>
-		)}
+		) : null}
 		<h3
-			className={`text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-br ${planType === 'Basic' ? 'from-gray-200 via-gray-200 to-gray-300' : 'from-gray-200 via-red-200 to-red-300'}`}
+			className={`bg-gradient-to-br bg-clip-text text-2xl font-bold text-transparent ${planType === 'Basic' ? 'from-gray-200 via-gray-200 to-gray-300' : 'from-gray-200 via-red-200 to-red-300'}`}
 		>
 			{planName}
 		</h3>
-		<div className="flex-1 mt-6 flex flex-col justify-between">
+		<div className="mt-6 flex flex-1 flex-col justify-between">
 			<div className="space-y-4">
 				{features.map((feature, index) => (
 					<div
 						key={index}
-						className="flex items-center gap-2 group cursor-pointer transition duration-150 ease-in-out"
+						className="group flex cursor-pointer items-center gap-2 transition duration-150 ease-in-out"
 					>
 						<i
-							className={`fas ${feature.included ? 'fa-check' : 'fa-times'} ${planType === 'Basic' ? 'text-gray-400' : 'text-red-400'} transition filter group-hover:brightness-150 group-hover:drop-shadow-[0_0_4px_rgba(255,255,255,0.5)]`}
+							className={`fas ${feature.included ? 'fa-check' : 'fa-times'} ${planType === 'Basic' ? 'text-gray-400' : 'text-red-400'} transition group-hover:brightness-150 group-hover:drop-shadow-[0_0_4px_rgba(255,255,255,0.5)]`}
 						></i>
 						{feature.tooltip ? (
 							<Tooltip content={feature.tooltip}>
@@ -113,6 +113,6 @@ const MembershipTier: React.FC<MembershipTierProps> = ({
 			<div className="mt-10 text-xs text-gray-500">{additionalInfo}</div>
 		</div>
 	</div>
-);
+)
 
-export default MembershipTier;
+export default MembershipTier

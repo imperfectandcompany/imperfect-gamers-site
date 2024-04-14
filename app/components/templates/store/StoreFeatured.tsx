@@ -1,17 +1,6 @@
 // StoreFeatured.tsx
-import React from 'react';
-import FeaturedItem from '~/components/molecules/FeaturedItem';
-
-// Data definition
-const featuredData = [
-	{
-		imageSrc: 'https://example.com/featured-image.jpg',
-		notice: '20%',
-		title: 'MEMBERSHIP IN GLOBAL RECORDS',
-		description:
-      'With the highest consideration of a matrix between an enhanced surfing and musical experience.',
-	},
-];
+import type React from 'react'
+import FeaturedItem from '~/components/molecules/FeaturedItem'
 
 // Data passed as a prop to FeaturedSection
 const StoreFeatured: React.FC = () => (
@@ -24,6 +13,6 @@ const StoreFeatured: React.FC = () => (
 			imageAlt="Heartbeat animation icon"
 		/>
 	</>
-);
+)
 
-export default StoreFeatured;
+export default StoreFeatured

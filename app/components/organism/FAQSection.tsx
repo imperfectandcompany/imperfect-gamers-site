@@ -1,12 +1,12 @@
 // FAQSection.tsx
-import React from 'react';
-import FAQItem from '~/components/molecules/FAQItem';
+import type React from 'react'
+import FAQItem from '~/components/molecules/FAQItem'
 
 type FAQSectionProps = {
-	faqs: Array<{question: string; answer: React.ReactNode}>;
-};
+	faqs: Array<{ question: string; answer: React.ReactNode }>
+}
 
-const FAQSection: React.FC<FAQSectionProps> = ({faqs}) => {
+const FAQSection: React.FC<FAQSectionProps> = ({ faqs }) => {
 	return (
 		<div className="faq-section">
 			<h2 className="faq-title">Frequently Asked Questions</h2>
@@ -16,7 +16,7 @@ const FAQSection: React.FC<FAQSectionProps> = ({faqs}) => {
 				</FAQItem>
 			))}
 		</div>
-	);
-};
+	)
+}
 
-export default FAQSection;
+export default FAQSection

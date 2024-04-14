@@ -1,14 +1,14 @@
 // FeaturedPartnership.tsx
-import React from 'react';
+import type React from 'react'
 
 type FeaturedPartnershipProps = {
-	logoSrc: string;
-	logoAlt: string;
-	title: string;
-	description: React.ReactNode;
-	link: string;
-	linkText: string;
-};
+	logoSrc: string
+	logoAlt: string
+	title: string
+	description: React.ReactNode
+	link: string
+	linkText: string
+}
 
 /**
  * Represents a featured partnership component.
@@ -30,23 +30,23 @@ const FeaturedPartnership: React.FC<FeaturedPartnershipProps> = ({
 }) => {
 	return (
 		<section>
-			<div className="flex flex-col lg:flex-row items-center justify-between">
-				<div className="lg:w-1/2 flex justify-center lg:justify-start mb-8 lg:mb-0">
+			<div className="flex flex-col items-center justify-between lg:flex-row">
+				<div className="mb-8 flex justify-center lg:mb-0 lg:w-1/2 lg:justify-start">
 					<img src={logoSrc} alt={logoAlt} className="h-32 lg:h-32 xl:h-48" />
 				</div>
-				<div className="lg:w-1/2 text-center lg:text-right">
-					<h3 className="text-3xl font-bold mb-4">{title}</h3>
-					<p className="text-gray-400 text-sm">
+				<div className="text-center lg:w-1/2 lg:text-right">
+					<h3 className="mb-4 text-3xl font-bold">{title}</h3>
+					<p className="text-sm text-gray-400">
 						{description}
 						<a className="text-red-600" href={link}>
 							{linkText}
 						</a>
-            .
+						.
 					</p>
 				</div>
 			</div>
 		</section>
-	);
-};
+	)
+}
 
-export default FeaturedPartnership;
+export default FeaturedPartnership

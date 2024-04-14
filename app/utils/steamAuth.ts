@@ -1,23 +1,26 @@
+// TODO: Implement Steam authentication utilities for generating login URLs and verifying user assertions.
+// Necessary for securing the application and authenticating users with Steam.
+// import { createHmac } from 'crypto';
+// import { redirect } from '@remix-run/node';
+
 // utils/steamAuth.ts
-import {createHmac} from 'crypto';
-import {redirect} from '@remix-run/node';
 
 /**
  * Generates the Steam login URL for authentication.
  * @param returnURL - The URL to redirect the user to after authentication.
  * @returns The Steam login URL.
  */
-export function getSteamLoginURL(returnURL: string) {
-	const params = new URLSearchParams({
-		'openid.ns': 'http://specs.openid.net/auth/2.0',
-		'openid.mode': 'checkid_setup',
-		'openid.return_to': returnURL,
-		'openid.realm': new URL(returnURL).origin,
-		'openid.identity': 'http://specs.openid.net/auth/2.0/identifier_select',
-		'openid.claimed_id': 'http://specs.openid.net/auth/2.0/identifier_select',
-	});
+export function generateSteamLoginURL(returnURL: string) {
+	const params: URLSearchParams = new URLSearchParams({
+		openidNs: 'http://specs.openid.net/auth/2.0',
+		openidMode: 'checkid_setup',
+		openidReturnTo: returnURL,
+		openidRealm: new URL(returnURL).origin,
+		openidIdentity: 'http://specs.openid.net/auth/2.0/identifier_select',
+		openidClaimedId: 'http://specs.openid.net/auth/2.0/identifier_select',
+	} as Record<string, string>)
 	// TODO move to ${process.env.AUTHORIZATION_URL}?${params}
-	return `${'https://steamcommunity.com/openid/login'}?${params}`;
+	return `${'https://steamcommunity.com/openid/login'}?${params}`
 }
 
 /**
@@ -38,7 +41,7 @@ export async function verifySteamAssertion(
 	// For simplicity, this is just a placeholder
 	return (
 		query
-			.get('openid.claimed_id')
-			?.replace('https://steamcommunity.com/openid/id/', '') || null
-	);
+			.get('openidClaimedId')
+			?.replace('https://steamcommunity.com/openid/id/', '') ?? null
+	)
 }

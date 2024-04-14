@@ -1,15 +1,14 @@
 // components/organism/ModalWrapper/ModalWrapper.tsx
-import React, {type ReactElement, useState} from 'react';
-import Modal from '../../atoms/Modal/Modal';
-import ModalContent from '~/components/molecules/ModalContent/ModalContent';
-import Button from '~/components/atoms/Button/Button';
-import modal from './ModalWrapper.module.css';
+import React, { type ReactElement, useState } from 'react'
+import ModalContent from '~/components/molecules/ModalContent/ModalContent'
+import Modal from '../../atoms/Modal/Modal'
+import modal from './ModalWrapper.module.css'
 
 type ModalWrapperProps = {
-	title: string;
-	content: ReactElement;
-	children: ReactElement;
-};
+	title: string
+	content: ReactElement
+	children: ReactElement
+}
 
 /**
  * ModalWrapper component displays a modal dialog with a title, content, and children.
@@ -20,35 +19,43 @@ const ModalWrapper: React.FC<ModalWrapperProps> = ({
 	content,
 	children,
 }) => {
-	const [isOpen, setIsOpen] = useState(false);
+	const [isOpen, setIsOpen] = useState(false)
 
 	/**
-   * Opens the modal dialog by setting the isOpen state to true.
-   */
+	 * Opens the modal dialog by setting the isOpen state to true.
+	 */
 	const openModal = () => {
-		setIsOpen(true);
-	};
+		setIsOpen(true)
+	}
 
 	/**
-   * Closes the modal dialog by setting the isOpen state to false.
-   */
+	 * Closes the modal dialog by setting the isOpen state to false.
+	 */
 	const closeModal = () => {
-		setIsOpen(false);
-	};
+		setIsOpen(false)
+	}
 
 	return (
 		<>
-			{React.cloneElement(children, {onClick: openModal})}
+			{React.cloneElement(children, { onClick: openModal })}
 			<Modal isOpen={isOpen} onClose={closeModal}>
 				<ModalContent title={title} content={content} />
-				<div className="mt-5 flex justify-end">
-					<div className={modal.close__button} onClick={closeModal}>
-            &times;
-					</div>
+				<div
+					className={modal.close__button}
+					role="button"
+					tabIndex={0}
+					onClick={closeModal}
+					onKeyDown={e => {
+						if (e.key === 'Enter' || e.key === ' ') {
+							closeModal()
+						}
+					}}
+				>
+					&times;
 				</div>
 			</Modal>
 		</>
-	);
-};
+	)
+}
 
-export default ModalWrapper;
+export default ModalWrapper

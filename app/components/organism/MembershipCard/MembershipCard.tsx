@@ -1,9 +1,10 @@
 // components/organism/MembershipCard.tsx
 
-import React, {useEffect, useState} from 'react';
-import {PriceToggle} from '~/components/molecules/PriceToggle/PriceToggle';
-import styles from './MembershipCard.module.css';
-import {PriceLabel} from '~/components/atoms/PriceLabel/PriceLabel';
+import type React from 'react'
+import { useEffect, useState } from 'react'
+import { PriceLabel } from '~/components/atoms/PriceLabel/PriceLabel'
+import { PriceToggle } from '~/components/molecules/PriceToggle/PriceToggle'
+import styles from './MembershipCard.module.css'
 
 /**
  * Props for the MembershipCard component.
@@ -12,9 +13,9 @@ type MembershipCardProps = {
 	// Define props here if needed, for example:
 	// monthlyPrice: string;
 	// yearlyPrice: string;
-};
+}
 
-export let filterIdCounter = 0;
+export let filterIdCounter = 0
 
 /**
  * A card component that displays membership information.
@@ -26,20 +27,20 @@ export let filterIdCounter = 0;
  * ```
  */
 export const MembershipCard: React.FC<MembershipCardProps> = () => {
-	const [isYearly, setIsYearly] = useState(false);
+	const [isYearly, setIsYearly] = useState(false)
 	const [uniqueFilterId, setUniqueFilterId] = useState(
 		`gooey-${filterIdCounter}`,
-	);
+	)
 
 	useEffect(() => {
-		setUniqueFilterId(`gooey-${++filterIdCounter}`);
-	}, []);
+		setUniqueFilterId(`gooey-${++filterIdCounter}`)
+	}, [])
 	/**
-   * Toggles between monthly and yearly pricing.
-   */
+	 * Toggles between monthly and yearly pricing.
+	 */
 	const handleToggle = () => {
-		setIsYearly(!isYearly);
-	};
+		setIsYearly(!isYearly)
+	}
 
 	return (
 		<>
@@ -47,9 +48,9 @@ export const MembershipCard: React.FC<MembershipCardProps> = () => {
 				className={`${styles['membership-card']} mx-auto hover:cursor-pointer`}
 			>
 				<div className={styles['membership-card__tooltip']}>
-          Click to view membership rewards
+					Click to view membership rewards
 				</div>
-				<div className="flex flex-col items-start justify-between h-full">
+				<div className="flex h-full flex-col items-start justify-between">
 					<img
 						className={styles['membership-card__logo']}
 						src="https://cdn.imperfectgamers.org/inc/assets/logo/isometric-mark-text.png"
@@ -102,7 +103,7 @@ export const MembershipCard: React.FC<MembershipCardProps> = () => {
 										fontSize="10"
 										fontFamily="monospace"
 									>
-                    PREMIUM
+										PREMIUM
 									</text>
 								</g>
 							</svg>
@@ -114,5 +115,5 @@ export const MembershipCard: React.FC<MembershipCardProps> = () => {
 			</div>
 			<PriceToggle isYearly={isYearly} onToggle={handleToggle} />
 		</>
-	);
-};
+	)
+}

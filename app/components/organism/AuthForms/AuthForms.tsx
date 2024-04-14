@@ -1,20 +1,20 @@
 // components/organism/AuthForms/AuthForms.tsx
 
-import {useFetcher, useLoaderData} from '@remix-run/react';
-import React, {useEffect, useState} from 'react';
-import {useRevalidator} from 'react-router-dom';
-import Button from '~/components/atoms/Button/Button';
-import AuthorizeForm from '~/components/molecules/AuthorizeForm';
-import LoginForm from '~/components/molecules/LoginForm';
-import SignUpForm from '~/components/molecules/SignUpForm';
+import { useFetcher, useLoaderData } from '@remix-run/react'
+import type React from 'react'
+import { useEffect, useState } from 'react'
+import { useRevalidator } from 'react-router-dom'
+import AuthorizeForm from '~/components/molecules/AuthorizeForm'
+import LoginForm from '~/components/molecules/LoginForm'
+import SignUpForm from '~/components/molecules/SignUpForm'
 
 type LoaderData = {
-	isAuthenticated: boolean;
-	userToken: string | undefined;
-	isSteamLinked: boolean;
-	steamId: string | undefined;
-	username: string | undefined;
-};
+	isAuthenticated: boolean
+	userToken: string | undefined
+	isSteamLinked: boolean
+	steamId: string | undefined
+	username: string | undefined
+}
 
 /**
  * Renders the authentication forms based on the user's authentication status.
@@ -47,42 +47,42 @@ type LoaderData = {
  * The `AuthForms` component is designed to be consumed inside a modal. A modal is a UI component that overlays the main content and is used to display additional information or perform specific actions. By integrating the `AuthForms` component inside a modal, users can interact with the authentication forms without leaving the current context or page.
  */
 const AuthForms: React.FC = () => {
-	const [isLoginForm, setIsLoginForm] = useState(true);
-	const {revalidate} = useRevalidator();
+	const [isLoginForm, setIsLoginForm] = useState(true)
+	const { revalidate } = useRevalidator()
 
 	const switchForm = () => {
-		setIsLoginForm(!isLoginForm);
-	};
+		setIsLoginForm(!isLoginForm)
+	}
 
-	const {isAuthenticated, userToken, isSteamLinked, steamId, username} =
-    useLoaderData<LoaderData>();
-	const fetcher = useFetcher();
+	const { isAuthenticated, isSteamLinked, steamId, username } =
+		useLoaderData<LoaderData>()
+	const fetcher = useFetcher()
 
 	/**
-   * Handles the logout action by submitting a POST request to the "/logout" endpoint.
-   */
+	 * Handles the logout action by submitting a POST request to the "/logout" endpoint.
+	 */
 	const handleLogout = () => {
-		fetcher.submit({}, {method: 'post', action: '/logout'});
-	};
+		fetcher.submit({}, { method: 'post', action: '/logout' })
+	}
 
 	useEffect(() => {
 		const handleMessage = (event: {
-			origin: string;
-			data: {type: string};
+			origin: string
+			data: { type: string }
 		}) => {
-			if (event.origin !== window.location.origin) return;
+			if (event.origin !== window.location.origin) return
 
 			if (event.data?.type === 'steam-auth-success') {
 				// Fetch the updated session data
-				revalidate(); // This re-triggers the loader
+				revalidate() // This re-triggers the loader
 			}
-		};
+		}
 
-		window.addEventListener('message', handleMessage);
+		window.addEventListener('message', handleMessage)
 		return () => {
-			window.removeEventListener('message', handleMessage);
-		};
-	}, [revalidate]);
+			window.removeEventListener('message', handleMessage)
+		}
+	}, [revalidate])
 
 	return (
 		<>
@@ -106,45 +106,47 @@ const AuthForms: React.FC = () => {
 					<SignUpForm />
 				)}
 			</div>
-			<div className="flex flex-col text-center mt-4 text-sm text-white mx-auto">
+			<div className="mx-auto mt-4 flex flex-col text-center text-sm text-white">
 				<div>
 					{isAuthenticated ? (
 						<>
-              You are currently signed{' in as ' + username || '.'}.
+							You are currently signed{' in as ' + username || '.'}.
 							<button onClick={handleLogout} className="underline">
-                Log out
+								Log out
 							</button>
 						</>
 					) : isLoginForm ? (
 						<>
-              Don't have an account?{' '}
+							Don&apos;t have an account?{' '}
 							<button
 								onClick={() => {
-									switchForm();
+									switchForm()
 								}}
-								className="underline ml-2"
+								className="ml-2 underline"
 							>
-                Sign up
+								Sign up
 							</button>
 						</>
 					) : (
 						<>
-              Already have an account?
+							Already have an account?
 							<button
 								onClick={() => {
-									switchForm();
+									switchForm()
 								}}
-								className="underline ml-2"
+								className="ml-2 underline"
 							>
-                Sign in
+								Sign in
 							</button>
 						</>
 					)}
 				</div>
-				{!isAuthenticated && <div className="underline">Forgot password</div>}
+				{!isAuthenticated ? (
+					<div className="underline">Forgot password</div>
+				) : null}
 			</div>
 		</>
-	);
-};
+	)
+}
 
-export default AuthForms;
+export default AuthForms

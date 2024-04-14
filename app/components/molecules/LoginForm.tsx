@@ -1,19 +1,19 @@
 // components/molecules/LoginForm.tsx
-import React from 'react';
-import {ValidatedForm} from 'remix-validated-form';
-import {withZod} from '@remix-validated-form/with-zod';
-import {z} from 'zod';
-import Button from '~/components/atoms/Button/Button';
-import Input from '~/components/atoms/Input/Input';
-import {useActionData, useFetcher} from '@remix-run/react';
+import { useFetcher } from '@remix-run/react'
+import { withZod } from '@remix-validated-form/with-zod'
+import type React from 'react'
+import { ValidatedForm } from 'remix-validated-form'
+import { z } from 'zod'
+import Button from '~/components/atoms/Button/Button'
+import Input from '~/components/atoms/Input/Input'
 
 /**
  * Represents the login schema for the login form.
  */
 const loginSchema = z.object({
-	email: z.string().email({message: 'Invalid email address'}),
+	email: z.string().email({ message: 'Invalid email address' }),
 	password: z.string().min(1, 'Password is required'),
-});
+})
 
 // Client-side validation
 /**
@@ -22,7 +22,7 @@ const loginSchema = z.object({
  * @param {typeof loginSchema} schema - The login schema to be validated.
  * @returns {Validator<ZodObject>} - The validator with the login schema applied.
  */
-const validator = withZod(loginSchema);
+const validator = withZod(loginSchema)
 
 /**
  * LoginForm component renders a login form with email and password fields.
@@ -32,11 +32,10 @@ const validator = withZod(loginSchema);
  */
 const LoginForm: React.FC = () => {
 	// Implement the form state and submission logic here
-	const fetcher = useFetcher();
-	const actionData = useActionData();
+	const fetcher = useFetcher()
 
 	if (fetcher.state === 'submitting') {
-		return <div>Logging in...</div>;
+		return <div>Logging in...</div>
 	}
 
 	return (
@@ -50,17 +49,17 @@ const LoginForm: React.FC = () => {
 			{/* The input fields */}
 			<Input name="email" type="email" placeholder="Email" />
 			<Input name="password" type="password" placeholder="Password" />
-			{(fetcher.data as {error: string})?.error && (
+			{(fetcher.data as { error: string })?.error ? (
 				<div className="mr-0 text-red-700">
-					{(fetcher.data as {error: string}).error}
+					{(fetcher.data as { error: string }).error}
 				</div>
-			)}
+			) : null}
 			{/* The login button */}
 			<div className="items-right justify-right ml-auto">
 				<Button type="submit">Login</Button>
 			</div>
 		</ValidatedForm>
-	);
-};
+	)
+}
 
-export default LoginForm;
+export default LoginForm
