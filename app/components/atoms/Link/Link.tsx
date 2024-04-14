@@ -1,11 +1,11 @@
 // components/atoms/Link/Link.tsx
-import React, { ReactNode } from 'react';
+import React, {type ReactNode} from 'react';
 
-interface LinkProps {
-  href: string;
-  children: ReactNode;
-  className?: string;
-}
+type LinkProps = {
+	href: string;
+	children: ReactNode;
+	className?: string;
+};
 
 /**
  * A component that renders a link.
@@ -17,15 +17,12 @@ interface LinkProps {
  * @param {string} props.className - The CSS class name for the link.
  * @returns {JSX.Element} The rendered link component.
  */
-const Link: React.FC<LinkProps> = ({ href, children, className }) => {
-  return (
-    <a
-      href={href}
-      className={`text-blue-400 hover:text-blue-600 ${className}`}
-    >
-      {children}
-    </a>
-  );
+const Link: React.FC<LinkProps> = ({href, children, className}) => {
+	return (
+		<a href={href} className={`text-blue-400 hover:text-blue-600 ${className}`}>
+			{children}
+		</a>
+	);
 };
 
 export default Link;

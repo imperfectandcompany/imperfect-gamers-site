@@ -2,10 +2,10 @@
 import React from 'react';
 import Text from '../atoms/Text';
 
-interface TitleDescriptionProps {
-  title: string;
-  description: string;
-}
+type TitleDescriptionProps = {
+	title: string;
+	description: string;
+};
 
 /**
  * Renders a component with a title and description.
@@ -16,13 +16,16 @@ interface TitleDescriptionProps {
  * @param {string} props.description - The description to be displayed.
  * @returns {JSX.Element} - The rendered component.
  */
-const TitleDescription: React.FC<TitleDescriptionProps> = ({ title, description }) => {
-  return (
-    <div>
-      <h2>{title}</h2>
-      <Text>{description}</Text>
-    </div>
-  );
+const TitleDescription: React.FC<TitleDescriptionProps> = ({
+	title,
+	description,
+}) => {
+	return (
+		<div>
+			<h2>{title}</h2>
+			<Text>{description}</Text>
+		</div>
+	);
 };
 
 export default TitleDescription;

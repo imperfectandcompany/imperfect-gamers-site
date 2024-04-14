@@ -1,11 +1,11 @@
 .label {
-    font-size: 0.725rem;
-    color: #aaa;
+  font-size: 0.725rem;
+  color: #aaa;
 }
 
 /*
 TODO: FIX LABEL CHANGE ANIMATION
 */
 .label_change {
-    animation: fadeOutIn 0.8s ease foxrwards;
+  animation: fadeOutIn 0.8s ease foxrwards;
 }

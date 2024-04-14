@@ -23,22 +23,31 @@
  * @cssprop {string} animation - The animation effect of the membership card.
  */
 .membership-card {
-    width: 384px;
-    height: 224px;
-    background: #000;
-    border-radius: 20px;
-    color: #fff;
-    padding: 20px;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    box-shadow: 0 0 100px rgba(255, 255, 255, 0.3);
-    transform: perspective(1000px) rotateY(10deg);
-    transition: transform 0.5s, box-shadow 0.5s, background 0.5s, background-color 1s ease-in-out;
-    background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1));
-    background-size: 200% 200%;
-    animation: shimmer-effect 8s ease infinite;
+  width: 384px;
+  height: 224px;
+  background: #000;
+  border-radius: 20px;
+  color: #fff;
+  padding: 20px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 0 100px rgba(255, 255, 255, 0.3);
+  transform: perspective(1000px) rotateY(10deg);
+  transition:
+    transform 0.5s,
+    box-shadow 0.5s,
+    background 0.5s,
+    background-color 1s ease-in-out;
+  background-image: linear-gradient(
+    45deg,
+    rgba(255, 255, 255, 0.1),
+    rgba(255, 255, 255, 0.3),
+    rgba(255, 255, 255, 0.1)
+  );
+  background-size: 200% 200%;
+  animation: shimmer-effect 8s ease infinite;
 }
 
 /**
@@ -51,21 +60,23 @@
  * @class membership-card__tooltip
  */
 .membership-card__tooltip {
-    position: absolute;
-    bottom: 105px;
-    left: 20%;
-    transform: translateX(-50%);
-    background-color: rgba(0, 0, 0, 0.85);
-    color: #fff;
-    padding: 8px 16px;
-    border-radius: 8px;
-    font-size: 15px;
-    font-weight: 500;
-    white-space: nowrap;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.5s ease, transform 0.5s ease;
+  position: absolute;
+  bottom: 105px;
+  left: 20%;
+  transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.85);
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 500;
+  white-space: nowrap;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.5s ease,
+    transform 0.5s ease;
 }
 
 /**
@@ -75,78 +86,91 @@
  * The tooltip is positioned above the membership card and slightly shifted downwards.
  */
 .membership-card:hover .membership-card__tooltip {
-    opacity: 1;
-    visibility: visible;
-    transform: translate(-50%, 10px);
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, 10px);
 }
 
 /**
  * Styles for the shimmer effect before the membership card.
  */
 .membership-card__shimmer-effect--before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.3) 50%, rgba(255, 255, 255, 0) 100%);
-    animation: shimmer 2s infinite;
-    background-repeat: no-repeat;
-    background-size: 200% 100%;
-    z-index: 1;
-    border-radius: 20px;
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.3) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  animation: shimmer 2s infinite;
+  background-repeat: no-repeat;
+  background-size: 200% 100%;
+  z-index: 1;
+  border-radius: 20px;
 }
 
 /**
  * Styles for the membership card on hover.
  */
 .membership-card:hover {
-    transform: perspective(1000px) rotateY(0deg);
-    background: linear-gradient(145deg, #640000, #ae0000);
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+  transform: perspective(1000px) rotateY(0deg);
+  background: linear-gradient(145deg, #640000, #ae0000);
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
 }
 
 @keyframes shimmer-effect {
-    0% {
-        background-position: 0% 50%;
-    }
+  0% {
+    background-position: 0% 50%;
+  }
 
-    50% {
-        background-position: 100% 50%;
-    }
+  50% {
+    background-position: 100% 50%;
+  }
 
-    100% {
-        background-position: 0% 50%;
-    }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 .membership-card__spinback-effect {
-    width: 100px;
-    height: 100px;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.1));
-    border-radius: 50%;
-    position: absolute;
-    right: 20px;
-    top: 50%;
-    transform: translateY(-50%);
-    background-blend-mode: overlay;
-    backdrop-filter: blur(5px);
+  width: 100px;
+  height: 100px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.5),
+    rgba(255, 255, 255, 0.1)
+  );
+  border-radius: 50%;
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  background-blend-mode: overlay;
+  backdrop-filter: blur(5px);
 }
 
 .membership-card__spinback-effect::before,
 .membership-card__spinback-effect::after {
-    content: '';
-    position: absolute;
-    top: 10%;
-    left: 10%;
-    right: 10%;
-    bottom: 10%;
-    border-radius: 50%;
+  content: '';
+  position: absolute;
+  top: 10%;
+  left: 10%;
+  right: 10%;
+  bottom: 10%;
+  border-radius: 50%;
 }
 
 .membership-card__spinback-effect::before {
-    background: linear-gradient(45deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0));
+  background: linear-gradient(
+    45deg,
+    rgba(255, 255, 255, 0.2),
+    rgba(255, 255, 255, 0)
+  );
 }
 
 /**
@@ -158,23 +182,28 @@
  * The spin-disk animation is applied to the pseudo-element, with a duration of 5 seconds, linear timing function, and infinite repetition.
  */
 .membership-card__spinback-effect::after {
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: linear-gradient(0deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    animation: spin-disk 5s linear infinite;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    0deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  animation: spin-disk 5s linear infinite;
 }
 
 @keyframes spin-disk {
-    100% {
-        transform: rotate(1turn);
-    }
+  100% {
+    transform: rotate(1turn);
+  }
 }
 
 .membership-card__logo {
-    width: 60px;
-    height: 60px;
+  width: 60px;
+  height: 60px;
 }
 
 /**
@@ -190,36 +219,35 @@
  * @cssprop width - Specifies the width of the membership card tier.
  */
 .membership-card__tier {
-    position: absolute;
-    top: 72.5%;
-    left: 13.75%;
-    transform: translate(-50%, -50%);
-    width: 150px;
+  position: absolute;
+  top: 72.5%;
+  left: 13.75%;
+  transform: translate(-50%, -50%);
+  width: 150px;
 }
 
 .membership-card__tier:hover .membership-card__show-mask {
-    opacity: 0.5;
-    transition: opacity 300ms;
+  opacity: 0.5;
+  transition: opacity 300ms;
 }
-
 
 /* Responsive Design */
 @media (max-width: 768px) {
-    .price-toggle {
-        flex-direction: column;
-        padding-top: 12px;
-        align-items: center;
-    }
+  .price-toggle {
+    flex-direction: column;
+    padding-top: 12px;
+    align-items: center;
+  }
 
-    .price-toggle .price-label {
-        margin: 0;
-    }
+  .price-toggle .price-label {
+    margin: 0;
+  }
 
-    .switch {
-        margin: 10px 0;
-    }
+  .switch {
+    margin: 10px 0;
+  }
 
-    .membership-card__spinback-effect {
-        display: none;
-    }
+  .membership-card__spinback-effect {
+    display: none;
+  }
 }

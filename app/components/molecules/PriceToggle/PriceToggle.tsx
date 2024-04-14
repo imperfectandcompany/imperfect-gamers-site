@@ -1,6 +1,6 @@
 // Molecules/PriceToggle.tsx
 
-import { ToggleSwitch } from '../../atoms/ToggleSwitch/ToggleSwitch';
+import {ToggleSwitch} from '../../atoms/ToggleSwitch/ToggleSwitch';
 import price from './PriceToggle.module.css';
 
 /**
@@ -10,12 +10,18 @@ import price from './PriceToggle.module.css';
  * @param {() => void} onToggle - Callback function to handle toggle changes.
  * @returns {JSX.Element} - The rendered price toggle component.
  */
-export const PriceToggle = ({ isYearly, onToggle }: { isYearly: boolean, onToggle: () => void }) => {
-    return (
-        <div className={price.toggle}>
-            <span className={price.toggle__label}>Monthly</span>
-            <ToggleSwitch isYearly={isYearly} onToggle={onToggle} />
-            <span className={price.toggle__label}>Annually</span>
-        </div>
-    );
+export const PriceToggle = ({
+	isYearly,
+	onToggle,
+}: {
+	isYearly: boolean;
+	onToggle: () => void;
+}) => {
+	return (
+		<div className={price.toggle}>
+			<span className={price.toggle__label}>Monthly</span>
+			<ToggleSwitch isYearly={isYearly} onToggle={onToggle} />
+			<span className={price.toggle__label}>Annually</span>
+		</div>
+	);
 };

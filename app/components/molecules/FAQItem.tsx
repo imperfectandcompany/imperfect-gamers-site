@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 
-interface FAQItemProps {
-  question: string;
-  children: React.ReactNode;
-}
+type FAQItemProps = {
+	question: string;
+	children: React.ReactNode;
+};
 
 /**
  * FAQItem component displays a frequently asked question and its answer.
@@ -14,22 +14,24 @@ interface FAQItemProps {
  * @param {ReactNode} props.children - The answer to the question.
  * @returns {JSX.Element} The rendered FAQItem component.
  */
-const FAQItem: React.FC<FAQItemProps> = ({ question, children }) => {
-  const [isActive, setIsActive] = useState(false);
+const FAQItem: React.FC<FAQItemProps> = ({question, children}) => {
+	const [isActive, setIsActive] = useState(false);
 
-  /**
+	/**
    * Toggles the active state of the FAQItem.
    */
-  const toggleIsActive = () => setIsActive(!isActive);
+	const toggleIsActive = () => {
+		setIsActive(!isActive);
+	};
 
-  return (
-    <div className={`faq-item ${isActive ? 'active' : ''}`}>
-      <div className="faq-question" onClick={toggleIsActive}>
-        {question}
-      </div>
-      {isActive && <div className="faq-answer">{children}</div>}
-    </div>
-  );
+	return (
+		<div className={`faq-item ${isActive ? 'active' : ''}`}>
+			<div className="faq-question" onClick={toggleIsActive}>
+				{question}
+			</div>
+			{isActive && <div className="faq-answer">{children}</div>}
+		</div>
+	);
 };
 
 export default FAQItem;

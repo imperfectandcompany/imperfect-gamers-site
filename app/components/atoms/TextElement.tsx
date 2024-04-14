@@ -1,10 +1,10 @@
 // TextElement.tsx
 import React from 'react';
 
-interface TextElementProps {
-  text: string;
-  className?: string;
-}
+type TextElementProps = {
+	text: string;
+	className?: string;
+};
 
 /**
  * Renders a text element.
@@ -15,8 +15,8 @@ interface TextElementProps {
  * @param {string} props.className - The CSS class name for the text element.
  * @returns {JSX.Element} The rendered text element.
  */
-const TextElement: React.FC<TextElementProps> = ({ text, className }) => (
-  <span className={className}>{text}</span>
+const TextElement: React.FC<TextElementProps> = ({text, className}) => (
+	<span className={className}>{text}</span>
 );
 
 export default TextElement;

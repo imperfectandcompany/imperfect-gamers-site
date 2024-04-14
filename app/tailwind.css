@@ -16,31 +16,36 @@
 @tailwind utilities;
 
 @layer components {
-    .button:hover {
-        @apply bg-gradient-to-l from-gradient-end to-gradient-start shadow-custom-hover -translate-y-0.5;
-    }
+  .button:hover {
+    @apply bg-gradient-to-l from-gradient-end to-gradient-start shadow-custom-hover -translate-y-0.5;
+  }
 
-    .button:before {
-        content: '';
-        @apply absolute top-1/2 left-1/2 w-72 h-72 bg-radial-at-c from-white via-white/10 to-transparent rounded-full z-0 pointer-events-none scale-0 transform transition-transform duration-500;
-    }
+  .button:before {
+    content: '';
+    @apply absolute top-1/2 left-1/2 w-72 h-72 bg-radial-at-c from-white via-white/10 to-transparent rounded-full z-0 pointer-events-none scale-0 transform transition-transform duration-500;
+  }
 
-    .button:hover:before {
-        @apply scale-100;
-    }
+  .button:hover:before {
+    @apply scale-100;
+  }
 }
 
 @media (max-width: 768px) {
-    .button {
-        @apply py-2 px-4;
-    }
+  .button {
+    @apply py-2 px-4;
+  }
 }
 
 .button:before {
-    background: radial-gradient(circle, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.1) 70%, rgba(255, 255, 255, 0) 100%);
-    transform: translate(-50%, -50%) scale(0);
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.5) 0%,
+    rgba(255, 255, 255, 0.1) 70%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: translate(-50%, -50%) scale(0);
 }
 
 .button:hover:before {
-    transform: translate(-50%, -50%) scale(1);
+  transform: translate(-50%, -50%) scale(1);
 }

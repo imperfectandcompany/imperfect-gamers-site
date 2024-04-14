@@ -1,13 +1,13 @@
 // components/molecules/ModalContent/ModalContent.tsx
-import React, { ReactNode } from 'react';
+import React, {type ReactNode} from 'react';
 import Heading from '~/components/atoms/Heading/Heading';
 import Link from '~/components/atoms/Link/Link';
 import Paragraph from '~/components/atoms/Paragraph/Paragraph';
 
-interface ModalContentProps {
-    title: string;
-    content: ReactNode;
-}
+type ModalContentProps = {
+	title: string;
+	content: ReactNode;
+};
 
 /**
  * Renders the content of a modal.
@@ -18,15 +18,15 @@ interface ModalContentProps {
  * @param {string | React.ReactNode} props.content - The content of the modal.
  * @returns {React.ReactNode} The rendered modal content.
  */
-const ModalContent: React.FC<ModalContentProps> = ({ title, content }) => {
-    return (
-        <>
-            <Heading>{title}</Heading>
-            {typeof content === 'string' ? (
-                <Paragraph>
-                    {content}
-                    <br />
-                    {/* 
+const ModalContent: React.FC<ModalContentProps> = ({title, content}) => {
+	return (
+		<>
+			<Heading>{title}</Heading>
+			{typeof content === 'string' ? (
+				<Paragraph>
+					{content}
+					<br />
+					{/* 
                     TODO Setup passable footer
 
                     example content:
@@ -38,14 +38,13 @@ const ModalContent: React.FC<ModalContentProps> = ({ title, content }) => {
                     </Link>{' '}
                     channel to sort out appeals. We're working on bringing this feature
                     directly to you here, so stay tuned!
-                    */
-                    }
-                </Paragraph>
-            ) : (
-                content
-            )}
-        </>
-    );
+                    */}
+				</Paragraph>
+			) : (
+				content
+			)}
+		</>
+	);
 };
 
 export default ModalContent;
