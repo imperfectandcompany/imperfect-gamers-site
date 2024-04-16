@@ -4,17 +4,8 @@ import Button from '~/components/atoms/Button/Button'
 import AuthForms from '~/components/organism/AuthForms/AuthForms'
 import { MembershipCard } from '~/components/organism/MembershipCard/MembershipCard'
 import ModalWrapper from '~/components/organism/ModalWrapper/ModalWrapper'
+import { LoaderData } from '~/routes/store'
 
-type LoaderData = {
-	isAuthenticated: boolean
-	userToken: string | undefined
-	isSteamLinked: boolean
-	steamId: string | undefined
-	email: string | undefined
-	uid: number | undefined
-	username: string | undefined
-	isOnboarded: boolean
-}
 
 /**
  * Renders the header component for the store page.

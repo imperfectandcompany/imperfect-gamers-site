@@ -10,7 +10,6 @@ interface TebexBasketResponse {
 	success: boolean
 	data?: {
 		basketId: string
-		checkoutUrl: string
 	}
 	error?: string
 }
@@ -18,19 +17,23 @@ interface TebexBasketResponse {
 // Function to create a basket on Tebex
 export async function createTebexBasket(
 	userId: number,
-	packageId: string,
+	username: string,
+	steamId: number,
+	ipAddress: string
 ): Promise<TebexBasketResponse> {
+
 	const requestBody = {
-		user: {
-			id: userId, // Your system's user ID, not the Tebex ID
+        complete_url: 'https://example.com/complete', // Replace with your complete URL
+        cancel_url: 'https://example.com/cancel', // Replace with your cancel URL
+        complete_auto_redirect: false, // Replace with your preference
+        ip_address: ipAddress,
+		custom: {
+			user_id: userId,
+			username: username,
+			steam_id: steamId
 		},
-		packages: [
-			{
-				id: packageId, // ID of the premium membership package in Tebex
-			},
-		],
 	}
-	const response = await fetch(`${TEBEX_API_BASE}/api/accounts/${TEBEX_WEBSTORE_IDENTIFIER}/baskets{}`, {
+	const response = await fetch(`${TEBEX_API_BASE}/api/accounts/${TEBEX_WEBSTORE_IDENTIFIER}/baskets`, {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
@@ -54,7 +57,6 @@ export async function createTebexBasket(
 			success: true,
 			data: {
 				basketId: basketData.basket_id,
-				checkoutUrl: basketData.checkout_url,
 			},
 		}
 	}

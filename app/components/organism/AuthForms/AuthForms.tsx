@@ -7,23 +7,12 @@ import { useRevalidator } from 'react-router-dom'
 import AuthorizeForm from '~/components/molecules/AuthorizeForm'
 import LoginForm from '~/components/molecules/LoginForm'
 import SignUpForm from '~/components/molecules/SignUpForm'
-
-type LoaderData = {
-	isAuthenticated: boolean
-	userToken: string | undefined
-	isSteamLinked: boolean
-	steamId: string | undefined
-	uid: number | string
-	email: string | undefined
-	username: string | undefined
-	isOnboarded: boolean
-}
+import { LoaderData } from '~/routes/store'
 
 
 // TODO update docs for this
 interface AuthFormProps {
-    isOpen: boolean;
-    // other props...
+    isOpen?: boolean;
 }
 
 /**
@@ -99,15 +88,16 @@ const AuthForms: React.FC<AuthFormProps> = ({ isOpen }) => {
 		if (isOpen && isAuthorized && !storeRequestTriggeredRef.current) {
 			console.log('Triggering store request...');
 			// Trigger store request if all conditions are met and it has not been done before
-			fetcher.submit({}, { method: 'post', action: '/store' });
+			fetcher.submit({ uid }, { method: 'post', action: '/store' });
 			storeRequestTriggeredRef.current = true;
 		} else if (!isOpen) {
 			// Clean up if modal is closed
 			storeRequestTriggeredRef.current = false;
 			console.log('Modal closed, cleaning up store request trigger.');
 		}
-	}, [isOpen, isAuthorized]);
+	}, [isOpen, isAuthorized, fetcher, uid]);
 	
+
 	return (
 		<>
 			<div className="flex flex-col space-y-6">

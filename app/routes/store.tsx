@@ -4,11 +4,27 @@ import {
 	json,
 	type LoaderFunction,
 	ActionFunction,
+	TypedResponse,
 } from '@remix-run/node'
-import { getSession } from '~/auth/storage.server' // Make sure this matches your file structure
+import { useLoaderData } from '@remix-run/react'
+import { getSession, store } from '~/auth/storage.server' // Make sure this matches your file structure
 import { StoreHeader } from '~/components/templates/store'
 import '~/styles/store.css'
 import { createTebexBasket } from '~/utils/tebex.server'
+import { getClientIPAddress } from 'remix-utils/get-client-ip-address';
+
+
+
+export type LoaderData = {
+	isAuthenticated: boolean
+	userToken: string | null
+	isSteamLinked: boolean
+	steamId: number | null
+	uid: number | null
+	email: string | null
+	username: string | null
+	isOnboarded: boolean
+}
 
 export const meta: MetaFunction = () => {
 	return [
@@ -34,43 +50,60 @@ export const links: LinksFunction = () => {
 	]
 }
 
+
+async function getData({ request }: { request: Request }): Promise<LoaderData> {
+	const session = await getSession(request.headers.get('Cookie'))
+
+	const data: LoaderData = {
+		isAuthenticated: session.has('userToken'),
+		userToken: session.get('userToken') ?? null,
+		uid: JSON.parse(JSON.stringify(session.get('uid'))) ?? null,
+		email: session.get('email') ?? null,
+		isSteamLinked: session.has('steamId'),
+		steamId: JSON.parse(JSON.stringify(session.get('steamId'))) ?? null,
+		isOnboarded: session.has('username'),
+		username: session.get('username') ?? null,
+	};
+
+	return data;
+}
+
 /**
  * Retrieves the necessary data for the store route.
  * @param request - The incoming request object.
  * @returns An object containing information about the user's authentication status, user token, Steam linking status, Steam ID, and onboarding status.
  */
 export const loader: LoaderFunction = async ({ request }) => {
-	const session = await getSession(request.headers.get('Cookie'))
-	return json({
-		isAuthenticated: session.has('userToken'),
-		userToken: session.get('userToken') ?? null,
-		uid: session.get('uid') ?? null,
-		email: session.get('email') ?? null,
-		isSteamLinked: session.has('steamId'),
-		steamId: session.get('steamId') ?? null,
-		isOnboarded: session.has('username'),
-		username: session.get('username') ?? null,
-	})
+	const data = await getData({ request })
+	return data
 }
+
 
 export let action: ActionFunction = async ({ request }) => {
 	const cookieHeader = request.headers.get('Cookie')
 
 	const session = await getSession(cookieHeader)
 	const userId = session.get('uid')
-	const packageId = '1'
+	const data = await getData({ request });
 
 	// Ensure user is authenticated
 	if (!userId) {
 		return json({ error: 'User must be authenticated' }, { status: 401 })
-	}
+	}	
+	// TODO update docs to explain how we use remix-utils library to get client IP address (along is is-ip)
+    const ipAddress = getClientIPAddress(request);
 
   // Automatically create a basket if the user is logged in
-  if (userId && packageId) {
+  if (data && data.uid && data.username && data.steamId && ipAddress) {
     try {
-      const basketResponse = await createTebexBasket(userId, packageId);
+const basketResponse = await createTebexBasket(data.uid, data.username, data.steamId, ipAddress);
 
       if (basketResponse.success && basketResponse.data) {
+
+			// Store basket details in the session or where appropriate
+			//const storeCookies = (await store.parse(cookieHeader)) || {}
+		//	storeCookies.basketId = basketResponse.data.basketId
+return null;
         // Handle success scenario, e.g., redirect to checkout
       } else {
         // Handle error scenario
@@ -85,6 +118,8 @@ export let action: ActionFunction = async ({ request }) => {
         return json({ error: 'An unexpected error occurred' }, { status: 500 });
       }
     }
+  } else {
+	return json({ error: 'Missing required data' }, { status: 400 });
   }
 };
 

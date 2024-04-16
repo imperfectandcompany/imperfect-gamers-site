@@ -7,11 +7,13 @@ import Paragraph from '~/components/atoms/Paragraph/Paragraph'
 type ModalContentProps = {
 	title: string
 	content: ReactNode
-	isOpen: boolean;
+	isOpen?: boolean;
 }
 
 /**
  * Renders the content of a modal.
+ * 
+ * TODO ENTIRE REFACTOR OF ARCHITECTURE FOR THIS COMPONENT
  *
  * @component
  * @param {Object} props - The component props.
@@ -21,14 +23,14 @@ type ModalContentProps = {
  */
 const ModalContent: React.FC<ModalContentProps> = ({ title, content, isOpen }) => {
 	return (
-        <div>
-            <Heading>{title}</Heading>
-            {typeof content === 'string' ? (
-                <Paragraph>{content}</Paragraph>
-            ) : (
-                React.isValidElement(content) ? React.cloneElement(content, { isOpen }) : null
-            )}
-        </div>
+		<div>
+			<Heading>{title}</Heading>
+			{typeof content === 'string' ? (
+				<Paragraph>{content}</Paragraph>
+			) : (
+				React.isValidElement(content) ? React.cloneElement(content as React.ReactElement<any>, { isOpen }) : null
+			)}
+		</div>
 	)
 }
 

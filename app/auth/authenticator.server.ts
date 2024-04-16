@@ -197,7 +197,7 @@ export async function logout(token: string) {
  */
 async function checkSteamAccount(
 	token: string,
-): Promise<{ status: string; hasSteam: boolean; steamId: string }> {
+): Promise<{ status: string; hasSteam: boolean; steamId: (number | null)}> {
 	try {
 		// Send the request to API
 		const response = await fetch(`${apiBase}/user/verifySteam`, {
@@ -216,7 +216,7 @@ async function checkSteamAccount(
 		}
 	} catch (error) {
 		console.error(error)
-		return { status: 'error', hasSteam: false, steamId: '' }
+		return { status: 'error', hasSteam: false, steamId: null }
 	}
 }
 

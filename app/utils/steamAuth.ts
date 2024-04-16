@@ -33,7 +33,7 @@ export function generateSteamLoginURL(returnURL: string) {
 export async function verifySteamAssertion(
 	returnURL: string,
 	query: URLSearchParams,
-): Promise<string | undefined> {
+): Promise<string | null> {
 	// Implementation of verifying the Steam user's identity
 	// This involves checking the query parameters returned by Steam after user authentication
 	// and optionally verifying a signature for security
