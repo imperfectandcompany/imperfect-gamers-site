@@ -11,9 +11,7 @@ import { getSession, store } from '~/auth/storage.server' // Make sure this matc
 import { StoreHeader } from '~/components/templates/store'
 import '~/styles/store.css'
 import { createTebexBasket } from '~/utils/tebex.server'
-import { getClientIPAddress } from 'remix-utils/get-client-ip-address';
-
-
+import { getClientIPAddress } from 'remix-utils/get-client-ip-address'
 
 export type LoaderData = {
 	isAuthenticated: boolean
@@ -50,7 +48,6 @@ export const links: LinksFunction = () => {
 	]
 }
 
-
 async function getData({ request }: { request: Request }): Promise<LoaderData> {
 	const session = await getSession(request.headers.get('Cookie'))
 
@@ -63,9 +60,9 @@ async function getData({ request }: { request: Request }): Promise<LoaderData> {
 		steamId: JSON.parse(JSON.stringify(session.get('steamId'))) ?? null,
 		isOnboarded: session.has('username'),
 		username: session.get('username') ?? null,
-	};
+	}
 
-	return data;
+	return data
 }
 
 /**
@@ -78,50 +75,54 @@ export const loader: LoaderFunction = async ({ request }) => {
 	return data
 }
 
-
 export let action: ActionFunction = async ({ request }) => {
 	const cookieHeader = request.headers.get('Cookie')
 
 	const session = await getSession(cookieHeader)
 	const userId = session.get('uid')
-	const data = await getData({ request });
+	const data = await getData({ request })
 
 	// Ensure user is authenticated
 	if (!userId) {
 		return json({ error: 'User must be authenticated' }, { status: 401 })
-	}	
+	}
 	// TODO update docs to explain how we use remix-utils library to get client IP address (along is is-ip)
-    const ipAddress = getClientIPAddress(request);
+	// NOTE On local development the function is most likely to return null. This is because the browser doesn't send any of the above headers
+	let ipAddress = process.env.NODE_ENV === "development" ? "1.3.3.7" : getClientIPAddress(request.headers);
 
-  // Automatically create a basket if the user is logged in
-  if (data && data.uid && data.username && data.steamId && ipAddress) {
-    try {
-const basketResponse = await createTebexBasket(data.uid, data.username, data.steamId, ipAddress);
-
-      if (basketResponse.success && basketResponse.data) {
-
-			// Store basket details in the session or where appropriate
-			//const storeCookies = (await store.parse(cookieHeader)) || {}
-		//	storeCookies.basketId = basketResponse.data.basketId
-return null;
-        // Handle success scenario, e.g., redirect to checkout
-      } else {
-        // Handle error scenario
-        return json({ error: basketResponse.error }, { status: 400 });
-      }
-    } catch (error: unknown) { // Note that we use `unknown` here
-      // We check if error is an instance of Error
-      if (error instanceof Error) {
-        return json({ error: error.message }, { status: 500 });
-      } else {
-        // If it's not an Error instance, you can return a generic error message
-        return json({ error: 'An unexpected error occurred' }, { status: 500 });
-      }
-    }
-  } else {
-	return json({ error: 'Missing required data' }, { status: 400 });
-  }
-};
+	// Automatically create a basket if the user is logged in
+	if (data && data.uid && data.username && data.steamId && ipAddress) {
+		try {
+			const basketResponse = await createTebexBasket(
+				data.uid,
+				data.username,
+				data.steamId,
+				ipAddress,
+			)
+			if (basketResponse) {
+				// Store basket details in the session or where appropriate
+				//const storeCookies = (await store.parse(cookieHeader)) || {}
+				//	storeCookies.basketId = basketResponse.data.basketId
+				return null
+				// Handle success scenario, e.g., redirect to checkout
+			} else {
+				// Handle error scenario
+				return json({ error: "TODO WRITE ERROR" }, { status: 400 })
+			}
+		} catch (error: unknown) {
+			// Note that we use `unknown` here
+			// We check if error is an instance of Error
+			if (error instanceof Error) {
+				return json({ error: error.message }, { status: 500 })
+			} else {
+				// If it's not an Error instance, you can return a generic error message
+				return json({ error: 'An unexpected error occurred' }, { status: 500 })
+			}
+		}
+	} else {
+		return json({ error: 'Missing required data' }, { status: 400 })
+	}
+}
 
 /**
  * Renders the Store component.
