@@ -39,7 +39,8 @@ const ModalWrapper: React.FC<ModalWrapperProps> = ({
 		<>
 			{React.cloneElement(children, { onClick: openModal })}
 			<Modal isOpen={isOpen} onClose={closeModal}>
-				<ModalContent title={title} content={content} />
+            <ModalContent title={title} content={content} isOpen={isOpen} />
+				{/** Escape modal button **/}
 				<div
 					className={modal.close__button}
 					role="button"

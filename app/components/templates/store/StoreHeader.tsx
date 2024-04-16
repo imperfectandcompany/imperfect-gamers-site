@@ -10,7 +10,10 @@ type LoaderData = {
 	userToken: string | undefined
 	isSteamLinked: boolean
 	steamId: string | undefined
+	email: string | undefined
+	uid: number | undefined
 	username: string | undefined
+	isOnboarded: boolean
 }
 
 /**

@@ -1,12 +1,15 @@
 // @/app/auth/storage.server.ts
 import { createCookieSessionStorage } from '@remix-run/node'
+import { createCookie } from '@remix-run/node'
 
 /**
  * Represents the session data for a user.
  */
 type SessionData = {
+	uid?: number
 	userToken?: string
 	steamId?: string
+	email?: string
 	username?: string
 }
 
@@ -57,3 +60,4 @@ export const sessionStorage = createCookieSessionStorage<SessionData>({
 })
 
 export const { getSession, commitSession, destroySession } = sessionStorage
+

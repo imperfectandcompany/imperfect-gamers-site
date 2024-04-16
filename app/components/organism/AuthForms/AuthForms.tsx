@@ -2,7 +2,7 @@
 
 import { useFetcher, useLoaderData } from '@remix-run/react'
 import type React from 'react'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useRevalidator } from 'react-router-dom'
 import AuthorizeForm from '~/components/molecules/AuthorizeForm'
 import LoginForm from '~/components/molecules/LoginForm'
@@ -13,7 +13,17 @@ type LoaderData = {
 	userToken: string | undefined
 	isSteamLinked: boolean
 	steamId: string | undefined
+	uid: number | string
+	email: string | undefined
 	username: string | undefined
+	isOnboarded: boolean
+}
+
+
+// TODO update docs for this
+interface AuthFormProps {
+    isOpen: boolean;
+    // other props...
 }
 
 /**
@@ -30,7 +40,7 @@ type LoaderData = {
  * const App: React.FC = () => {
  *   return (
  *     <div>
- *       <h1>Welcome to My App</h1>
+ *       <h1>Welcome to Imperfect Gamers Store</h1>
  *       <AuthForms />
  *     </div>
  *   );
@@ -46,16 +56,19 @@ type LoaderData = {
  * @concept Modal
  * The `AuthForms` component is designed to be consumed inside a modal. A modal is a UI component that overlays the main content and is used to display additional information or perform specific actions. By integrating the `AuthForms` component inside a modal, users can interact with the authentication forms without leaving the current context or page.
  */
-const AuthForms: React.FC = () => {
+const AuthForms: React.FC<AuthFormProps> = ({ isOpen }) => {
 	const [isLoginForm, setIsLoginForm] = useState(true)
 	const { revalidate } = useRevalidator()
+	const basketCreatedRef = useRef(false);
+
 
 	const switchForm = () => {
 		setIsLoginForm(!isLoginForm)
 	}
 
-	const { isAuthenticated, isSteamLinked, steamId, username } =
+	const { isAuthenticated, isSteamLinked, steamId, isOnboarded, uid, username } =
 		useLoaderData<LoaderData>()
+		
 	const fetcher = useFetcher()
 
 	/**
@@ -65,25 +78,36 @@ const AuthForms: React.FC = () => {
 		fetcher.submit({}, { method: 'post', action: '/logout' })
 	}
 
+	const [isAuthorized, setIsAuthorized] = useState(false);
+	const storeRequestTriggeredRef = useRef(false);
+	const prevIsAuthenticated = useRef(isAuthenticated);
+
 	useEffect(() => {
-		const handleMessage = (event: {
-			origin: string
-			data: { type: string }
-		}) => {
-			if (event.origin !== window.location.origin) return
+		const authorizationStatus = isAuthenticated && isOnboarded && isSteamLinked;
+		setIsAuthorized(authorizationStatus);
+		console.log('Authorization status updated:', authorizationStatus);
 
-			if (event.data?.type === 'steam-auth-success') {
-				// Fetch the updated session data
-				revalidate() // This re-triggers the loader
-			}
+		// Reset store request trigger if logged out
+		if (!isAuthenticated && prevIsAuthenticated.current) {
+			storeRequestTriggeredRef.current = false;
+			console.log('User logged out, reset store request trigger.');
 		}
+		prevIsAuthenticated.current = isAuthenticated;
+	}, [isAuthenticated, isOnboarded, isSteamLinked]);
 
-		window.addEventListener('message', handleMessage)
-		return () => {
-			window.removeEventListener('message', handleMessage)
+	useEffect(() => {
+		if (isOpen && isAuthorized && !storeRequestTriggeredRef.current) {
+			console.log('Triggering store request...');
+			// Trigger store request if all conditions are met and it has not been done before
+			fetcher.submit({}, { method: 'post', action: '/store' });
+			storeRequestTriggeredRef.current = true;
+		} else if (!isOpen) {
+			// Clean up if modal is closed
+			storeRequestTriggeredRef.current = false;
+			console.log('Modal closed, cleaning up store request trigger.');
 		}
-	}, [revalidate])
-
+	}, [isOpen, isAuthorized]);
+	
 	return (
 		<>
 			<div className="flex flex-col space-y-6">

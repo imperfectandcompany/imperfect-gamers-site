@@ -1,5 +1,5 @@
 // components/molecules/ModalContent/ModalContent.tsx
-import type React from 'react'
+import React from 'react'
 import { type ReactNode } from 'react'
 import Heading from '~/components/atoms/Heading/Heading'
 import Paragraph from '~/components/atoms/Paragraph/Paragraph'
@@ -7,6 +7,7 @@ import Paragraph from '~/components/atoms/Paragraph/Paragraph'
 type ModalContentProps = {
 	title: string
 	content: ReactNode
+	isOpen: boolean;
 }
 
 /**
@@ -18,32 +19,16 @@ type ModalContentProps = {
  * @param {string | React.ReactNode} props.content - The content of the modal.
  * @returns {React.ReactNode} The rendered modal content.
  */
-const ModalContent: React.FC<ModalContentProps> = ({ title, content }) => {
+const ModalContent: React.FC<ModalContentProps> = ({ title, content, isOpen }) => {
 	return (
-		<>
-			<Heading>{title}</Heading>
-			{typeof content === 'string' ? (
-				<Paragraph>
-					{content}
-					<br />
-					{/* 
-                    TODO Setup passable footer
-
-                    example content:
-                    For now, head over to our{' '}
-                    <Link href="https://imperfectgamers.org/discord/">Discord</Link> or
-                    directly to the{' '}
-                    <Link href="https://discord.com/channels/193909594270072832/641373370944061451">
-                    #ban-appeals
-                    </Link>{' '}
-                    channel to sort out appeals. We're working on bringing this feature
-                    directly to you here, so stay tuned!
-                    */}
-				</Paragraph>
-			) : (
-				content
-			)}
-		</>
+        <div>
+            <Heading>{title}</Heading>
+            {typeof content === 'string' ? (
+                <Paragraph>{content}</Paragraph>
+            ) : (
+                React.isValidElement(content) ? React.cloneElement(content, { isOpen }) : null
+            )}
+        </div>
 	)
 }
 

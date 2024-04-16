@@ -5,6 +5,7 @@ const apiBase = 'https://api.imperfectgamers.org'
 
 type User = {
 	email: string
+	uid?: number
 	userToken?: string
 }
 
@@ -37,7 +38,10 @@ async function authenticateUser(
 			const data = await response.json()
 			// For simplicity, returning a simplified user object
 			if (response.ok) {
-				return { status: 'success', data: { email, userToken: data.token } }
+				return {
+					status: 'success',
+					data: { email, userToken: data.token, uid: data.uid },
+				}
 			} else if (response.status === 404) {
 				return { status: 'error', message: 'User not found' }
 			} else if (response.status === 500) {
@@ -106,8 +110,10 @@ export async function login(request: Request) {
 		}
 
 		const session = await getSession()
-		if (user.data?.userToken) {
+		if (user.data?.userToken && user.data?.uid && user.data?.email) {
 			session.set('userToken', user.data.userToken)
+			session.set('uid', user.data.uid)
+			session.set('email', user.data.email)
 
 			const hasSteamAccount = await checkSteamAccount(user.data?.userToken)
 			if (hasSteamAccount.hasSteam) {
@@ -161,24 +167,28 @@ export async function registerUser(email: string, password: string) {
  */
 export async function logout(token: string) {
 	try {
-		const response = await fetch(`${apiBase}/logout`, {
-			method: 'POST',
-			headers: {
-				authorization: `${token}`,
-				'Content-Type': 'application/json',
-			},
-		})
-		if (!response.ok) {
-			console.log(response.status)
-			throw new Error('Logout failed at API level')
+	  const response = await fetch(`${apiBase}/logout`, {
+		method: 'POST',
+		headers: {
+		  authorization: `${token}`,
+		  'Content-Type': 'application/json',
+		},
+	  });
+	  if (!response.ok) {
+		if (response.status === 401) {
+		  return { ok: false, error: 'Token invalid' };
 		}
-
-		return { ok: true }
+		console.log(response.status);
+		throw new Error('Logout failed at API level');
+	  }
+  
+	  return { ok: true };
 	} catch (error) {
-		console.error('Logout error:', error)
-		return { ok: false }
+	  console.error('Logout error:', error);
+	  return { ok: false };
 	}
-}
+  }
+  
 
 /**
  * Checks the Steam account associated with the provided token.
