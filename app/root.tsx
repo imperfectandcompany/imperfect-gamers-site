@@ -1,3 +1,4 @@
+// ~/root.tsx
 import { type LinksFunction } from '@remix-run/node'
 import {
 	Links,
@@ -6,6 +7,7 @@ import {
 	Scripts,
 	ScrollRestoration,
 } from '@remix-run/react'
+import { ExternalScripts } from 'remix-utils/external-scripts'
 
 import stylesheet from '~/tailwind.css?url'
 
@@ -27,6 +29,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 			<body className="background-svg relative flex flex-col bg-black px-4 text-white sm:px-8 md:px-12">
 				<main className="space-y-24 md:mx-72 md:space-y-12">{children}</main>
 				<ScrollRestoration />
+				<ExternalScripts />
 				<Scripts />
 			</body>
 		</html>

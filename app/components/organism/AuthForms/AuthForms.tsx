@@ -7,6 +7,9 @@ import AuthorizeForm from '~/components/molecules/AuthorizeForm'
 import LoginForm from '~/components/molecules/LoginForm'
 import SignUpForm from '~/components/molecules/SignUpForm'
 import type { LoaderData } from '~/routes/store'
+import type { TebexWindow } from '~/utils/tebex.interface'
+import useExternalScript, { handle } from '~/utils/tebexjs'
+import { useTebexCheckout } from '~/utils/useTebexCheckout'
 
 // TODO update docs for this
 interface AuthFormProps {
@@ -52,11 +55,13 @@ const AuthForms: React.FC<AuthFormProps> = ({ isOpen }) => {
 		username,
 		basketId,
 		packages,
+		checkoutUrl,
 	} = useLoaderData<LoaderData>()
 	const [isLoginForm, setIsLoginForm] = useState(true)
 	const [isAuthorized, setIsAuthorized] = useState(false)
 	const storeRequestTriggeredRef = useRef(false)
 	const storeSecondRequestTriggeredRef = useRef(false)
+	const storeTebexCheckoutmodalTriggeredRef = useRef(false)
 	const prevIsAuthenticated = useRef(isAuthenticated)
 	const fetcher = useFetcher()
 	const switchForm = () => {
@@ -71,6 +76,42 @@ const AuthForms: React.FC<AuthFormProps> = ({ isOpen }) => {
 	const handleLogout = () => {
 		fetcher.submit({}, { method: 'post', action: '/logout' })
 	}
+
+
+
+	function useTebexCheckout(checkoutId: string, theme: 'light' | 'dark') {
+		if (window.Tebex) {
+		const config = {
+			ident: checkoutId,
+			theme: theme,
+		  };
+		  window.Tebex.checkout.init(config);
+		  window.Tebex.checkout.launch();
+		}
+	}
+
+	const initiateCheckout = () => {
+		if (packages && basketId && isAuthorized) {
+			console.log('Checkout launching...')
+			useTebexCheckout(basketId, 'dark')
+		}
+	}
+
+	useEffect(() => {
+		if (
+			isOpen &&
+			basketId &&
+			isAuthorized &&
+			packages &&
+			!storeTebexCheckoutmodalTriggeredRef.current
+		) {
+			// setup some onload thing later that calls initiate checkout
+			if (basketId) {
+			console.log('checkout initiated')
+				initiateCheckout()
+			}
+		}
+	}, [isOpen, isAuthorized, basketId, packages, initiateCheckout])
 
 	useEffect(() => {
 		const authorizationStatus = isAuthenticated && isOnboarded && isSteamLinked
@@ -87,21 +128,38 @@ const AuthForms: React.FC<AuthFormProps> = ({ isOpen }) => {
 
 	useEffect(() => {
 		// Trigger store request if all conditions are met and it has not been done before
-		if (isOpen && isAuthorized && !storeRequestTriggeredRef.current && storeSecondRequestTriggeredRef) {
+		if (
+			isOpen &&
+			isAuthorized &&
+			!storeRequestTriggeredRef.current &&
+			storeSecondRequestTriggeredRef
+		) {
 			if (!packages.some(pkg => pkg.id === 6154841)) {
 				// Determine the correct action based on whether a basketId exists if package 6154841 is not in the packages array
 				const action = didBasketExist ? '/store/add' : '/store/create'
 				console.log(`Triggering store request to ${action}...`)
 				fetcher.submit(null, { method: 'post', action })
+			} else {
+				console.log('Package already in basket, skipping store request.')
+				initiateCheckout
 			}
 
 			storeRequestTriggeredRef.current = true
 		} else if (!isOpen) {
 			// Clean up if modal is closed
 			storeRequestTriggeredRef.current = false
+			storeTebexCheckoutmodalTriggeredRef.current = false
 			console.log('Modal closed, cleaning up store request trigger.')
 		}
-	}, [isOpen, isAuthorized, storeRequestTriggeredRef, storeSecondRequestTriggeredRef, packages, didBasketExist, fetcher])
+	}, [
+		isOpen,
+		isAuthorized,
+		storeRequestTriggeredRef,
+		storeSecondRequestTriggeredRef,
+		packages,
+		didBasketExist,
+		fetcher,
+	])
 
 	useEffect(() => {
 		// Only attempt to add a package to the basket if the basket was created successfully for the first time
@@ -110,6 +168,7 @@ const AuthForms: React.FC<AuthFormProps> = ({ isOpen }) => {
 			!didBasketExist &&
 			basketId &&
 			isAuthorized &&
+			packages &&
 			!storeSecondRequestTriggeredRef.current
 		) {
 			// Attempt to add package to newly created basket here
@@ -121,9 +180,34 @@ const AuthForms: React.FC<AuthFormProps> = ({ isOpen }) => {
 		isAuthorized,
 		didBasketExist,
 		basketId,
+		packages,
 		fetcher,
 		storeSecondRequestTriggeredRef,
 	])
+
+	// //~utilities/tebexjs.ts
+	//	useExternalScript('https://js.tebex.io/v1.0.0.js');
+
+	// useEffect(() => {
+	// 	// Only attempt to add launch tebex checkout if the basket exists and a package is added (after authorization)
+	// 	if (
+	// 		isOpen &&
+	// 		basketId &&
+	// 		isAuthorized &&
+	// 		!storeTebexCheckoutmodalTriggeredRef.current
+	// 	) {
+	// 		console.log('AWERRWERWREW');
+	// 		useTebexCheckout(basketId, 'dark');
+	// 		storeTebexCheckoutmodalTriggeredRef.current = true
+	// 	}
+	// }, [
+	// 	isOpen,
+	// 	isAuthorized,
+	// 	didBasketExist,
+	// 	basketId,
+	// 	fetcher,
+	// 	storeTebexCheckoutmodalTriggeredRef,
+	// ])
 
 	return (
 		<>

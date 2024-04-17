@@ -1,3 +1,10 @@
+// ~/utils/tebex.interface.ts
+export interface TebexCheckout {
+	init: (config: { ident: string; theme: 'light' | 'dark' }) => void;
+	launch: () => void;
+	on: (event: string, callback: (event?: any) => void) => void;
+  }
+
 /**
  * @interface GiftCardCodeBody
  * @description The gift card code object for the body of the request
