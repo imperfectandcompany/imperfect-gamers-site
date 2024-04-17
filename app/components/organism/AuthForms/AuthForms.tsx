@@ -6,10 +6,8 @@ import { useEffect, useRef, useState } from 'react'
 import AuthorizeForm from '~/components/molecules/AuthorizeForm'
 import LoginForm from '~/components/molecules/LoginForm'
 import SignUpForm from '~/components/molecules/SignUpForm'
+import UsernameForm from '~/components/molecules/UsernameForm'
 import type { LoaderData } from '~/routes/store'
-import type { TebexWindow } from '~/utils/tebex.interface'
-import useExternalScript, { handle } from '~/utils/tebexjs'
-import { useTebexCheckout } from '~/utils/useTebexCheckout'
 
 // TODO update docs for this
 interface AuthFormProps {
@@ -185,44 +183,22 @@ const AuthForms: React.FC<AuthFormProps> = ({ isOpen }) => {
 		storeSecondRequestTriggeredRef,
 	])
 
-	// //~utilities/tebexjs.ts
-	//	useExternalScript('https://js.tebex.io/v1.0.0.js');
-
-	// useEffect(() => {
-	// 	// Only attempt to add launch tebex checkout if the basket exists and a package is added (after authorization)
-	// 	if (
-	// 		isOpen &&
-	// 		basketId &&
-	// 		isAuthorized &&
-	// 		!storeTebexCheckoutmodalTriggeredRef.current
-	// 	) {
-	// 		console.log('AWERRWERWREW');
-	// 		useTebexCheckout(basketId, 'dark');
-	// 		storeTebexCheckoutmodalTriggeredRef.current = true
-	// 	}
-	// }, [
-	// 	isOpen,
-	// 	isAuthorized,
-	// 	didBasketExist,
-	// 	basketId,
-	// 	fetcher,
-	// 	storeTebexCheckoutmodalTriggeredRef,
-	// ])
-
 	return (
 		<>
 			<div className="flex flex-col space-y-6">
 				{isAuthenticated ? (
 					<>
-						{isSteamLinked ? (
-							<div>Steam Linked with ID: {steamId}</div>
-						) : (
-							<AuthorizeForm />
-						)}
 						{username ? (
-							<div>Onboarded as: {username}</div>
+							isSteamLinked ? (
+								<>
+									<div>Steam Linked with ID: {steamId}</div>
+									<div>Onboarded as: {username}</div>
+								</>
+							) : (
+								<AuthorizeForm />
+							)
 						) : (
-							'User not onboarded'
+							<UsernameForm />
 						)}
 					</>
 				) : isLoginForm ? (
@@ -235,7 +211,7 @@ const AuthForms: React.FC<AuthFormProps> = ({ isOpen }) => {
 				<div>
 					{isAuthenticated ? (
 						<>
-							You are currently signed{' in as ' + username || '.'}.
+							You are currently signed in{username ? ' as ' + username : ''}.
 							<button onClick={handleLogout} className="ml-1 underline">
 								Log out
 							</button>
