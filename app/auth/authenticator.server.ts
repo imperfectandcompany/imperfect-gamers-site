@@ -117,7 +117,7 @@ export async function login(request: Request) {
 
 			const hasSteamAccount = await checkSteamAccount(user.data?.userToken)
 			if (hasSteamAccount.hasSteam) {
-				session.set('steamId', hasSteamAccount.steamId)
+				session.set('steamId', hasSteamAccount.steamId ?? undefined)
 			}
 
 			const onboardingDetails = await checkOnboarded(user.data?.userToken)

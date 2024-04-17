@@ -1,6 +1,8 @@
 // @/app/auth/storage.server.ts
 import { createCookieSessionStorage } from '@remix-run/node'
 import { createCookie } from '@remix-run/node'
+import { createTypedCookie } from 'remix-utils/typed-cookie'
+import { z } from "zod";
 
 /**
  * Represents the session data for a user.
@@ -61,4 +63,17 @@ export const sessionStorage = createCookieSessionStorage<SessionData>({
 
 export const { getSession, commitSession, destroySession } = sessionStorage
 
-export const store = createCookie("store");
+const storeCookieSchema = z.object({
+    basketId: z.string().optional()
+}).default({});
+
+export const storeCookie = createTypedCookie({
+    cookie: createCookie("user-store", {
+        path: "/store",
+        secrets: ["n3wsecr3t", "olds3cret"],
+        sameSite: "strict",
+        httpOnly: true,
+		secure: process.env.NODE_ENV === 'production',
+    }),
+    schema: storeCookieSchema,
+});

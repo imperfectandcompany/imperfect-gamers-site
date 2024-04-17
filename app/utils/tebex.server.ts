@@ -1,31 +1,12 @@
-import { json } from '@remix-run/node'
+import { createCookie, json } from '@remix-run/node'
 import { Basket, Data, KeyValuePair, PackageType } from './tebex.interface'
+import { createTypedCookie } from 'remix-utils/typed-cookie'
 
 // Tebex API details
 const TEBEX_API_BASE = 'https://headless.tebex.io'
 const TEBEX_SECRET_KEY = process.env.TEBEX_SECRET_KEY // Ensure this is set in your environment
 const TEBEX_WEBSTORE_IDENTIFIER = process.env.TEBEX_WEBSTORE_IDENTIFIER // Ensure this is set in your environment
 
-
-interface TebexBasketResponse {
-	success: boolean
-	data?: {
-		basketId: string
-	}
-	error?: string
-}
-
-interface RequestBody {
-    complete_url: string;
-    cancel_url: string;
-    complete_auto_redirect: boolean;
-    ip_address?: string;
-    custom: {
-        user_id: number;
-        username: string;
-        steam_id: number;
-    };
-}
 
 // Function to create a basket on Tebex
 export async function createTebexBasket(
@@ -63,69 +44,57 @@ export async function createTebexBasket(
 		throw new Error(`Tebex basket creation failed: ${response.statusText}`)
 	}
 	const basketData = await response.json()
-	return basketData;
+	return basketData.data;
 }
 
-
-/**
- * @function AddPackageToBasket
- * @description A function to add a package to a basket from the Tebex Headless API
- * 
- * @param {string} basketIdent The identifier of the basket
- * @param {number} package_id The ID of the package
- * @param {number} quantity The quantity of the package
- * @param {PackageType} type The type of the package
- * @param {KeyValuePair<string, any>} variable_data The variable data of the package
- * 
- * @returns {Promise<Basket>}
- */
-export async function AddPackageToBasket(basketIdent: string, package_id: number, quantity: number, type: PackageType, variable_data?: KeyValuePair<string, any>): Promise<Basket> {
-    const { data }: Data<Basket> = await Request("POST", basketIdent, "baskets", "/packages", {}, {
-        package_id,
-        quantity,
-        type,
-        variable_data
-    })
-
-    return data;
+export async function AddPackageToBasket(
+    basketIdent: string, 
+    variable_data?: KeyValuePair<string, any>
+): Promise<Basket> {
+    try {
+		let packageId=6154841;
+		let quantity=1;
+		let type='subscription';
+		const { data }: Data<Basket> = await Request("POST", basketIdent, "baskets", "/packages", {}, {
+			packageId,
+			quantity,
+			type,
+			variable_data
+		})
+        return data;
+    } catch (error) {
+        console.error("Failed to add package to basket:", error);
+        throw new Error('Failed to process the request');
+    }
 }
 
-export async function Request<T, Body>(
+export async function Request<T>(
     method: 'GET' | 'POST' | 'PUT' | 'DELETE', 
     identifier: string | null, 
     route: string, 
     path?: string, 
     params?: Record<string, any>, 
-    body?: Body
+    body?: any
 ): Promise<T> {
-    if (params) {
-        for (const [key, value] of Object.entries(params)) {
-            if (typeof value === "boolean") {
-                params[key] = value ? 1 : 0;
-            }
-        }
-    }
+    const url = new URL(`${TEBEX_API_BASE}/api/${route}/${identifier}${path ?? ""}`);
+    Object.entries(params || {}).forEach(([key, value]) => {
+        if (typeof value === "boolean") value = value ? '1' : '0';
+        url.searchParams.append(key, value);
+    });
 
-    let url = `${TEBEX_API_BASE}/api/${route}/${identifier}${path ?? ""}`;
-    if (params) {
-        url += '?' + new URLSearchParams(params).toString();
-    }
+    const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+        'Authorization': `Basic ${btoa(`${TEBEX_WEBSTORE_IDENTIFIER}:${TEBEX_SECRET_KEY}`)}`
+    };
 
-const headers: Record<string, string> = {
-	'Content-Type': 'application/json',
-};
-
-if (TEBEX_WEBSTORE_IDENTIFIER && TEBEX_SECRET_KEY) {
-	headers['Authorization'] = 'Basic ' + btoa(TEBEX_WEBSTORE_IDENTIFIER + ':' + TEBEX_SECRET_KEY);
-}
-
-const response = await fetch(url, {
-	method,
-	headers,
-	body: body ? JSON.stringify(body) : undefined,
-});
+    const response = await fetch(url.toString(), {
+        method,
+        headers,
+        body: JSON.stringify(body),
+    });
 
     if (!response.ok) {
+        console.error(`Request failed: ${response.statusText}`);
         throw new Error(`Request failed: ${response.statusText}`);
     }
 

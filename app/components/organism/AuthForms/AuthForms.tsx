@@ -3,16 +3,16 @@
 import { useFetcher, useLoaderData } from '@remix-run/react'
 import type React from 'react'
 import { useEffect, useRef, useState } from 'react'
-import { useRevalidator } from 'react-router-dom'
 import AuthorizeForm from '~/components/molecules/AuthorizeForm'
 import LoginForm from '~/components/molecules/LoginForm'
 import SignUpForm from '~/components/molecules/SignUpForm'
 import { LoaderData } from '~/routes/store'
+import { storeCookie } from '~/auth/storage.server';
 
 
 // TODO update docs for this
 interface AuthFormProps {
-    isOpen?: boolean;
+	isOpen?: boolean
 }
 
 /**
@@ -46,20 +46,23 @@ interface AuthFormProps {
  * The `AuthForms` component is designed to be consumed inside a modal. A modal is a UI component that overlays the main content and is used to display additional information or perform specific actions. By integrating the `AuthForms` component inside a modal, users can interact with the authentication forms without leaving the current context or page.
  */
 const AuthForms: React.FC<AuthFormProps> = ({ isOpen }) => {
+    const {
+        isAuthenticated,
+        isSteamLinked,
+        steamId,
+        isOnboarded,
+        uid,
+        username,
+        basketId
+    } = useLoaderData<LoaderData>();
 	const [isLoginForm, setIsLoginForm] = useState(true)
-	const { revalidate } = useRevalidator()
-	const basketCreatedRef = useRef(false);
-
-
+	const [isAuthorized, setIsAuthorized] = useState(false)
+	const storeRequestTriggeredRef = useRef(false)
+	const prevIsAuthenticated = useRef(isAuthenticated)
+	const fetcher = useFetcher()
 	const switchForm = () => {
 		setIsLoginForm(!isLoginForm)
 	}
-
-	const { isAuthenticated, isSteamLinked, steamId, isOnboarded, uid, username } =
-		useLoaderData<LoaderData>()
-		
-	const fetcher = useFetcher()
-
 	/**
 	 * Handles the logout action by submitting a POST request to the "/logout" endpoint.
 	 */
@@ -67,36 +70,36 @@ const AuthForms: React.FC<AuthFormProps> = ({ isOpen }) => {
 		fetcher.submit({}, { method: 'post', action: '/logout' })
 	}
 
-	const [isAuthorized, setIsAuthorized] = useState(false);
-	const storeRequestTriggeredRef = useRef(false);
-	const prevIsAuthenticated = useRef(isAuthenticated);
 
 	useEffect(() => {
-		const authorizationStatus = isAuthenticated && isOnboarded && isSteamLinked;
-		setIsAuthorized(authorizationStatus);
-		console.log('Authorization status updated:', authorizationStatus);
+		const authorizationStatus = isAuthenticated && isOnboarded && isSteamLinked
+		setIsAuthorized(authorizationStatus)
+		console.log('Authorization status updated:', authorizationStatus)
 
 		// Reset store request trigger if logged out
 		if (!isAuthenticated && prevIsAuthenticated.current) {
-			storeRequestTriggeredRef.current = false;
-			console.log('User logged out, reset store request trigger.');
+			storeRequestTriggeredRef.current = false
+			console.log('User logged out, reset store request trigger.')
 		}
-		prevIsAuthenticated.current = isAuthenticated;
-	}, [isAuthenticated, isOnboarded, isSteamLinked]);
+		prevIsAuthenticated.current = isAuthenticated
+	}, [isAuthenticated, isOnboarded, isSteamLinked])
 
 	useEffect(() => {
 		if (isOpen && isAuthorized && !storeRequestTriggeredRef.current) {
-			console.log('Triggering store request...');
 			// Trigger store request if all conditions are met and it has not been done before
-			fetcher.submit({ uid }, { method: 'post', action: '/store' });
-			storeRequestTriggeredRef.current = true;
+			console.log('Triggering store request...')
+			// Determine the correct action based on whether a basketId exists
+			const action = basketId ? '/store/add' : '/store/create'
+			console.log(`Triggering store request to ${action}...`)
+			fetcher.submit({ uid }, { method: 'post', action })
+
+			storeRequestTriggeredRef.current = true
 		} else if (!isOpen) {
 			// Clean up if modal is closed
-			storeRequestTriggeredRef.current = false;
-			console.log('Modal closed, cleaning up store request trigger.');
+			storeRequestTriggeredRef.current = false
+			console.log('Modal closed, cleaning up store request trigger.')
 		}
 	}, [isOpen, isAuthorized, fetcher, uid]);
-	
 
 	return (
 		<>
