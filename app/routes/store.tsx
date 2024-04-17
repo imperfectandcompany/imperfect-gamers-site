@@ -13,6 +13,7 @@ import { AddPackageToBasket, createTebexBasket } from '~/utils/tebex.server'
 import { getClientIPAddress } from 'remix-utils/get-client-ip-address'
 import { namedAction } from 'remix-utils/named-action'
 import { z } from 'zod'
+import { BasketPackage } from '~/utils/tebex.interface'
 
 export type LoaderData = {
 	isAuthenticated: boolean
@@ -24,6 +25,7 @@ export type LoaderData = {
 	username: string | null
 	isOnboarded: boolean
 	basketId: string | null // Assuming basketId is a string, null if not present
+	packages: BasketPackage[] | []
 }
 
 export const meta: MetaFunction = () => {
@@ -60,6 +62,7 @@ async function loadBasketId(
 
 	try {
 		let storeCookies = (await storeCookie.parse(cookieHeader)) || {}
+		// Ensure it does not return NaN if conversion fails
 		const basketId = storeCookies.basketId
 			? String(storeCookies.basketId)
 			: null
@@ -70,10 +73,31 @@ async function loadBasketId(
 	}
 }
 
+// Function to load the packages from the cookie
+async function loadPackages(
+	cookieHeader: string | null,
+): Promise<any | null> {
+	if (!cookieHeader) {
+		return null // Early return if no cookie header is present
+	}
+
+	try {
+		let storeCookies = (await storeCookie.parse(cookieHeader)) || {}
+		// Ensure it does not return NaN if conversion fails
+		const packages = storeCookies.packages ? storeCookies.packages : []
+		return packages
+	} catch (error) {
+		console.error('Error parsing store cookie:', error)
+		return null // Return null if parsing fails
+	}
+}
+
 // Function to get user data from session
 async function getData(cookieHeader: string | null): Promise<LoaderData> {
 	const session = await getSession(cookieHeader)
 	const basketId = await loadBasketId(cookieHeader)
+	const packages = await loadPackages(cookieHeader)
+
 
 	return {
 		isAuthenticated: session.has('userToken'),
@@ -85,6 +109,7 @@ async function getData(cookieHeader: string | null): Promise<LoaderData> {
 		isOnboarded: session.has('username'),
 		username: session.get('username') ?? null,
 		basketId: basketId ?? null,
+		packages: packages ?? [],
 	}
 }
 

@@ -49,27 +49,29 @@ export async function createTebexBasket(
 
 export async function AddPackageToBasket(
     basketIdent: string, 
-    variable_data?: KeyValuePair<string, any>
 ): Promise<Basket> {
 	console.info('Making API call to add package to basket...');
-
     try {
-		let package_id=6154841;
 		let quantity=1;
 		let type='subscription';
 		const { data }: Data<Basket> = await Request("POST", basketIdent, "baskets", "/packages", {}, {
-			package_id,
+			package_id: 6154841,
 			quantity,
 			type,
 			variable_data: {
 				discord_id: 0o0,
 			},
 		})
-        return data;
+		return data;
 	} catch (error) {
-		throw new Error('Failed to process the request');
+		throw new Error((error as Error).message);
     }
 }
+
+// async function fetchBasketDetails(basketId) {
+// 	// API call to fetch basket details using the basketId
+// 	// Returns the basket object or null if not found or an error occurs
+//   }
 
 export async function Request<T>(
     method: 'GET' | 'POST' | 'PUT' | 'DELETE', 
@@ -92,15 +94,17 @@ export async function Request<T>(
 		'Authorization': `Basic ${btoa(`${TEBEX_WEBSTORE_IDENTIFIER}:${TEBEX_SECRET_KEY}`)}`
 	};
 
-	const response = await fetch(url.toString(), {
-		method,
-		headers,
-		body: JSON.stringify(body),
-	});
-	console.log(response);
-	if (!response.ok) {
-		throw new Error(`Request failed: ${response.statusText}`);
+	try{
+		const response = await fetch(url.toString(), {
+			method,
+			headers,
+			body: JSON.stringify(body),
+		});
+		if (!response.ok) {
+			throw new Error(`Request failed: ${response.statusText}`);
+		}
+		return response.json();
+	} catch (error) {
+		throw new Error((error as Error).message);
 	}
-
-    return response.json();
 }

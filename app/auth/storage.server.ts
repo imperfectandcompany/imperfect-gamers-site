@@ -63,9 +63,28 @@ export const sessionStorage = createCookieSessionStorage<SessionData>({
 
 export const { getSession, commitSession, destroySession } = sessionStorage
 
+
+// Define the schema for the in-basket object
+const inBasketSchema = z.object({
+	quantity: z.number(),
+	price: z.number(),
+	gift_username_id: z.string().nullable(), // Use nullable for null values
+	gift_username: z.string().nullable(),
+  });
+  
+  // Define the base schema for an item
+  const baseItemSchema = z.object({
+	id: z.number(),
+	name: z.string(),
+  });
+  
+
+// Define the schema for the store cookie
 const storeCookieSchema = z.object({
-    basketId: z.string().optional()
+	basketId: z.string().optional(),
+	packages: z.array(z.unknown()).optional(),
 }).default({});
+  
 
 export const storeCookie = createTypedCookie({
     cookie: createCookie("user-store", {

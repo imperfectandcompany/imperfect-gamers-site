@@ -46,15 +46,15 @@ interface AuthFormProps {
  * The `AuthForms` component is designed to be consumed inside a modal. A modal is a UI component that overlays the main content and is used to display additional information or perform specific actions. By integrating the `AuthForms` component inside a modal, users can interact with the authentication forms without leaving the current context or page.
  */
 const AuthForms: React.FC<AuthFormProps> = ({ isOpen }) => {
-    const {
-        isAuthenticated,
-        isSteamLinked,
-        steamId,
-        isOnboarded,
-        uid,
-        username,
-        basketId
-    } = useLoaderData<LoaderData>();
+	const {
+		isAuthenticated,
+		isSteamLinked,
+		steamId,
+		isOnboarded,
+		uid,
+		username,
+		basketId
+	} = useLoaderData<LoaderData>()
 	const [isLoginForm, setIsLoginForm] = useState(true)
 	const [isAuthorized, setIsAuthorized] = useState(false)
 	const storeRequestTriggeredRef = useRef(false)
@@ -88,10 +88,12 @@ const AuthForms: React.FC<AuthFormProps> = ({ isOpen }) => {
 		if (isOpen && isAuthorized && !storeRequestTriggeredRef.current) {
 			// Trigger store request if all conditions are met and it has not been done before
 			console.log('Triggering store request...')
+
 			// Determine the correct action based on whether a basketId exists
 			const action = basketId ? '/store/add' : '/store/create'
+			// NOTE NOTE NOTE !!! BASKETID CURRENTLY DOES NOT EXIST
 			console.log(`Triggering store request to ${action}...`)
-			fetcher.submit({ uid }, { method: 'post', action })
+			fetcher.submit(null, { method: 'post', action })
 
 			storeRequestTriggeredRef.current = true
 		} else if (!isOpen) {
