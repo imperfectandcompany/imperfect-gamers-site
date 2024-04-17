@@ -1,7 +1,8 @@
 // components/organism/ModalWrapper/ModalWrapper.tsx
-import React, { ReactElement, useState } from 'react'
-import Modal from '../../atoms/Modal/Modal'
+import type { ReactElement } from 'react'
+import React, { useState } from 'react'
 import ModalContent from '~/components/molecules/ModalContent/ModalContent'
+import Modal from '../../atoms/Modal/Modal'
 import modal from './ModalWrapper.module.css'
 
 interface ModalWrapperProps {
@@ -39,7 +40,8 @@ const ModalWrapper: React.FC<ModalWrapperProps> = ({
 		<>
 			{React.cloneElement(children, { onClick: openModal })}
 			<Modal isOpen={isOpen} onClose={closeModal}>
-				<ModalContent title={title} content={content} />
+				<ModalContent title={title} content={content} isOpen={isOpen} />
+				{/** Escape modal button **/}
 				<div
 					className={modal.close__button}
 					role="button"

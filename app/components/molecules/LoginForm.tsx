@@ -55,7 +55,7 @@ const LoginForm: React.FC = () => {
 				</div>
 			) : null}
 			{/* The login button */}
-			<div className="items-right justify-right ml-auto">
+			<div className="ml-auto">
 				<Button type="submit">Login</Button>
 			</div>
 		</ValidatedForm>

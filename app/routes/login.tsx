@@ -15,7 +15,7 @@ export async function action({ request }: ActionFunctionArgs) {
 			},
 		)
 	} else {
-		// If login fails, return an error message to be displayed.0
+		// If login fails, return an error message to be displayed.
 		console.log('Error in login:', result.error)
 		return json({ error: result.error }, { status: 400 })
 	}

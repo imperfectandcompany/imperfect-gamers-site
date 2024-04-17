@@ -28,20 +28,19 @@ export function generateSteamLoginURL(returnURL: string) {
  *
  * @param returnURL - The return URL after user authentication.
  * @param query - The query parameters returned by Steam after user authentication.
- * @returns A string representing the user's identity, or null if the verification fails.
+ * @returns A number representing the user's identity, or null if the verification fails.
  */
 export async function verifySteamAssertion(
 	returnURL: string,
 	query: URLSearchParams,
-): Promise<string | undefined> {
+): Promise<number | null> {
 	// Implementation of verifying the Steam user's identity
 	// This involves checking the query parameters returned by Steam after user authentication
 	// and optionally verifying a signature for security
 
 	// For simplicity, this is just a placeholder
-	return (
-		query
-			.get('openidClaimedId')
-			?.replace('https://steamcommunity.com/openid/id/', '') ?? null
-	)
+	const steamId = query
+		.get('openidClaimedId')
+		?.replace('https://steamcommunity.com/openid/id/', '')
+	return steamId ? parseInt(steamId, 10) : null
 }

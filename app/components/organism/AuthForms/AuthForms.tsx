@@ -2,18 +2,18 @@
 
 import { useFetcher, useLoaderData } from '@remix-run/react'
 import type React from 'react'
-import { useEffect, useState } from 'react'
-import { useRevalidator } from 'react-router-dom'
+import { useEffect, useRef, useState } from 'react'
 import AuthorizeForm from '~/components/molecules/AuthorizeForm'
 import LoginForm from '~/components/molecules/LoginForm'
 import SignUpForm from '~/components/molecules/SignUpForm'
+import type { LoaderData } from '~/routes/store'
+import type { TebexWindow } from '~/utils/tebex.interface'
+import useExternalScript, { handle } from '~/utils/tebexjs'
+import { useTebexCheckout } from '~/utils/useTebexCheckout'
 
-type LoaderData = {
-	isAuthenticated: boolean
-	userToken: string | undefined
-	isSteamLinked: boolean
-	steamId: string | undefined
-	username: string | undefined
+// TODO update docs for this
+interface AuthFormProps {
+	isOpen?: boolean
 }
 
 /**
@@ -30,7 +30,7 @@ type LoaderData = {
  * const App: React.FC = () => {
  *   return (
  *     <div>
- *       <h1>Welcome to My App</h1>
+ *       <h1>Welcome to Imperfect Gamers Store</h1>
  *       <AuthForms />
  *     </div>
  *   );
@@ -46,17 +46,29 @@ type LoaderData = {
  * @concept Modal
  * The `AuthForms` component is designed to be consumed inside a modal. A modal is a UI component that overlays the main content and is used to display additional information or perform specific actions. By integrating the `AuthForms` component inside a modal, users can interact with the authentication forms without leaving the current context or page.
  */
-const AuthForms: React.FC = () => {
+const AuthForms: React.FC<AuthFormProps> = ({ isOpen }) => {
+	const {
+		isAuthenticated,
+		isSteamLinked,
+		steamId,
+		isOnboarded,
+		username,
+		basketId,
+		packages,
+		checkoutUrl,
+	} = useLoaderData<LoaderData>()
 	const [isLoginForm, setIsLoginForm] = useState(true)
-	const { revalidate } = useRevalidator()
-
+	const [isAuthorized, setIsAuthorized] = useState(false)
+	const storeRequestTriggeredRef = useRef(false)
+	const storeSecondRequestTriggeredRef = useRef(false)
+	const storeTebexCheckoutmodalTriggeredRef = useRef(false)
+	const prevIsAuthenticated = useRef(isAuthenticated)
+	const fetcher = useFetcher()
 	const switchForm = () => {
 		setIsLoginForm(!isLoginForm)
 	}
 
-	const { isAuthenticated, isSteamLinked, steamId, username } =
-		useLoaderData<LoaderData>()
-	const fetcher = useFetcher()
+	const [didBasketExist] = useState(basketId ? true : false)
 
 	/**
 	 * Handles the logout action by submitting a POST request to the "/logout" endpoint.
@@ -65,24 +77,137 @@ const AuthForms: React.FC = () => {
 		fetcher.submit({}, { method: 'post', action: '/logout' })
 	}
 
-	useEffect(() => {
-		const handleMessage = (event: {
-			origin: string
-			data: { type: string }
-		}) => {
-			if (event.origin !== window.location.origin) return
 
-			if (event.data?.type === 'steam-auth-success') {
-				// Fetch the updated session data
-				revalidate() // This re-triggers the loader
+
+	function useTebexCheckout(checkoutId: string, theme: 'light' | 'dark') {
+		if (window.Tebex) {
+		const config = {
+			ident: checkoutId,
+			theme: theme,
+		  };
+		  window.Tebex.checkout.init(config);
+		  window.Tebex.checkout.launch();
+		}
+	}
+
+	const initiateCheckout = () => {
+		if (packages && basketId && isAuthorized) {
+			console.log('Checkout launching...')
+			useTebexCheckout(basketId, 'dark')
+		}
+	}
+
+	useEffect(() => {
+		if (
+			isOpen &&
+			basketId &&
+			isAuthorized &&
+			packages &&
+			!storeTebexCheckoutmodalTriggeredRef.current
+		) {
+			// setup some onload thing later that calls initiate checkout
+			if (basketId) {
+			console.log('checkout initiated')
+				initiateCheckout()
 			}
 		}
+	}, [isOpen, isAuthorized, basketId, packages, initiateCheckout])
 
-		window.addEventListener('message', handleMessage)
-		return () => {
-			window.removeEventListener('message', handleMessage)
+	useEffect(() => {
+		const authorizationStatus = isAuthenticated && isOnboarded && isSteamLinked
+		setIsAuthorized(authorizationStatus)
+		console.log('Authorization status updated:', authorizationStatus)
+
+		// Reset store request trigger if logged out
+		if (!isAuthenticated && prevIsAuthenticated.current) {
+			storeRequestTriggeredRef.current = false
+			console.log('User logged out, reset store request trigger.')
 		}
-	}, [revalidate])
+		prevIsAuthenticated.current = isAuthenticated
+	}, [isAuthenticated, isOnboarded, isSteamLinked])
+
+	useEffect(() => {
+		// Trigger store request if all conditions are met and it has not been done before
+		if (
+			isOpen &&
+			isAuthorized &&
+			!storeRequestTriggeredRef.current &&
+			storeSecondRequestTriggeredRef
+		) {
+			if (!packages.some(pkg => pkg.id === 6154841)) {
+				// Determine the correct action based on whether a basketId exists if package 6154841 is not in the packages array
+				const action = didBasketExist ? '/store/add' : '/store/create'
+				console.log(`Triggering store request to ${action}...`)
+				fetcher.submit(null, { method: 'post', action })
+			} else {
+				console.log('Package already in basket, skipping store request.')
+				initiateCheckout
+			}
+
+			storeRequestTriggeredRef.current = true
+		} else if (!isOpen) {
+			// Clean up if modal is closed
+			storeRequestTriggeredRef.current = false
+			storeTebexCheckoutmodalTriggeredRef.current = false
+			console.log('Modal closed, cleaning up store request trigger.')
+		}
+	}, [
+		isOpen,
+		isAuthorized,
+		storeRequestTriggeredRef,
+		storeSecondRequestTriggeredRef,
+		packages,
+		didBasketExist,
+		fetcher,
+	])
+
+	useEffect(() => {
+		// Only attempt to add a package to the basket if the basket was created successfully for the first time
+		if (
+			isOpen &&
+			!didBasketExist &&
+			basketId &&
+			isAuthorized &&
+			packages &&
+			!storeSecondRequestTriggeredRef.current
+		) {
+			// Attempt to add package to newly created basket here
+			fetcher.submit(null, { method: 'post', action: '/store/add' })
+			storeSecondRequestTriggeredRef.current = true
+		}
+	}, [
+		isOpen,
+		isAuthorized,
+		didBasketExist,
+		basketId,
+		packages,
+		fetcher,
+		storeSecondRequestTriggeredRef,
+	])
+
+	// //~utilities/tebexjs.ts
+	//	useExternalScript('https://js.tebex.io/v1.0.0.js');
+
+	// useEffect(() => {
+	// 	// Only attempt to add launch tebex checkout if the basket exists and a package is added (after authorization)
+	// 	if (
+	// 		isOpen &&
+	// 		basketId &&
+	// 		isAuthorized &&
+	// 		!storeTebexCheckoutmodalTriggeredRef.current
+	// 	) {
+	// 		console.log('AWERRWERWREW');
+	// 		useTebexCheckout(basketId, 'dark');
+	// 		storeTebexCheckoutmodalTriggeredRef.current = true
+	// 	}
+	// }, [
+	// 	isOpen,
+	// 	isAuthorized,
+	// 	didBasketExist,
+	// 	basketId,
+	// 	fetcher,
+	// 	storeTebexCheckoutmodalTriggeredRef,
+	// ])
 
 	return (
 		<>

@@ -4,9 +4,25 @@ import {
 	json,
 	type LoaderFunction,
 } from '@remix-run/node'
-import { getSession } from '~/auth/storage.server' // Make sure this matches your file structure
+import { ExternalScriptsHandle } from 'remix-utils/external-scripts'
+import { getSession, storeCookie } from '~/auth/storage.server' // Make sure this matches your file structure
 import { StoreHeader } from '~/components/templates/store'
 import '~/styles/store.css'
+import type { BasketPackage } from '~/utils/tebex.interface'
+
+export type LoaderData = {
+	isAuthenticated: boolean
+	userToken: string | null
+	isSteamLinked: boolean
+	steamId: number | null
+	uid: number | null
+	email: string | null
+	username: string | null
+	isOnboarded: boolean
+	basketId: string | null // Assuming basketId is a string, null if not present
+	packages: BasketPackage[] | []
+	checkoutUrl: string | null
+}
 
 export const meta: MetaFunction = () => {
 	return [
@@ -32,21 +48,108 @@ export const links: LinksFunction = () => {
 	]
 }
 
+export let handle: ExternalScriptsHandle = {
+	scripts: [
+	  {
+		src: "/1.0.0.js", // Updated to point to your local file
+		crossOrigin: "anonymous",
+		preload: true,
+	  },
+	],
+  };
+
+
+// Function to load the basket ID from the cookie
+async function loadBasketId(
+	cookieHeader: string | null,
+): Promise<string | null> {
+	if (!cookieHeader) {
+		return null // Early return if no cookie header is present
+	}
+
+	try {
+		let storeCookies = (await storeCookie.parse(cookieHeader)) || {}
+		// Ensure it does not return NaN if conversion fails
+		const basketId = storeCookies.basketId
+			? String(storeCookies.basketId)
+			: null
+		return basketId
+	} catch (error) {
+		console.error('Error parsing store cookie:', error)
+		return null // Return null if parsing fails
+	}
+}
+
+// Function to load the packages from the cookie
+async function loadPackages(
+	cookieHeader: string | null,
+): Promise<BasketPackage[] | null> {
+	if (!cookieHeader) {
+		return null // Early return if no cookie header is present
+	}
+
+	try {
+		let storeCookies = (await storeCookie.parse(cookieHeader)) || {}
+		const packages = storeCookies.packages ? storeCookies.packages : []
+		return packages
+	} catch (error) {
+		console.error('Error parsing store cookie:', error)
+		return null // Return null if parsing fails
+	}
+}
+
+// Function to load the basket ID from the cookie
+async function loadCheckoutUrl(
+	cookieHeader: string | null,
+): Promise<string | null> {
+	if (!cookieHeader) {
+		return null // Early return if no cookie header is present
+	}
+
+	try {
+		let storeCookies = (await storeCookie.parse(cookieHeader)) || {}
+		const checkoutUrl = storeCookies.checkoutUrl
+			? String(storeCookies.checkoutUrl)
+			: null
+		return checkoutUrl
+	} catch (error) {
+		console.error('Error parsing store cookie:', error)
+		return null // Return null if parsing fails
+	}
+}
+
+// Function to get user data from session
+async function getData(cookieHeader: string | null): Promise<LoaderData> {
+	const session = await getSession(cookieHeader)
+	const basketId = await loadBasketId(cookieHeader)
+	const checkoutUrl = await loadCheckoutUrl(cookieHeader)
+	const packages = await loadPackages(cookieHeader)
+
+	return {
+		isAuthenticated: session.has('userToken'),
+		userToken: session.get('userToken') ?? null,
+		uid: session.get('uid') ?? null,
+		email: session.get('email') ?? null,
+		isSteamLinked: session.has('steamId'),
+		steamId: session.get('steamId') ?? null,
+		isOnboarded: session.has('username'),
+		username: session.get('username') ?? null,
+		basketId: basketId ?? null,
+		packages: packages ?? [],
+		checkoutUrl: checkoutUrl ?? null,
+	}
+}
+
 /**
  * Retrieves the necessary data for the store route.
  * @param request - The incoming request object.
  * @returns An object containing information about the user's authentication status, user token, Steam linking status, Steam ID, and onboarding status.
  */
 export const loader: LoaderFunction = async ({ request }) => {
-	const session = await getSession(request.headers.get('Cookie'))
-	return json({
-		isAuthenticated: session.has('userToken'),
-		userToken: session.get('userToken') ?? null,
-		isSteamLinked: session.has('steamId'),
-		steamId: session.get('steamId') ?? null,
-		isOnboarded: session.has('username'),
-		username: session.get('username') ?? null,
-	})
+	const cookieHeader = request.headers.get('Cookie')
+	const data = await getData(cookieHeader)
+
+	return json(data) // Include basketId in the response
 }
 
 /**

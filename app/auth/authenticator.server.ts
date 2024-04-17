@@ -5,6 +5,7 @@ const apiBase = 'https://api.imperfectgamers.org'
 
 type User = {
 	email: string
+	uid?: number
 	userToken?: string
 }
 
@@ -37,7 +38,10 @@ async function authenticateUser(
 			const data = await response.json()
 			// For simplicity, returning a simplified user object
 			if (response.ok) {
-				return { status: 'success', data: { email, userToken: data.token } }
+				return {
+					status: 'success',
+					data: { email, userToken: data.token, uid: data.uid },
+				}
 			} else if (response.status === 404) {
 				return { status: 'error', message: 'User not found' }
 			} else if (response.status === 500) {
@@ -106,12 +110,14 @@ export async function login(request: Request) {
 		}
 
 		const session = await getSession()
-		if (user.data?.userToken) {
+		if (user.data?.userToken && user.data?.uid && user.data?.email) {
 			session.set('userToken', user.data.userToken)
+			session.set('uid', user.data.uid)
+			session.set('email', user.data.email)
 
 			const hasSteamAccount = await checkSteamAccount(user.data?.userToken)
 			if (hasSteamAccount.hasSteam) {
-				session.set('steamId', hasSteamAccount.steamId)
+				session.set('steamId', hasSteamAccount.steamId ?? undefined)
 			}
 
 			const onboardingDetails = await checkOnboarded(user.data?.userToken)
@@ -169,6 +175,9 @@ export async function logout(token: string) {
 			},
 		})
 		if (!response.ok) {
+			if (response.status === 401) {
+				return { ok: false, error: 'Token invalid' }
+			}
 			console.log(response.status)
 			throw new Error('Logout failed at API level')
 		}
@@ -187,7 +196,7 @@ export async function logout(token: string) {
  */
 async function checkSteamAccount(
 	token: string,
-): Promise<{ status: string; hasSteam: boolean; steamId: string }> {
+): Promise<{ status: string; hasSteam: boolean; steamId: number | null }> {
 	try {
 		// Send the request to API
 		const response = await fetch(`${apiBase}/user/verifySteam`, {
@@ -206,7 +215,7 @@ async function checkSteamAccount(
 		}
 	} catch (error) {
 		console.error(error)
-		return { status: 'error', hasSteam: false, steamId: '' }
+		return { status: 'error', hasSteam: false, steamId: null }
 	}
 }
 

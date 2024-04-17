@@ -19,14 +19,32 @@ export const action: ActionFunction = async ({ request }) => {
 		return json({ error: 'No user token found' }, { status: 400 })
 	}
 
-	const logoutResult = await logout(userToken)
-	if (logoutResult.ok) {
-		const headers = {
-			'Set-Cookie': await destroySession(session),
+	try {
+		const logoutResult = await logout(userToken)
+		if (logoutResult.ok) {
+			const headers = {
+				'Set-Cookie': await destroySession(session),
+			}
+			return json({ success: 'Logout successful' }, { headers })
+		} else if (logoutResult.error === 'Token invalid') {
+			const headers = {
+				'Set-Cookie': await destroySession(session),
+			}
+			return json(
+				{
+					success:
+						'Logout successful. Token was invalid, so session was destroyed.',
+				},
+				{ headers },
+			)
 		}
-		return json({ success: 'Logout successful' }, { headers })
-	} else {
-		alert('Failed to log out. Please try again.')
-		return json({ error: 'Logout failed' }, { status: 500 })
+	} catch (error) {
+		console.error('An error occurred during logout:', error)
+		return json({ error: 'An error occurred during logout' }, { status: 500 })
 	}
+
+	return json(
+		{ error: 'An error occurred during logout. Please try again later.' },
+		{ status: 500 },
+	)
 }
