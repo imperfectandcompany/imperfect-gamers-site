@@ -17,30 +17,21 @@ export async function action({ request }: ActionFunctionArgs) {
 			throw new Error('User does not have a basket to add a package to.')
 		}
 
-		// // Check if basketId already exists
-		// if (storeCookies.packages) {
-		// 	if (storeCookies.packages.some(pkg => pkg.id === 6154841)) {
-		// 		console.log('User already has a package added to a basket.')
-		// 		return json(
-		// 			{ error: 'User already has this package in their basket.' },
-		// 			{ status: 401 },
-		// 		)
-		// 	}
-		// }
-
-		function stripHtml(html:string) {
-			return html.replace(/<[^>]*>/g, '');
-		  }
-		  
+		// Check if basketId already exists
+		if (storeCookies.packages) {
+			if (storeCookies.packages.some(pkg => pkg.id === 6154841)) {
+				console.log('User already has a package added to a basket.')
+				return json(
+					{ error: 'User already has this package in their basket.' },
+					{ status: 401 },
+				)
+			}
+		}
 
 		console.log('Attempting to add a package to the existing basket.')
 		const packageResponse = await AddPackageToBasket(storeCookies.basketId)
 
-
-		  
-
-
-		if (packageResponse && packageResponse.packages) {
+		if (packageResponse && packageResponse.packages && packageResponse.links.checkout) {
 			// Simplify package details
 			const strippedPackages = packageResponse.packages.map((pkg) => {
 				return {
@@ -48,14 +39,16 @@ export async function action({ request }: ActionFunctionArgs) {
 					description: '', // Empty out the description field
 				};
 			});
-		  
-			console.log('Simplified packages:', JSON.stringify(strippedPackages));
+
+			const checkoutUrl = packageResponse.links.checkout;
 		  
 			// Store simplified data in the cookie
 			storeCookies.packages = strippedPackages;
+			storeCookies.checkoutUrl = checkoutUrl;
 			const serializedCookie = await storeCookie.serialize(storeCookies);
+
 			  // Set cookie or return response
-			return json({ packages: strippedPackages }, {
+			return json({ packages: strippedPackages, checkoutUrl: checkoutUrl }, {
 				headers: {
 				"Set-Cookie": serializedCookie
 				}

@@ -80,11 +80,18 @@ const inBasketSchema = z.object({
   
 
 // Define the schema for the store cookie
+const basket = baseItemSchema.extend({
+	description: z.string(),
+	in_basket: inBasketSchema,
+	image: z.string().nullable(),
+});
+
+// Define the schema for the store cookie
 const storeCookieSchema = z.object({
 	basketId: z.string().optional(),
-	packages: z.array(z.unknown()).optional(),
+	packages: z.array(basket).optional(),
+	checkoutUrl: z.string().url().optional(),
 }).default({});
-  
 
 export const storeCookie = createTypedCookie({
     cookie: createCookie("user-store", {

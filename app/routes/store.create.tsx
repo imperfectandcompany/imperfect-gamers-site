@@ -35,7 +35,7 @@ export let action: ActionFunction = async ({ request }) => {
 
 // Check if basketId already exists
 if (storeCookies.basketId) {
-    console.log('User already has a package added to a basket.');
+    console.log('User already has a basket.');
 	return json({ error: ERROR_MESSAGES.basket }, { status: 401 });
 }
 

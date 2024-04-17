@@ -7,8 +7,7 @@ import AuthorizeForm from '~/components/molecules/AuthorizeForm'
 import LoginForm from '~/components/molecules/LoginForm'
 import SignUpForm from '~/components/molecules/SignUpForm'
 import { LoaderData } from '~/routes/store'
-import { storeCookie } from '~/auth/storage.server';
-
+import { storeCookie } from '~/auth/storage.server'
 
 // TODO update docs for this
 interface AuthFormProps {
@@ -53,23 +52,28 @@ const AuthForms: React.FC<AuthFormProps> = ({ isOpen }) => {
 		isOnboarded,
 		uid,
 		username,
-		basketId
+		basketId,
+		packages,
 	} = useLoaderData<LoaderData>()
 	const [isLoginForm, setIsLoginForm] = useState(true)
 	const [isAuthorized, setIsAuthorized] = useState(false)
 	const storeRequestTriggeredRef = useRef(false)
+	const storeSecondRequestTriggeredRef = useRef(false)
 	const prevIsAuthenticated = useRef(isAuthenticated)
 	const fetcher = useFetcher()
 	const switchForm = () => {
 		setIsLoginForm(!isLoginForm)
 	}
+
+	const [didBasketExist] = useState(basketId ? true : false);
+	const [basketCreated, setBasketCreated] = useState(false)
+
 	/**
 	 * Handles the logout action by submitting a POST request to the "/logout" endpoint.
 	 */
 	const handleLogout = () => {
 		fetcher.submit({}, { method: 'post', action: '/logout' })
 	}
-
 
 	useEffect(() => {
 		const authorizationStatus = isAuthenticated && isOnboarded && isSteamLinked
@@ -85,15 +89,19 @@ const AuthForms: React.FC<AuthFormProps> = ({ isOpen }) => {
 	}, [isAuthenticated, isOnboarded, isSteamLinked])
 
 	useEffect(() => {
+		// Trigger store request if all conditions are met and it has not been done before
 		if (isOpen && isAuthorized && !storeRequestTriggeredRef.current) {
-			// Trigger store request if all conditions are met and it has not been done before
-			console.log('Triggering store request...')
-
-			// Determine the correct action based on whether a basketId exists
-			const action = basketId ? '/store/add' : '/store/create'
-			// NOTE NOTE NOTE !!! BASKETID CURRENTLY DOES NOT EXIST
-			console.log(`Triggering store request to ${action}...`)
-			fetcher.submit(null, { method: 'post', action })
+			if (!packages.some(pkg => pkg.id === 6154841)) {
+				// Determine the correct action based on whether a basketId exists if package 6154841 is not in the packages array
+				const action = didBasketExist ? '/store/add' : '/store/create'
+				console.log(`Triggering store request to ${action}...`)
+				fetcher.submit(null, { method: 'post', action })
+				console.log('isOpen:', isOpen)
+				console.log('didBasketExist:', didBasketExist)
+				console.log('basketCreated:', basketId)
+				console.log('isAuthorized:', isAuthorized)
+				console.log('storeSecondRequestTriggered:', storeSecondRequestTriggeredRef.current)
+			}
 
 			storeRequestTriggeredRef.current = true
 		} else if (!isOpen) {
@@ -101,7 +109,29 @@ const AuthForms: React.FC<AuthFormProps> = ({ isOpen }) => {
 			storeRequestTriggeredRef.current = false
 			console.log('Modal closed, cleaning up store request trigger.')
 		}
-	}, [isOpen, isAuthorized, fetcher, uid]);
+	}, [isOpen, isAuthorized, fetcher, uid])
+
+	useEffect(() => {
+		console.log('second request function triggered')
+		console.log('isOpen:', isOpen)
+		console.log('didBasketExist:', didBasketExist)
+		console.log('basketCreated:', basketId)
+		console.log('isAuthorized:', isAuthorized)
+		console.log('storeSecondRequestTriggered:', storeSecondRequestTriggeredRef.current)
+
+		// Only attempt to add a package to the basket if the basket was created successfully for the first time
+		if (isOpen && !didBasketExist && basketId && isAuthorized && !storeSecondRequestTriggeredRef.current) {
+		console.log('second request function nest entered')
+
+		  // Attempt to add package to newly created basket here
+		  fetcher.submit(
+			null,
+			{ method: 'post', action: '/store/add' }
+		  );
+			storeSecondRequestTriggeredRef.current = true
+		}
+	  }, [isAuthorized, fetcher, uid, basketCreated]);
+	
 
 	return (
 		<>

@@ -26,6 +26,7 @@ export type LoaderData = {
 	isOnboarded: boolean
 	basketId: string | null // Assuming basketId is a string, null if not present
 	packages: BasketPackage[] | []
+	checkoutUrl: string | null
 }
 
 export const meta: MetaFunction = () => {
@@ -76,16 +77,35 @@ async function loadBasketId(
 // Function to load the packages from the cookie
 async function loadPackages(
 	cookieHeader: string | null,
-): Promise<any | null> {
+): Promise<BasketPackage[] | null> {
 	if (!cookieHeader) {
 		return null // Early return if no cookie header is present
 	}
 
 	try {
 		let storeCookies = (await storeCookie.parse(cookieHeader)) || {}
-		// Ensure it does not return NaN if conversion fails
 		const packages = storeCookies.packages ? storeCookies.packages : []
 		return packages
+	} catch (error) {
+		console.error('Error parsing store cookie:', error)
+		return null // Return null if parsing fails
+	}
+}
+
+// Function to load the basket ID from the cookie
+async function loadCheckoutUrl(
+	cookieHeader: string | null,
+): Promise<string | null> {
+	if (!cookieHeader) {
+		return null // Early return if no cookie header is present
+	}
+
+	try {
+		let storeCookies = (await storeCookie.parse(cookieHeader)) || {}
+		const checkoutUrl = storeCookies.checkoutUrl
+			? String(storeCookies.checkoutUrl)
+			: null
+		return checkoutUrl
 	} catch (error) {
 		console.error('Error parsing store cookie:', error)
 		return null // Return null if parsing fails
@@ -96,8 +116,8 @@ async function loadPackages(
 async function getData(cookieHeader: string | null): Promise<LoaderData> {
 	const session = await getSession(cookieHeader)
 	const basketId = await loadBasketId(cookieHeader)
+	const checkoutUrl = await loadCheckoutUrl(cookieHeader)
 	const packages = await loadPackages(cookieHeader)
-
 
 	return {
 		isAuthenticated: session.has('userToken'),
@@ -110,6 +130,7 @@ async function getData(cookieHeader: string | null): Promise<LoaderData> {
 		username: session.get('username') ?? null,
 		basketId: basketId ?? null,
 		packages: packages ?? [],
+		checkoutUrl: checkoutUrl ?? null,
 	}
 }
 
