@@ -51,20 +51,23 @@ export async function AddPackageToBasket(
     basketIdent: string, 
     variable_data?: KeyValuePair<string, any>
 ): Promise<Basket> {
+	console.info('Making API call to add package to basket...');
+
     try {
-		let packageId=6154841;
+		let package_id=6154841;
 		let quantity=1;
 		let type='subscription';
 		const { data }: Data<Basket> = await Request("POST", basketIdent, "baskets", "/packages", {}, {
-			packageId,
+			package_id,
 			quantity,
 			type,
-			variable_data
+			variable_data: {
+				discord_id: 0o0,
+			},
 		})
         return data;
-    } catch (error) {
-        console.error("Failed to add package to basket:", error);
-        throw new Error('Failed to process the request');
+	} catch (error) {
+		throw new Error('Failed to process the request');
     }
 }
 
@@ -82,21 +85,22 @@ export async function Request<T>(
         url.searchParams.append(key, value);
     });
 
-    const headers: Record<string, string> = {
-        'Content-Type': 'application/json',
-        'Authorization': `Basic ${btoa(`${TEBEX_WEBSTORE_IDENTIFIER}:${TEBEX_SECRET_KEY}`)}`
-    };
+	console.log(JSON.stringify(body));
 
-    const response = await fetch(url.toString(), {
-        method,
-        headers,
-        body: JSON.stringify(body),
-    });
+	const headers: Record<string, string> = {
+		'Content-Type': 'application/json',
+		'Authorization': `Basic ${btoa(`${TEBEX_WEBSTORE_IDENTIFIER}:${TEBEX_SECRET_KEY}`)}`
+	};
 
-    if (!response.ok) {
-        console.error(`Request failed: ${response.statusText}`);
-        throw new Error(`Request failed: ${response.statusText}`);
-    }
+	const response = await fetch(url.toString(), {
+		method,
+		headers,
+		body: JSON.stringify(body),
+	});
+	console.log(response);
+	if (!response.ok) {
+		throw new Error(`Request failed: ${response.statusText}`);
+	}
 
     return response.json();
 }
