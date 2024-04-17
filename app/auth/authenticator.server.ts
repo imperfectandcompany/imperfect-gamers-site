@@ -167,28 +167,27 @@ export async function registerUser(email: string, password: string) {
  */
 export async function logout(token: string) {
 	try {
-	  const response = await fetch(`${apiBase}/logout`, {
-		method: 'POST',
-		headers: {
-		  authorization: `${token}`,
-		  'Content-Type': 'application/json',
-		},
-	  });
-	  if (!response.ok) {
-		if (response.status === 401) {
-		  return { ok: false, error: 'Token invalid' };
+		const response = await fetch(`${apiBase}/logout`, {
+			method: 'POST',
+			headers: {
+				authorization: `${token}`,
+				'Content-Type': 'application/json',
+			},
+		})
+		if (!response.ok) {
+			if (response.status === 401) {
+				return { ok: false, error: 'Token invalid' }
+			}
+			console.log(response.status)
+			throw new Error('Logout failed at API level')
 		}
-		console.log(response.status);
-		throw new Error('Logout failed at API level');
-	  }
-  
-	  return { ok: true };
+
+		return { ok: true }
 	} catch (error) {
-	  console.error('Logout error:', error);
-	  return { ok: false };
+		console.error('Logout error:', error)
+		return { ok: false }
 	}
-  }
-  
+}
 
 /**
  * Checks the Steam account associated with the provided token.
@@ -197,7 +196,7 @@ export async function logout(token: string) {
  */
 async function checkSteamAccount(
 	token: string,
-): Promise<{ status: string; hasSteam: boolean; steamId: (number | null)}> {
+): Promise<{ status: string; hasSteam: boolean; steamId: number | null }> {
 	try {
 		// Send the request to API
 		const response = await fetch(`${apiBase}/user/verifySteam`, {

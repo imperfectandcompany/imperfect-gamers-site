@@ -3,17 +3,11 @@ import {
 	type LinksFunction,
 	json,
 	type LoaderFunction,
-	ActionFunction,
-	createCookie,
 } from '@remix-run/node'
 import { getSession, storeCookie } from '~/auth/storage.server' // Make sure this matches your file structure
 import { StoreHeader } from '~/components/templates/store'
 import '~/styles/store.css'
-import { AddPackageToBasket, createTebexBasket } from '~/utils/tebex.server'
-import { getClientIPAddress } from 'remix-utils/get-client-ip-address'
-import { namedAction } from 'remix-utils/named-action'
-import { z } from 'zod'
-import { BasketPackage } from '~/utils/tebex.interface'
+import type { BasketPackage } from '~/utils/tebex.interface'
 
 export type LoaderData = {
 	isAuthenticated: boolean

@@ -4,8 +4,7 @@ import Button from '~/components/atoms/Button/Button'
 import AuthForms from '~/components/organism/AuthForms/AuthForms'
 import { MembershipCard } from '~/components/organism/MembershipCard/MembershipCard'
 import ModalWrapper from '~/components/organism/ModalWrapper/ModalWrapper'
-import { LoaderData } from '~/routes/store'
-
+import type { LoaderData } from '~/routes/store'
 
 /**
  * Renders the header component for the store page.

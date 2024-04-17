@@ -39,6 +39,8 @@ export async function verifySteamAssertion(
 	// and optionally verifying a signature for security
 
 	// For simplicity, this is just a placeholder
-	const steamId = query.get('openidClaimedId')?.replace('https://steamcommunity.com/openid/id/', '');
-	return steamId ? parseInt(steamId, 10) : null;
+	const steamId = query
+		.get('openidClaimedId')
+		?.replace('https://steamcommunity.com/openid/id/', '')
+	return steamId ? parseInt(steamId, 10) : null
 }

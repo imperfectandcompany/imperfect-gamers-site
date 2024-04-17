@@ -1,8 +1,7 @@
 // @/app/auth/storage.server.ts
-import { createCookieSessionStorage } from '@remix-run/node'
-import { createCookie } from '@remix-run/node'
+import { createCookieSessionStorage, createCookie } from '@remix-run/node'
 import { createTypedCookie } from 'remix-utils/typed-cookie'
-import { z } from "zod";
+import { z } from 'zod'
 
 /**
  * Represents the session data for a user.
@@ -63,43 +62,43 @@ export const sessionStorage = createCookieSessionStorage<SessionData>({
 
 export const { getSession, commitSession, destroySession } = sessionStorage
 
-
 // Define the schema for the in-basket object
 const inBasketSchema = z.object({
 	quantity: z.number(),
 	price: z.number(),
 	gift_username_id: z.string().nullable(), // Use nullable for null values
 	gift_username: z.string().nullable(),
-  });
-  
-  // Define the base schema for an item
-  const baseItemSchema = z.object({
+})
+
+// Define the base schema for an item
+const baseItemSchema = z.object({
 	id: z.number(),
 	name: z.string(),
-  });
-  
+})
 
 // Define the schema for the store cookie
 const basket = baseItemSchema.extend({
 	description: z.string(),
 	in_basket: inBasketSchema,
 	image: z.string().nullable(),
-});
+})
 
 // Define the schema for the store cookie
-const storeCookieSchema = z.object({
-	basketId: z.string().optional(),
-	packages: z.array(basket).optional(),
-	checkoutUrl: z.string().url().optional(),
-}).default({});
+const storeCookieSchema = z
+	.object({
+		basketId: z.string().optional(),
+		packages: z.array(basket).optional(),
+		checkoutUrl: z.string().url().optional(),
+	})
+	.default({})
 
 export const storeCookie = createTypedCookie({
-    cookie: createCookie("user-store", {
-        path: "/store",
-        secrets: ["n3wsecr3t", "olds3cret"],
-        sameSite: "strict",
-        httpOnly: true,
+	cookie: createCookie('user-store', {
+		path: '/store',
+		secrets: ['n3wsecr3t', 'olds3cret'],
+		sameSite: 'strict',
+		httpOnly: true,
 		secure: process.env.NODE_ENV === 'production',
-    }),
-    schema: storeCookieSchema,
-});
+	}),
+	schema: storeCookieSchema,
+})

@@ -1,6 +1,4 @@
 import { type LinksFunction } from '@remix-run/node'
-import rdtStylesheet from "remix-development-tools/index.css"; 
-
 import {
 	Links,
 	Meta,
