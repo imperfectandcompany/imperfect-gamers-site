@@ -24,7 +24,7 @@ export let action: ActionFunction = async ({ request }) => {
         } else {
             return json({
                 success: true,
-                message: 'User change completed successfully.'
+                message: 'User registration completed successfully.'
             });
         }
     } catch (error) {
