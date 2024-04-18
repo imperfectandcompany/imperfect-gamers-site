@@ -17,6 +17,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 	// Verify the Steam assertion
 	const steamId = await verifySteamAssertion(url.toString(), url.searchParams)
+	console.log(steamId);
 
 	if (!steamId) {
 		// Handle error or redirect to an error page

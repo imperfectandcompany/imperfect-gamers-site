@@ -84,8 +84,8 @@ const UsernameForm: React.FC = () => {
                     required={true}
                 />
                 {usernameStatus && (
-                    <div id="usernameStatus" className={`text-sm ${usernameStatus.includes("taken") ? 'text-red-500' : usernameStatus.includes("short") ? 'text-yellow-500' : 'text-green-500'}`}>
-                        {usernameStatus}
+                    <div id="usernameStatus" className={`text-sm ${fetcher.state === 'submitting' ? 'text-gray-500' : usernameStatus.includes("taken") ? 'text-red-500' : usernameStatus.includes("short") ? 'text-yellow-500' : 'text-green-500'}`}>
+                        {fetcher.state === 'submitting' ? 'Checking': usernameStatus}
                     </div>
                 )}
                 <Button type="submit">{fetcher.state === 'submitting' ? 'Checking...' : 'Continue'}</Button>

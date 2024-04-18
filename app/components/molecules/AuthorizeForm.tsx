@@ -8,6 +8,7 @@ import { generateSteamLoginURL } from '~/utils/steamAuth'
 const AuthorizeForm: React.FC = () => {
 	const [showFallback, setShowFallback] = useState(false)
 	const [fallbackUrl, setFallbackUrl] = useState('')
+	const [steamPopupOpened, setSteamPopupOpened] = useState(false)
 
 	/**
 	 * Initiates the process of linking the Steam account.
@@ -31,16 +32,19 @@ const AuthorizeForm: React.FC = () => {
 				)
 				if (!steamPopup) {
 					setShowFallback(true)
+				setSteamPopupOpened(false)
 					setFallbackUrl(data.url) // Set the fallback URL
 				}
+				setSteamPopupOpened(true)
 			} else {
 				alert('Failed to initiate Steam linking. Please try again.')
 			}
 		} catch (error) {
 			console.error('Failed to fetch Steam linking URL', error)
 			setShowFallback(true)
+			setSteamPopupOpened(false)
 			const returnURL = '' // Declare the variable returnURL
-			setFallbackUrl(await generateSteamLoginURL(returnURL)) // Implement this function to get the Steam login URL on the client side if needed
+			setFallbackUrl(await generateSteamLoginURL(returnURL)) // Implement this function to get the Steam login URL on the client side if needed (TODO)
 		}
 	}
 
@@ -62,7 +66,13 @@ const AuthorizeForm: React.FC = () => {
 					</p>
 				</div>
 			) : null}
-			<Button onClick={initiateSteamLinking}>Link Steam Account</Button>
+
+			{steamPopupOpened ? ( /* TODO list to when window is closed to set popup open to closed. */
+				<p>
+					Please link your Steam account in the popup window. If the popup
+					didn&apos;t open, click the link below.
+				</p>
+			) : <Button onClick={initiateSteamLinking}>Link Steam Account</Button>}
 		</div>
 	)
 }

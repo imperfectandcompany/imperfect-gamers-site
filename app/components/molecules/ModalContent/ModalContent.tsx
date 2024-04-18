@@ -6,7 +6,9 @@ import Paragraph from '~/components/atoms/Paragraph/Paragraph'
 
 type ModalContentProps = {
 	title: string
+	header?: ReactNode
 	content: ReactNode
+	footer?: ReactNode
 	isOpen?: boolean
 }
 
@@ -23,17 +25,22 @@ type ModalContentProps = {
  */
 const ModalContent: React.FC<ModalContentProps> = ({
 	title,
+	header,
 	content,
+	footer,
 	isOpen,
 }) => {
 	return (
 		<div>
-			<Heading>{title}</Heading>
+			{/** TODO setup standard header for modals with fall backs */}
+			{header ? <div className="mb-4">{header}</div> : <Heading>{title}</Heading>}			
 			{typeof content === 'string' ? (
 				<Paragraph>{content}</Paragraph>
 			) : React.isValidElement(content) ? (
 				React.cloneElement(content as React.ReactElement<any>, { isOpen })
 			) : null}
+			{/** TODO setup standard footer for modals with fall backs */}
+			{footer ? footer : null}			
 		</div>
 	)
 }

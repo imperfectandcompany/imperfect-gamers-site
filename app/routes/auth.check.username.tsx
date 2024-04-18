@@ -11,7 +11,6 @@ export let action: ActionFunction = async ({ request }) => {
         return json({ error: 'Invalid username.' }, { status: 400 });
     }
 
-
 	const session = await getSession(request.headers.get('Cookie'))
 	const userToken = session.get('userToken')
 
