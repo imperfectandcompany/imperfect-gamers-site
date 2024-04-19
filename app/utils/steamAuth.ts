@@ -1,16 +1,20 @@
-// TODO: Implement Steam authentication utilities for generating login URLs and verifying user assertions.
-// Necessary for securing the application and authenticating users with Steam.
-// import { createHmac } from 'crypto';
-// import { redirect } from '@remix-run/node';
-
 // utils/steamAuth.ts
+
+// Implementation of Steam authentication utilities for generating login URLs and verifying user assertions.
+import { checkSignature } from '~/auth/steam.server'
+import { getEnvVar } from './general'
 
 /**
  * Generates the Steam login URL for authentication.
  * @param returnURL - The URL to redirect the user to after authentication.
  * @returns The Steam login URL.
  */
-export function generateSteamLoginURL(returnURL: string) {
+export function generateSteamLoginURL(returnURL: string): string {
+	const steamAuthUrl = getEnvVar(
+		'STEAM_AUTHORIZATION_URL',
+		'https://steamcommunity.com/openid/login',
+	)
+
 	const params = new URLSearchParams({
 		'openid.ns': 'http://specs.openid.net/auth/2.0',
 		'openid.mode': 'checkid_setup',
@@ -19,8 +23,8 @@ export function generateSteamLoginURL(returnURL: string) {
 		'openid.identity': 'http://specs.openid.net/auth/2.0/identifier_select',
 		'openid.claimed_id': 'http://specs.openid.net/auth/2.0/identifier_select',
 	})
-	// TODO move to ${process.env.AUTHORIZATION_URL}?${params}
-	return `${'https://steamcommunity.com/openid/login'}?${params}`
+
+	return `${steamAuthUrl}?${params}`
 }
 
 /**
@@ -34,13 +38,57 @@ export async function verifySteamAssertion(
 	returnURL: string,
 	query: URLSearchParams,
 ): Promise<number | null> {
-	// Implementation of verifying the Steam user's identity
-	// This involves checking the query parameters returned by Steam after user authentication
-	// and optionally verifying a signature for security
+	try {
+		if (!query.get('openid.mode') || query.get('openid.mode') !== 'id_res') {
+			console.error('Invalid mode in Steam response')
+			return null
+		}
 
-	// For simplicity, this is just a placeholder
-	const steamId = query
-		.get('openid.claimed_id')
-		?.replace('https://steamcommunity.com/openid/id/', '')
-	return steamId ? parseInt(steamId, 10) : null
+		const opEndpoint = query.get('openid.op_endpoint')
+		if (!opEndpoint) {
+			console.error('OpenID provider endpoint is missing')
+			return null
+		}
+
+		const verificationParams = new URLSearchParams(query.toString())
+		verificationParams.set('openid.mode', 'check_authentication')
+
+		// Send verification request
+		const verificationResponse = await fetch(opEndpoint, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/x-www-form-urlencoded',
+			},
+			body: verificationParams,
+		})
+
+		const verificationResult = await verificationResponse.text()
+		if (!verificationResult.includes('is_valid:true')) {
+			console.error('Steam OpenID validation failed')
+			return null
+		}
+
+		//const sharedSecret = getEnvVar('SHARED_SECRET')
+
+		// const sigResult = await checkSignature(query)
+
+		// if (!sigResult) {
+		// 	console.log('Invalid signature in Steam response');
+        // 	return null
+		// }
+
+		const claimedId = query.get('openid.claimed_id')
+		if (!claimedId) throw new Error('Claimed ID not found in Steam response')
+
+		// This example simply checks if the claimed_id is a proper Steam ID URL.
+		const steamIdMatch = claimedId.match(
+			/^https:\/\/steamcommunity\.com\/openid\/id\/(\d+)$/,
+		)
+		if (!steamIdMatch) throw new Error('Invalid Steam ID format')
+
+		return parseInt(steamIdMatch[1], 10)
+	} catch (error) {
+		console.error('Error verifying Steam assertion:', error)
+		return null // Return null to signify that verification has failed
+	}
 }

@@ -1,6 +1,7 @@
 // app/routes/auth/steam/callback.tsx
 import { type LoaderFunction } from '@remix-run/node'
 import { commitSession, getSession } from '~/auth/storage.server'
+import { getEnvVar } from '~/utils/general'
 import { verifySteamAssertion } from '~/utils/steamAuth'
 
 /**
@@ -33,10 +34,11 @@ export const loader: LoaderFunction = async ({ request }) => {
 		await commitSession(session)
 
 		// Send a message to the parent window
-		// TODO: Setup process.env.ORIGIN instead of * for security
+		const origin = getEnvVar('HOSTED_ORIGIN/store', 'http://localhost:5173');
+
 		const script = `
       <script>
-        window.opener.postMessage({ type: 'steam-auth-success' }, '*');
+	  window.opener.postMessage({ type: 'steam-auth-success' }, origin);
         window.close();
       </script>
     `
