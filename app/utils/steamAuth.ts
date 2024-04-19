@@ -1,7 +1,6 @@
 // utils/steamAuth.ts
 
 // Implementation of Steam authentication utilities for generating login URLs and verifying user assertions.
-import { checkSignature } from '~/auth/steam.server'
 import { getEnvVar } from './general'
 
 /**
@@ -27,6 +26,7 @@ export function generateSteamLoginURL(returnURL: string): string {
 	return `${steamAuthUrl}?${params}`
 }
 
+
 /**
  * Verifies the Steam user's assertion and returns the user's identity.
  *
@@ -44,39 +44,6 @@ export async function verifySteamAssertion(
 			return null
 		}
 
-		const opEndpoint = query.get('openid.op_endpoint')
-		if (!opEndpoint) {
-			console.error('OpenID provider endpoint is missing')
-			return null
-		}
-
-		const verificationParams = new URLSearchParams(query.toString())
-		verificationParams.set('openid.mode', 'check_authentication')
-
-		// Send verification request
-		const verificationResponse = await fetch(opEndpoint, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/x-www-form-urlencoded',
-			},
-			body: verificationParams,
-		})
-
-		const verificationResult = await verificationResponse.text()
-		if (!verificationResult.includes('is_valid:true')) {
-			console.error('Steam OpenID validation failed')
-			return null
-		}
-
-		//const sharedSecret = getEnvVar('SHARED_SECRET')
-
-		// const sigResult = await checkSignature(query)
-
-		// if (!sigResult) {
-		// 	console.log('Invalid signature in Steam response');
-        // 	return null
-		// }
-
 		const claimedId = query.get('openid.claimed_id')
 		if (!claimedId) throw new Error('Claimed ID not found in Steam response')
 
@@ -92,3 +59,6 @@ export async function verifySteamAssertion(
 		return null // Return null to signify that verification has failed
 	}
 }
+
+
+

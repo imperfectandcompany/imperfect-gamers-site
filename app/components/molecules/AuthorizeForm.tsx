@@ -3,14 +3,30 @@ import { useEffect, useState } from 'react'
 import Button from '~/components/atoms/Button/Button'
 import { generateSteamLoginURL } from '~/utils/steamAuth'
 
+// Add props interface to include an onSuccess callback
+interface AuthorizeFormProps {
+	onSuccess: () => void;
+}
+
 /**
  * Represents a form component for authorizing a Steam account.
  */
-const AuthorizeForm: React.FC = () => {
+const AuthorizeForm: React.FC<AuthorizeFormProps> = ({ onSuccess }) => {
 	const [showFallback, setShowFallback] = useState(false)
 	const [fallbackUrl, setFallbackUrl] = useState('')
 	const [steamPopupOpened, setSteamPopupOpened] = useState(false)
 	const [steamPopup, setSteamPopup] = useState<Window | null>(null)
+
+	const handleSteamLinkSuccess = () => {
+		onSuccess(); // Notify the parent component
+	  };
+	  if (typeof window !== 'undefined') {
+		window.addEventListener('message', (event) => {
+			if (event.data.type === 'steam-auth-success') {
+				handleSteamLinkSuccess();
+			}
+		});
+	}
 
 	// Function to fetch URL and open the popup
 	const initiateSteamLinking = async () => {
@@ -42,6 +58,7 @@ const AuthorizeForm: React.FC = () => {
 			setFallbackUrl(await generateSteamLoginURL(returnURL))
 		}
 	}
+
 
 	// Monitor the popup state
 	useEffect(() => {

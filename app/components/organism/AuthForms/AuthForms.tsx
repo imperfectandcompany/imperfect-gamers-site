@@ -182,10 +182,16 @@ const AuthForms: React.FC<AuthFormProps> = ({ isOpen }) => {
 		fetcher,
 		storeSecondRequestTriggeredRef,
 	])
+	
+	  // Function to handle successful Steam linking
+	  const handleSteamLinkSuccess = () => {
+		setIsAuthorized(true); // Assume other conditions are met for simplicity
+	  };
 
 	return (
 		<>
 			<div className="flex flex-col space-y-6">
+				
 				{isAuthenticated ? (
 					<>
 						{username ? (
@@ -195,7 +201,7 @@ const AuthForms: React.FC<AuthFormProps> = ({ isOpen }) => {
 									<div>Onboarded as: {username}</div>
 								</>
 							) : (
-								<AuthorizeForm />
+								<AuthorizeForm onSuccess={handleSteamLinkSuccess} />
 							)
 						) : (
 							<UsernameForm />

@@ -1,21 +1,23 @@
-// @/app/auth/steam.server.ts
-import { createHmac } from 'crypto'
-import { getEnvVar } from '~/utils/general'
+export async function directVerificationWithSteam(params: URLSearchParams): Promise<boolean> {
+    const opEndpoint = params.get('openid.op_endpoint');
+    if (!opEndpoint) {
+        return false;
+    }
 
-// Necessary for securing the application and authenticating users with Steam.
-export function checkSignature(query: URLSearchParams): boolean {
-    const signedParams = query.get('openid.signed')?.split(',')
-    if (!signedParams) return false
-    
-    const sharedSecret = getEnvVar('STEAM_SHARED_SECRET')
+    params.set('openid.mode', 'check_authentication');
+    const verificationResponse = await fetch(opEndpoint, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: params,
+    });
 
-    const signatureBaseString = signedParams
-        .map(field => `${field}:${query.get(`openid.${field}`)}`)
-        .join('\n')
-    const hmac = createHmac('sha1', sharedSecret)
-    hmac.update(signatureBaseString)
-    const ourSignature = hmac.digest('base64')
+    if (!verificationResponse.ok) {
+        console.error('Failed to post verification request to Steam.');
+        return false;
+    }
 
-    const theirSignature = query.get('openid.sig')
-    return ourSignature === theirSignature
+    const responseText = await verificationResponse.text();
+    return responseText.includes('is_valid:true');
 }
