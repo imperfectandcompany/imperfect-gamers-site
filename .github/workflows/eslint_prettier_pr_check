@@ -1,0 +1,34 @@
+name: Lint and Format Check
+
+on:
+  pull_request:
+    branches:
+      - dev
+
+jobs:
+  build:
+    name: Run ESLint and Prettier
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      # This action checks out our repository under $GITHUB_WORKSPACE, so actions can access it.
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'  # Match the version specified under "engines" in our package.json
+      # This step sets up the specified version of Node.js and adds it to PATH.
+
+    - name: Install Dependencies
+      run: npm install
+      # This step installs all dependencies declared in our package.json.
+
+    - name: Run ESLint
+      run: npm run lint
+      # This step utilizes the existing npm script 'lint' that handles the ESLint checks.
+
+    - name: Run Prettier Check
+      run: npx prettier --check .
+      # Directly using Prettier check to ensure all files are formatted correctly without making changes.
