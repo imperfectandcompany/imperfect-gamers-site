@@ -6,10 +6,8 @@ import { useEffect, useRef, useState } from 'react'
 import AuthorizeForm from '~/components/molecules/AuthorizeForm'
 import LoginForm from '~/components/molecules/LoginForm'
 import SignUpForm from '~/components/molecules/SignUpForm'
+import UsernameForm from '~/components/molecules/UsernameForm'
 import type { LoaderData } from '~/routes/store'
-import type { TebexWindow } from '~/utils/tebex.interface'
-import useExternalScript, { handle } from '~/utils/tebexjs'
-import { useTebexCheckout } from '~/utils/useTebexCheckout'
 
 // TODO update docs for this
 interface AuthFormProps {
@@ -55,7 +53,6 @@ const AuthForms: React.FC<AuthFormProps> = ({ isOpen }) => {
 		username,
 		basketId,
 		packages,
-		checkoutUrl,
 	} = useLoaderData<LoaderData>()
 	const [isLoginForm, setIsLoginForm] = useState(true)
 	const [isAuthorized, setIsAuthorized] = useState(false)
@@ -77,23 +74,21 @@ const AuthForms: React.FC<AuthFormProps> = ({ isOpen }) => {
 		fetcher.submit({}, { method: 'post', action: '/logout' })
 	}
 
-
-
-	function useTebexCheckout(checkoutId: string, theme: 'light' | 'dark') {
+	function UseTebexCheckout(checkoutId: string, theme: 'light' | 'dark') {
 		if (window.Tebex) {
-		const config = {
-			ident: checkoutId,
-			theme: theme,
-		  };
-		  window.Tebex.checkout.init(config);
-		  window.Tebex.checkout.launch();
+			const config = {
+				ident: checkoutId,
+				theme: theme,
+			}
+			window.Tebex.checkout.init(config)
+			window.Tebex.checkout.launch()
 		}
 	}
 
 	const initiateCheckout = () => {
 		if (packages && basketId && isAuthorized) {
 			console.log('Checkout launching...')
-			useTebexCheckout(basketId, 'dark')
+			UseTebexCheckout(basketId, 'dark')
 		}
 	}
 
@@ -107,7 +102,7 @@ const AuthForms: React.FC<AuthFormProps> = ({ isOpen }) => {
 		) {
 			// setup some onload thing later that calls initiate checkout
 			if (basketId) {
-			console.log('checkout initiated')
+				console.log('checkout initiated')
 				initiateCheckout()
 			}
 		}
@@ -141,7 +136,7 @@ const AuthForms: React.FC<AuthFormProps> = ({ isOpen }) => {
 				fetcher.submit(null, { method: 'post', action })
 			} else {
 				console.log('Package already in basket, skipping store request.')
-				initiateCheckout
+				initiateCheckout()
 			}
 
 			storeRequestTriggeredRef.current = true
@@ -185,44 +180,27 @@ const AuthForms: React.FC<AuthFormProps> = ({ isOpen }) => {
 		storeSecondRequestTriggeredRef,
 	])
 
-	// //~utilities/tebexjs.ts
-	//	useExternalScript('https://js.tebex.io/v1.0.0.js');
-
-	// useEffect(() => {
-	// 	// Only attempt to add launch tebex checkout if the basket exists and a package is added (after authorization)
-	// 	if (
-	// 		isOpen &&
-	// 		basketId &&
-	// 		isAuthorized &&
-	// 		!storeTebexCheckoutmodalTriggeredRef.current
-	// 	) {
-	// 		console.log('AWERRWERWREW');
-	// 		useTebexCheckout(basketId, 'dark');
-	// 		storeTebexCheckoutmodalTriggeredRef.current = true
-	// 	}
-	// }, [
-	// 	isOpen,
-	// 	isAuthorized,
-	// 	didBasketExist,
-	// 	basketId,
-	// 	fetcher,
-	// 	storeTebexCheckoutmodalTriggeredRef,
-	// ])
+	// Function to handle successful Steam linking
+	const handleSteamLinkSuccess = () => {
+		setIsAuthorized(true) // Assume other conditions are met for simplicity
+	}
 
 	return (
 		<>
 			<div className="flex flex-col space-y-6">
 				{isAuthenticated ? (
 					<>
-						{isSteamLinked ? (
-							<div>Steam Linked with ID: {steamId}</div>
-						) : (
-							<AuthorizeForm />
-						)}
 						{username ? (
-							<div>Onboarded as: {username}</div>
+							isSteamLinked ? (
+								<>
+									<div>Steam Linked with ID: {steamId}</div>
+									<div>Onboarded as: {username}</div>
+								</>
+							) : (
+								<AuthorizeForm onSuccess={handleSteamLinkSuccess} />
+							)
 						) : (
-							'User not onboarded'
+							<UsernameForm />
 						)}
 					</>
 				) : isLoginForm ? (
@@ -235,7 +213,7 @@ const AuthForms: React.FC<AuthFormProps> = ({ isOpen }) => {
 				<div>
 					{isAuthenticated ? (
 						<>
-							You are currently signed{' in as ' + username || '.'}.
+							You are currently signed in{username ? ' as ' + username : ''}.
 							<button onClick={handleLogout} className="ml-1 underline">
 								Log out
 							</button>
