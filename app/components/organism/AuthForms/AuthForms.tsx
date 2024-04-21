@@ -53,7 +53,6 @@ const AuthForms: React.FC<AuthFormProps> = ({ isOpen }) => {
 		username,
 		basketId,
 		packages,
-		checkoutUrl,
 	} = useLoaderData<LoaderData>()
 	const [isLoginForm, setIsLoginForm] = useState(true)
 	const [isAuthorized, setIsAuthorized] = useState(false)
@@ -75,23 +74,21 @@ const AuthForms: React.FC<AuthFormProps> = ({ isOpen }) => {
 		fetcher.submit({}, { method: 'post', action: '/logout' })
 	}
 
-
-
-	function useTebexCheckout(checkoutId: string, theme: 'light' | 'dark') {
+	function UseTebexCheckout(checkoutId: string, theme: 'light' | 'dark') {
 		if (window.Tebex) {
-		const config = {
-			ident: checkoutId,
-			theme: theme,
-		  };
-		  window.Tebex.checkout.init(config);
-		  window.Tebex.checkout.launch();
+			const config = {
+				ident: checkoutId,
+				theme: theme,
+			}
+			window.Tebex.checkout.init(config)
+			window.Tebex.checkout.launch()
 		}
 	}
 
 	const initiateCheckout = () => {
 		if (packages && basketId && isAuthorized) {
 			console.log('Checkout launching...')
-			useTebexCheckout(basketId, 'dark')
+			UseTebexCheckout(basketId, 'dark')
 		}
 	}
 
@@ -105,7 +102,7 @@ const AuthForms: React.FC<AuthFormProps> = ({ isOpen }) => {
 		) {
 			// setup some onload thing later that calls initiate checkout
 			if (basketId) {
-			console.log('checkout initiated')
+				console.log('checkout initiated')
 				initiateCheckout()
 			}
 		}
@@ -139,7 +136,7 @@ const AuthForms: React.FC<AuthFormProps> = ({ isOpen }) => {
 				fetcher.submit(null, { method: 'post', action })
 			} else {
 				console.log('Package already in basket, skipping store request.')
-				initiateCheckout
+				initiateCheckout()
 			}
 
 			storeRequestTriggeredRef.current = true
@@ -182,16 +179,15 @@ const AuthForms: React.FC<AuthFormProps> = ({ isOpen }) => {
 		fetcher,
 		storeSecondRequestTriggeredRef,
 	])
-	
-	  // Function to handle successful Steam linking
-	  const handleSteamLinkSuccess = () => {
-		setIsAuthorized(true); // Assume other conditions are met for simplicity
-	  };
+
+	// Function to handle successful Steam linking
+	const handleSteamLinkSuccess = () => {
+		setIsAuthorized(true) // Assume other conditions are met for simplicity
+	}
 
 	return (
 		<>
 			<div className="flex flex-col space-y-6">
-				
 				{isAuthenticated ? (
 					<>
 						{username ? (

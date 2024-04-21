@@ -33,14 +33,18 @@ const ModalContent: React.FC<ModalContentProps> = ({
 	return (
 		<div>
 			{/** TODO setup standard header for modals with fall backs */}
-			{header ? <div className="mb-4">{header}</div> : <Heading>{title}</Heading>}			
+			{header ? (
+				<div className="mb-4">{header}</div>
+			) : (
+				<Heading>{title}</Heading>
+			)}
 			{typeof content === 'string' ? (
 				<Paragraph>{content}</Paragraph>
 			) : React.isValidElement(content) ? (
 				React.cloneElement(content as React.ReactElement<any>, { isOpen })
 			) : null}
 			{/** TODO setup standard footer for modals with fall backs */}
-			{footer ? footer : null}			
+			{footer ? footer : null}
 		</div>
 	)
 }

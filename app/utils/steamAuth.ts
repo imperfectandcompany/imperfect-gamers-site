@@ -26,7 +26,6 @@ export function generateSteamLoginURL(returnURL: string): string {
 	return `${steamAuthUrl}?${params}`
 }
 
-
 /**
  * Verifies the Steam user's assertion and returns the user's identity.
  *
@@ -59,6 +58,3 @@ export async function verifySteamAssertion(
 		return null // Return null to signify that verification has failed
 	}
 }
-
-
-

@@ -89,6 +89,7 @@ module.exports = {
 				'prettier', // Ensure this is last
 			],
 			rules: {
+				'react/prop-types': 'off',
 				'import/order': [
 					'error',
 					{

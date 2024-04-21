@@ -5,7 +5,7 @@ import { generateSteamLoginURL } from '~/utils/steamAuth'
 
 // Add props interface to include an onSuccess callback
 interface AuthorizeFormProps {
-	onSuccess: () => void;
+	onSuccess: () => void
 }
 
 /**
@@ -18,14 +18,14 @@ const AuthorizeForm: React.FC<AuthorizeFormProps> = ({ onSuccess }) => {
 	const [steamPopup, setSteamPopup] = useState<Window | null>(null)
 
 	const handleSteamLinkSuccess = () => {
-		onSuccess(); // Notify the parent component
-	  };
-	  if (typeof window !== 'undefined') {
-		window.addEventListener('message', (event) => {
+		onSuccess() // Notify the parent component
+	}
+	if (typeof window !== 'undefined') {
+		window.addEventListener('message', event => {
 			if (event.data.type === 'steam-auth-success') {
-				handleSteamLinkSuccess();
+				handleSteamLinkSuccess()
 			}
-		});
+		})
 	}
 
 	// Function to fetch URL and open the popup
@@ -59,7 +59,6 @@ const AuthorizeForm: React.FC<AuthorizeFormProps> = ({ onSuccess }) => {
 		}
 	}
 
-
 	// Monitor the popup state
 	useEffect(() => {
 		let interval: NodeJS.Timeout
@@ -83,7 +82,7 @@ const AuthorizeForm: React.FC<AuthorizeFormProps> = ({ onSuccess }) => {
 
 	return (
 		<div>
-			{showFallback && (
+			{showFallback ? (
 				<div id="fallback">
 					<p>
 						Click{' '}
@@ -95,17 +94,17 @@ const AuthorizeForm: React.FC<AuthorizeFormProps> = ({ onSuccess }) => {
 						>
 							here
 						</a>{' '}
-						if you're having trouble linking your Steam account.
+						if you&apos;re having trouble linking your Steam account.
 					</p>
 				</div>
-			)}
+			) : null}
 
 			{!steamPopupOpened ? (
 				<Button onClick={initiateSteamLinking}>Link Steam Account</Button>
 			) : (
 				<p>
 					Please link your Steam account in the popup window. If the popup
-					didn't open, click the link below.
+					didn&apos;t open, click the link below.
 				</p>
 			)}
 		</div>
