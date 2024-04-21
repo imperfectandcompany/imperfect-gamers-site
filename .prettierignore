@@ -6,3 +6,5 @@ node_modules
 
 /app/styles/store.css
 /app/styles/MembershipCard.css
+public/1.0.0.js
+README.md

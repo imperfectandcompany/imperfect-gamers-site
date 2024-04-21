@@ -4,7 +4,7 @@ import {
 	json,
 	type LoaderFunction,
 } from '@remix-run/node'
-import { ExternalScriptsHandle } from 'remix-utils/external-scripts'
+import type { ExternalScriptsHandle } from 'remix-utils/external-scripts'
 import { getSession, storeCookie } from '~/auth/storage.server' // Make sure this matches your file structure
 import { StoreHeader } from '~/components/templates/store'
 import '~/styles/store.css'
@@ -50,14 +50,13 @@ export const links: LinksFunction = () => {
 
 export let handle: ExternalScriptsHandle = {
 	scripts: [
-	  {
-		src: "/1.0.0.js", // Updated to point to your local file
-		crossOrigin: "anonymous",
-		preload: true,
-	  },
+		{
+			src: '/1.0.0.js', // Updated to point to your local file
+			crossOrigin: 'anonymous',
+			preload: true,
+		},
 	],
-  };
-
+}
 
 // Function to load the basket ID from the cookie
 async function loadBasketId(

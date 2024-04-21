@@ -1,13 +1,13 @@
 // ~/utils/tebex.d.ts
-import { TebexCheckout } from './tebex.interface';
+import type { TebexCheckout } from './tebex.interface'
 
 declare global {
-  interface Window {
-    Tebex?: {
-      checkout: TebexCheckout;
-      events: {
-        [key: string]: string;
-      };
-    };
-  }
+	interface Window {
+		Tebex?: {
+			checkout: TebexCheckout
+			events: {
+				[key: string]: string
+			}
+		}
+	}
 }
