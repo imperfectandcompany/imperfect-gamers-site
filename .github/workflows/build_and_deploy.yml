@@ -33,7 +33,6 @@ jobs:
         uses: docker/setup-buildx-action@v2
 
       - name: Log in to GitHub Container Registry (GHCR)
-        id: login
         uses: docker/login-action@v2
         with:
           registry: ghcr.io
@@ -46,7 +45,9 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/imperfectandcompany/imperfect-gamers-site:latest
+          tags: |
+            ghcr.io/imperfectandcompany/imperfect-gamers-site:latest
+            ghcr.io/imperfectandcompany/imperfect-gamers-site:${{ github.sha }}
 
       - name: Logout from GHCR
         if: steps.login.outcome == 'success'
