@@ -1,42 +1,58 @@
-this readme is a work in progress. will be refined later but aim is to get documentation out for reading at the very least. this readme is not only for the code we built but to educate the tools and methodologies used around it.
-
-the goal is to focus on the store module and then pivot to refactoring other existing pages on imperfectgamers.org. refined readme will have organized roadmap. and all.
-
-# Imperfect Gamers Website - Store Module
-
-Welcome to the repository for the **Imperfect Gamers Platform's Store Module**, an integral part of our effort to revitalize the Imperfect Gamers experience with a focus on community engagement, performance, and modern web practices. This module, crafted with **Remix React**, **Tailwind CSS**, and a keen eye for user experience, serves as the cornerstone of our transition to a more interactive and engaging platform.
-
-
-## Project Context
-
-The technical structure and components align well with the goals of Imperfect Gamers and Imperfect and Company to provide a vibrant, engaging platform for their community. The emphasis on modularity, styling, functionality, and interactivity in the component architecture supports the creation of an immersive user experience that mirrors the energy and inclusivity of the Imperfect Gamers community.
-
-By starting with the store page, the project prioritizes a key interaction point for the community—facilitating the purchase of memberships, event tickets, or merchandise. The detailed attention to the UI components ensures that this interaction is seamless, accessible, and enjoyable for users, potentially increasing engagement and participation within the Imperfect Gamers ecosystem.
+<p align="center">
+  <img src="https://cdn.imperfectgamers.org/inc/assets/img/icon/isometric_ig_circle.png" width="100" />
+</p>
+<p align="center">
+    <h1 align="center">IMPERFECT GAMERS SITE</h1>
+</p>
+<p align="center">
+    <em>https://imperfectgamers.org/</em>
+</p>
 
 
-## Overview
-
-The Store Module is designed from the ground up to offer an immersive, responsive, and accessible shopping experience. Leveraging the latest in web technologies and design methodologies, we aim to provide our community with a seamless interface for accessing Imperfect Gamers merchandise, memberships, and more.
-
-## Features
-
-- **Server-Side Rendering**: Optimized for performance and SEO, ensuring quick load times and visibility.
-- **Responsive Design**: Crafted with Tailwind CSS for a seamless experience across all devices.
-- **Dynamic Content**: Real-time updates for events, testimonials, and statistics, enhancing user engagement.
-- **User-Centric Interactions**: Detailed attention to hover effects, transitions, and accessibility, promoting a user-friendly environment.
-- **Membership Tier Visualization**: Creative displays and comparisons of membership options, encouraging community participation and support.
+<div align="center">
   
-## Project Structure
+![Imperfect Gamers Wallpaper Rounded](https://cdn.imperfectgamers.org/inc/assets/img/wallpaper/wallpaper_dj_rapper_rounded.jpg)
+</div>
 
-- `entry.client.tsx` & `entry.server.tsx`: Entry points for client and server, respectively, showcasing our SSR strategy.
-- `root.tsx`: The root component that wraps the entire application, setting the stage for a cohesive user experience.
-- `store.css` & `tailwind.css`: Core styling files, driving the visual consistency and responsiveness of the module.
-- `components/atoms`: Basic UI elements like buttons and inputs, forming the building blocks of our interface.
-- `components/molecules`: Combinations of atoms into functional units such as forms and cards, enhancing the modularity of our design.
-- `components/organisms`: Complex UI segments like membership tiers and FAQ sections, demonstrating advanced composition and functionality.
-- `components/templates/store`: High-level layouts specific to the store module, orchestrating the overall user interface.
+<p align="center">
+	<img src="https://img.shields.io/github/last-commit/imperfectandcompany/imperfect-gamers-site?style=flat&logo=git&logoColor=white&color=0080ff" alt="last-commit">
+<p>
+<p align="center">
+		<em>Developed with the software and tools below.</em>
+</p>
+<p align="center">
+	<img src="https://img.shields.io/badge/JavaScript-F7DF1E.svg?style=flat&logo=JavaScript&logoColor=black" alt="JavaScript">
+	<img src="https://img.shields.io/badge/Prettier-F7B93E.svg?style=flat&logo=Prettier&logoColor=black" alt="Prettier">
+	<img src="https://img.shields.io/badge/PostCSS-DD3A0A.svg?style=flat&logo=PostCSS&logoColor=white" alt="PostCSS">
+	<img src="https://img.shields.io/badge/Autoprefixer-DD3735.svg?style=flat&logo=Autoprefixer&logoColor=white" alt="Autoprefixer">
+	<img src="https://img.shields.io/badge/Vite-646CFF.svg?style=flat&logo=Vite&logoColor=white" alt="Vite">
+	<img src="https://img.shields.io/badge/React-61DAFB.svg?style=flat&logo=React&logoColor=black" alt="React">
+	<br>
+	<img src="https://img.shields.io/badge/ESLint-4B32C3.svg?style=flat&logo=ESLint&logoColor=white" alt="ESLint">
+	<img src="https://img.shields.io/badge/TypeScript-3178C6.svg?style=flat&logo=TypeScript&logoColor=white" alt="TypeScript">
+	<img src="https://img.shields.io/badge/Docker-2496ED.svg?style=flat&logo=Docker&logoColor=white" alt="Docker">
+	<img src="https://img.shields.io/badge/GitHub%20Actions-2088FF.svg?style=flat&logo=GitHub-Actions&logoColor=white" alt="GitHub%20Actions">
+	<img src="https://img.shields.io/badge/JSON-000000.svg?style=flat&logo=JSON&logoColor=white" alt="JSON">
+</p>
+<hr>
 
-## Quick Links
+## 🔗 Quick Links
+
+- [📍 Overview](#-overview)
+- [📦 Features](#-features)
+- [📂 Repository Structure](#-repository-structure)
+- [🧩 Files](#-files)
+- [🚀 Getting Started](#-getting-started)
+  - [⚙️ Installation](#️-installation)
+  - [🤖 Running Imperfect Gamers Site](#-running-imperfect-gamers-site)
+  - [🧪 Tests](#-tests)
+- [🚀 Strategy](#-strategy)
+- [🛠 Project Roadmap](#-project-roadmap)
+- [🤝 Contributing](#-contributing)
+- [📄 License](#-license)
+- [👏 Acknowledgments](#-acknowledgments)
+
+### External
 
 - [Remix Documentation](https://remix.run/docs/en/main)
 - [Remix Website](https://remix.run/)
@@ -45,302 +61,654 @@ The Store Module is designed from the ground up to offer an immersive, responsiv
 - [Remix Guide](https://remix.guide/)
 - [Digestible Remix Guides](https://www.jacobparis.com/content)
 
-# Installation and NPM Commands
+---
 
-- [Download npm](https://www.npmjs.com/get-npm)
-- [Update npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm#updating-npm)
-- [npm install](https://docs.npmjs.com/cli/v7/commands/npm-install)
+## 📍 Overview
 
-## Getting Started
+The Imperfect Gamers site project serves as a web front for our platform, emphasizing personalized experiences through Steam integration too aggregate data to your account for looking up stats, purchases, social and more. It provides our users with a member-centric portal where users can manage their data on our services and interact seamlessly within the community. We have a focus on Tailwind-based UI with atomic design principles, to ensure a robust, scalable, and user-friendly interface for our audience. Automated deployment and code quality processes are embedded through CI/CD pipelines, ensuring a reliable and scalable infrastructure, enriching the users and developers journey within our Imperfect Gamers ecosystem as we develop and introduce new features.
+
+---
+
+## 📦 Features
+
+
+|    | Feature          | Description                                                                                                           |
+|----|------------------|-----------------------------------------------------------------------------------------------------------------------|
+| ⚙️ | **Architecture** | Currently involves session management through Remix and Steam integration for user authentication while using Tebex for Product management. Uses automated deployment.   |
+| 🔩 | **Code Quality** | Code quality ensured by ESLint, Prettier, TypeScript. The codebase includes config files for consistent coding style.  |
+| 📄 | **Documentation**| This is a living document and expected to remain under development until we reaach key milestones in our roadmap.  |
+| 🔌 | **Integrations** | Integrates with Steam for authentication. Uses Docker for containerization, and GitHub Actions for CI/CD workflows. |
+| 🧩 | **Modularity**   | Leveraging Atomic Design Methodology alongside component varients for reusability and building a uniform design.       |
+| 🧪 | **Testing**      | We have strict typescript and Eslint as a mandatory requirement before merging into dev. We will introduce jest and enzyme once we put our shop into production.         |
+| ⚡️ | **Performance**   | With remix's recent support for Vite, we chose it as our build tool for fast build times, performance metrics will be benchmarked after we introduce testing.                    |
+| 🛡️ | **Security**     | Steam integration using OAuth; bcryptjs received on API through rest for hashing passwords.                       |
+| 📦 | **Dependencies** | Key libs: React, TailwindCSS, TypeScript, TailwindCSS, Remix, Remix Utilities: ESLint, Prettier, Vite, PostCSS.            |
+| 🚀 | **Scalability**  | Uses Remix from Shopify, which is scalable and in competition with Next.JS (although React is backing Next.JS), but follows latest trending support for Server-Side-Rendering Full-Stack Development. |
+
+---
+
+## 📂 Repository Structure
+<details closed><summary>View Structure</summary>
+
+### Structure overview
+
+- `entry.client.tsx` & `entry.server.tsx`: Entry points for client and server, respectively, showcasing our SSR strategy.
+- `root.tsx`: The root component that wraps the entire application, setting the stage for a cohesive user experience.
+- `store.css` & `tailwind.css`: Core styling files, driving the visual consistency and responsiveness of the module.
+- `components/atoms`: Basic UI elements like buttons and inputs, forming the building blocks of our interface.
+- `components/molecules`: Combinations of atoms into functional units such as forms and cards, enhancing the modularity of our design.
+- `components/organisms`: Complex UI segments like membership tiers and FAQ sections, demonstrating advanced composition and functionality.
+- `components/templates/store`: High-level layouts specific to the store module, orchestrating the overall user interface.
+  
+```sh
+└── imperfect-gamers-site/
+    ├── .github
+    │   ├── CODEOWNERS
+    │   └── workflows
+    │       ├── build_and_deploy.yml
+    │       └── eslint_prettier_pr_check.yml
+    ├── Dockerfile
+    ├── README.md
+    ├── app
+    │   ├── auth
+    │   │   ├── authenticator.server.ts
+    │   │   ├── session.ts
+    │   │   ├── steam.server.ts
+    │   │   ├── storage.server.ts
+    │   │   └── user.server.ts
+    │   ├── components
+    │   │   ├── atoms
+    │   │   │   ├── Button
+    │   │   │   │   ├── Button.tsx
+    │   │   │   │   └── ButtonProps.tsx
+    │   │   │   ├── Heading
+    │   │   │   │   └── Heading.tsx
+    │   │   │   ├── IconElement.tsx
+    │   │   │   ├── Image.tsx
+    │   │   │   ├── Input
+    │   │   │   │   └── Input.tsx
+    │   │   │   ├── Link
+    │   │   │   │   └── Link.tsx
+    │   │   │   ├── Modal
+    │   │   │   │   └── Modal.tsx
+    │   │   │   ├── Paragraph
+    │   │   │   │   └── Paragraph.tsx
+    │   │   │   ├── PriceLabel
+    │   │   │   │   ├── PriceLabel.module.css
+    │   │   │   │   └── PriceLabel.tsx
+    │   │   │   ├── Text.tsx
+    │   │   │   ├── TextElement.tsx
+    │   │   │   └── ToggleSwitch
+    │   │   │       ├── ToggleSwitch.module.css
+    │   │   │       └── ToggleSwitch.tsx
+    │   │   ├── molecules
+    │   │   │   ├── AuthorizeForm.tsx
+    │   │   │   ├── EventItem.tsx
+    │   │   │   ├── FAQItem.tsx
+    │   │   │   ├── FeaturedItem.tsx
+    │   │   │   ├── FooterLink.tsx
+    │   │   │   ├── IconText.tsx
+    │   │   │   ├── LoginForm.tsx
+    │   │   │   ├── ModalContent
+    │   │   │   │   └── ModalContent.tsx
+    │   │   │   ├── PriceToggle
+    │   │   │   │   ├── PriceToggle.module.css
+    │   │   │   │   └── PriceToggle.tsx
+    │   │   │   ├── SignUpForm.tsx
+    │   │   │   ├── StatisticItem.tsx
+    │   │   │   ├── TitleDescription.tsx
+    │   │   │   └── UsernameForm.tsx
+    │   │   ├── organism
+    │   │   │   ├── AuthForms
+    │   │   │   │   └── AuthForms.tsx
+    │   │   │   ├── ContactForm.tsx
+    │   │   │   ├── FAQSection.tsx
+    │   │   │   ├── FeaturedPartnership.tsx
+    │   │   │   ├── FeaturedSection.tsx
+    │   │   │   ├── MembershipCard
+    │   │   │   │   ├── MembershipCard.module.css
+    │   │   │   │   └── MembershipCard.tsx
+    │   │   │   ├── MembershipTier.tsx
+    │   │   │   ├── ModalWrapper
+    │   │   │   │   ├── ModalWrapper.module.css
+    │   │   │   │   └── ModalWrapper.tsx
+    │   │   │   ├── StatisticsGroup.tsx
+    │   │   │   ├── Testimonial.tsx
+    │   │   │   └── UnauthenticatedView.tsx
+    │   │   └── templates
+    │   │       └── store
+    │   │           ├── StoreContact.tsx
+    │   │           ├── StoreEvents.tsx
+    │   │           ├── StoreFAQ.tsx
+    │   │           ├── StoreFeatured.tsx
+    │   │           ├── StoreFooter.tsx
+    │   │           ├── StoreHeader.tsx
+    │   │           ├── StorePartnership.tsx
+    │   │           ├── StoreStatistics.tsx
+    │   │           ├── StoreTestimonials.tsx
+    │   │           ├── StoreTiers.tsx
+    │   │           └── index.tsx
+    │   ├── entry.client.tsx
+    │   ├── entry.server.tsx
+    │   ├── root.tsx
+    │   ├── routes
+    │   │   ├── _index.tsx
+    │   │   ├── auth.check.username.tsx
+    │   │   ├── auth.finalize.username.tsx
+    │   │   ├── authorize.check.steam.tsx
+    │   │   ├── authorize.steam.callback.tsx
+    │   │   ├── authorize.steam.tsx
+    │   │   ├── login.tsx
+    │   │   ├── logout.tsx
+    │   │   ├── register.tsx
+    │   │   ├── store.add.tsx
+    │   │   ├── store.create.tsx
+    │   │   └── store.tsx
+    │   ├── styles
+    │   │   ├── MembershipCard.css
+    │   │   └── store.css
+    │   ├── tailwind.css
+    │   └── utils
+    │       ├── general.ts
+    │       ├── steamAuth.ts
+    │       ├── tebex.d.ts
+    │       ├── tebex.interface.ts
+    │       ├── tebex.server.ts
+    │       ├── tebexjs.ts
+    │       └── useTebexCheckout.ts
+    ├── package-lock.json
+    ├── package.json
+    ├── postcss.config.js
+    ├── public
+    │   ├── 1.0.0.js
+    │   └── favicon.ico
+    ├── tailwind.config.ts
+    ├── tsconfig.eslint.json
+    ├── tsconfig.json
+    └── vite.config.ts
+```
+</details>
+
+---
+
+## 🧩 Files
+
+<details closed><summary>Open Directory</summary>
+
+`This section is currently in process`
+
+<details closed><summary>.</summary>
+
+| File                                                                                                                  | Summary                                                                                                                                                                                                                                                                                                                                                                  |
+| ---                                                                                                                   | ---                                                                                                                                                                                                                                                                                                                                                                      |
+| [tailwind.config.ts](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/tailwind.config.ts)     | TODO: Document summary for this file                                                                                                                                                                          |
+| [Dockerfile](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/Dockerfile)                     | TODO: Document summary for this file              |
+| [tsconfig.json](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/tsconfig.json)               | TODO: Document summary for this file                                       |
+| [postcss.config.js](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/postcss.config.js)       | TODO: Document summary for this file |
+| [vite.config.ts](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/vite.config.ts)             | TTODO: Document summary for this file                                                                                                                                                                                                                                     |
+| [package.json](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/package.json)                 | TODO: Document summary for this file            |
+| [tsconfig.eslint.json](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/tsconfig.eslint.json) | TTODO: Document summary for this file                                                          |
+| [package-lock.json](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/package-lock.json)       | TODO: Document summary for this file                                                                                                                                                                        |
+
+</details>
+
+<details closed><summary>public</summary>
+
+| File                                                                                                 | Summary                                                                                                                                                                                                                                   |
+| ---                                                                                                  | ---                                                                                                                                                                                                                                       |
+| [1.0.0.js](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/public/1.0.0.js) | TODO: Document summary for this file |
+
+</details>
+
+<details closed><summary>.github</summary>
+
+| File                                                                                                      | Summary                                                                                                                                                                                                                                                                                     |
+| ---                                                                                                       | ---                                                                                                                                                                                                                                                                                         |
+| [CODEOWNERS](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/.github/CODEOWNERS) | TODO: Document summary for this file |
+
+</details>
+
+<details closed><summary>.github.workflows</summary>
+
+| File                                                                                                                                                    | Summary                                                                                                                                                                                                                                                            |
+| ---                                                                                                                                                     | ---                                                                                                                                                                                                                                                                |
+| [eslint_prettier_pr_check.yml](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/.github/workflows/eslint_prettier_pr_check.yml) | TODO: Document summary for this file                                               |
+| [build_and_deploy.yml](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/.github/workflows/build_and_deploy.yml)                 | TODO: Document summary for this file |
+
+</details>
+
+<details closed><summary>app</summary>
+
+| File                                                                                                              | Summary                                                                                                                                                                                                                                                                                                                                                                                              |
+| ---                                                                                                               | ---                                                                                                                                                                                                                                                                                                                                                                                                  |
+| [entry.server.tsx](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/entry.server.tsx) | TODO: Document summary for this file |
+| [entry.client.tsx](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/entry.client.tsx) | TODO: Document summary for this file                                                                                                                                                                                    |
+| [root.tsx](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/root.tsx)                 | TODO: Document summary for this file                                                                                                                                                                                                                                                                                 |
+| [tailwind.css](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/tailwind.css)         | TODO: Document summary for this file                                                                                                                                                                                                                      |
+
+</details>
+
+<details closed><summary>app.styles</summary>
+
+| File                                                                                                                         | Summary                                                                                                                                                                                                                                    |
+| ---                                                                                                                          | ---                                                                                                                                                                                                                                        |
+| [store.css](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/styles/store.css)                   | TODO: Document summary for this file |
+| [MembershipCard.css](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/styles/MembershipCard.css) | TODO: Document summary for this file                                                              |
+
+</details>
+
+<details closed><summary>app.utils</summary>
+
+| File                                                                                                                          | Summary                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| ---                                                                                                                           | ---                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| [tebexjs.ts](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/utils/tebexjs.ts)                   | TODO: Document summary for this file                                                                                                                                                                               |
+| [tebex.d.ts](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/utils/tebex.d.ts)                   | TTODO: Document summary for this file                                                                                                                                                                                                                                                                                            |
+| [steamAuth.ts](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/utils/steamAuth.ts)               | TODO: Document summary for this file |
+| [general.ts](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/utils/general.ts)                   | TODO: Document summary for this file                                                                                                                                                                                                                                                                 |
+| [tebex.interface.ts](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/utils/tebex.interface.ts)   | TODO: Document summary for this file                                                                                                                                                                                                                                                                                                                                        |
+| [tebex.server.ts](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/utils/tebex.server.ts)         | TODO: Document summary for this file                                                                                                                                                                                                                                                                                                           |
+| [useTebexCheckout.ts](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/utils/useTebexCheckout.ts) | TODO: Document summary for this file                                                                                                                                                                                                                                                                                                                                                                |
+
+</details>
+
+<details closed><summary>app.routes</summary>
+
+| File                                                                                                                                             | Summary                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| ---                                                                                                                                              | ---                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| [store.tsx](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/routes/store.tsx)                                       | TODO: Document summary for this file                                                                                                                                                                                                                                                                                                                            |
+| [authorize.check.steam.tsx](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/routes/authorize.check.steam.tsx)       | TTODO: Document summary for this file                                                                                                                                                                                                                                                                                                                                                                           |
+| [register.tsx](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/routes/register.tsx)                                 | TODO: Document summary for this file                                                                                                                                                                                                                                                                                                                                                                             |
+| [logout.tsx](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/routes/logout.tsx)                                     | TODO: Document summary for this file                                                                                                                                                                                                                                                                                                                                                                          |
+| [auth.check.username.tsx](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/routes/auth.check.username.tsx)           | TODO: Document summary for this file |
+| [store.add.tsx](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/routes/store.add.tsx)                               | TODO: Document summary for this file                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| [auth.finalize.username.tsx](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/routes/auth.finalize.username.tsx)     | TODO: Document summary for this file                                                                                                                                                                                                                                                                                                                                                                                   |
+| [login.tsx](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/routes/login.tsx)                                       | TODO: Document summary for this file                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| [authorize.steam.tsx](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/routes/authorize.steam.tsx)                   | TODO: Document summary for this file                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| [authorize.steam.callback.tsx](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/routes/authorize.steam.callback.tsx) | TODO: Document summary for this file                                                                                                                                                                                                                                                                                                                                          |
+| [store.create.tsx](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/routes/store.create.tsx)                         | TODO: Document summary for this file                                                                                                                                            |
+| [_index.tsx](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/routes/_index.tsx)                                     | TODO: Document summary for this file                                                                                                                                                                                                                                                                                                                                                                           |
+
+</details>
+
+<details closed><summary>app.components.templates.store</summary>
+
+| File                                                                                                                                                   | Summary                                                                                                                                                                                                                                                                                                                                         |
+| ---                                                                                                                                                    | ---                                                                                                                                                                                                                                                                                                                                             |
+| [StoreFooter.tsx](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/components/templates/store/StoreFooter.tsx)             | TODO: Document summary for this file                                                                                                                                                                                                                                              |
+| [StoreFAQ.tsx](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/components/templates/store/StoreFAQ.tsx)                   | TODO: Document summary for this file                                                             |
+| [StoreContact.tsx](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/components/templates/store/StoreContact.tsx)           | TODO: Document summary for this file                      |
+| [index.tsx](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/components/templates/store/index.tsx)                         | TODO: Document summary for this file.                                                                      |
+| [StoreHeader.tsx](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/components/templates/store/StoreHeader.tsx)             | TODO: Document summary for this file                                              |
+| [StoreStatistics.tsx](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/components/templates/store/StoreStatistics.tsx)     | TODO: Document summary for this file                                                                                                                                                              |
+| [StoreEvents.tsx](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/components/templates/store/StoreEvents.tsx)             | TODO: Document summary for this file                                                                                                                                                                           |
+| [StoreTiers.tsx](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/components/templates/store/StoreTiers.tsx)               | TODO: Document summary for this file                                                                                                                                        |
+| [StoreFeatured.tsx](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/components/templates/store/StoreFeatured.tsx)         | TODO: Document summary for this file                                                                                                                                                             |
+| [StoreTestimonials.tsx](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/components/templates/store/StoreTestimonials.tsx) | TODO: Document summary for this file                                                                                                                                                                                       |
+| [StorePartnership.tsx](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/components/templates/store/StorePartnership.tsx)   | TODO: Document summary for this file |
+
+</details>
+
+<details closed><summary>app.components.atoms</summary>
+
+| File                                                                                                                             | Summary                                                                                                                                                                                                                                                                                                                                  |
+| ---                                                                                                                              | ---                                                                                                                                                                                                                                                                                                                                      |
+| [TextElement.tsx](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/components/atoms/TextElement.tsx) | TODO: Document summary for this file                                                                                                  |
+| [IconElement.tsx](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/components/atoms/IconElement.tsx) | TODO: Document summary for this file                                                                     |
+| [Text.tsx](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/components/atoms/Text.tsx)               | TODO: Document summary for this file |
+| [Image.tsx](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/components/atoms/Image.tsx)             | TODO: Document summary for this file                                                                                                                                                       |
+
+</details>
+
+<details closed><summary>app.components.atoms.Button</summary>
+
+| File                                                                                                                                    | Summary                                                                                                                                                                                                                                                                                   |
+| ---                                                                                                                                     | ---                                                                                                                                                                                                                                                                                       |
+| [Button.tsx](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/components/atoms/Button/Button.tsx)           | TODO: Document summary for this file                           |
+| [ButtonProps.tsx](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/components/atoms/Button/ButtonProps.tsx) | TODO: Document summary for this file |
+
+</details>
+
+<details closed><summary>app.components.atoms.PriceLabel</summary>
+
+| File                                                                                                                                                    | Summary                                                                                                                                                                                                                                                                                                                                                           |
+| ---                                                                                                                                                     | ---                                                                                                                                                                                                                                                                                                                                                               |
+| [PriceLabel.tsx](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/components/atoms/PriceLabel/PriceLabel.tsx)               | TODO: Document summary for this file |
+| [PriceLabel.module.css](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/components/atoms/PriceLabel/PriceLabel.module.css) | TODO: Document summary for this file                                                                                                                                                                        |
+
+</details>
+
+<details closed><summary>app.components.atoms.ToggleSwitch</summary>
+
+| File                                                                                                                                                          | Summary                                                                                                                                                                                                                                                                                                                                                                                                   |
+| ---                                                                                                                                                           | ---                                                                                                                                                                                                                                                                                                                                                                                                       |
+| [ToggleSwitch.tsx](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/components/atoms/ToggleSwitch/ToggleSwitch.tsx)               | TODO: Document summary for this file                                                                                                                                                                                       |
+| [ToggleSwitch.module.css](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/components/atoms/ToggleSwitch/ToggleSwitch.module.css) | TODO: Document summary for this file |
+
+</details>
+
+<details closed><summary>app.components.atoms.Paragraph</summary>
+
+| File                                                                                                                                   | Summary                                                                                                                                              |
+| ---                                                                                                                                    | ---                                                                                                                                                  |
+| [Paragraph.tsx](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/components/atoms/Paragraph/Paragraph.tsx) | TODO: Document summary for this file |
+
+</details>
+
+<details closed><summary>app.components.atoms.Modal</summary>
+
+| File                                                                                                                       | Summary                                                                                                                                                                      |
+| ---                                                                                                                        | ---                                                                                                                                                                          |
+| [Modal.tsx](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/components/atoms/Modal/Modal.tsx) | TODO: Document summary for this file |
+
+</details>
+
+<details closed><summary>app.components.atoms.Link</summary>
+
+| File                                                                                                                    | Summary                                                                                                                                                    |
+| ---                                                                                                                     | ---                                                                                                                                                        |
+| [Link.tsx](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/components/atoms/Link/Link.tsx) | TODO: Document summary for this file |
+
+</details>
+
+<details closed><summary>app.components.atoms.Heading</summary>
+
+| File                                                                                                                             | Summary                                                                                                                                                                                                                                          |
+| ---                                                                                                                              | ---                                                                                                                                                                                                                                              |
+| [Heading.tsx](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/components/atoms/Heading/Heading.tsx) | TTODO: Document summary for this file |
+
+</details>
+
+<details closed><summary>app.components.atoms.Input</summary>
+
+| File                                                                                                                       | Summary                                                                                                                                    |
+| ---                                                                                                                        | ---                                                                                                                                        |
+| [Input.tsx](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/components/atoms/Input/Input.tsx) | TODO: Document summary for this file |
+
+</details>
+
+<details closed><summary>app.components.organism</summary>
+
+| File                                                                                                                                                | Summary                                                                                                                                                                                                                                                                                                                                                     |
+| ---                                                                                                                                                 | ---                                                                                                                                                                                                                                                                                                                                                         |
+| [FeaturedPartnership.tsx](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/components/organism/FeaturedPartnership.tsx) | TODO: Document summary for this file                                                                                                                                                                                                       |
+| [Testimonial.tsx](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/components/organism/Testimonial.tsx)                 | TODO: Document summary for this file                                                                                               |
+| [MembershipTier.tsx](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/components/organism/MembershipTier.tsx)           | TODO: Document summary for this file |
+| [ContactForm.tsx](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/components/organism/ContactForm.tsx)                 | TODO: Document summary for this file                                                                 |
+| [FAQSection.tsx](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/components/organism/FAQSection.tsx)                   | TODO: Document summary for this file                                                                         |
+| [UnauthenticatedView.tsx](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/components/organism/UnauthenticatedView.tsx) | TODO: Document summary for this file                                                                                                                                                                                          |
+| [FeaturedSection.tsx](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/components/organism/FeaturedSection.tsx)         | TODO: Document summary for this file                                                                                                                                      |
+| [StatisticsGroup.tsx](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/components/organism/StatisticsGroup.tsx)         | TODO: Document summary for this file                                                                                                                                                                                           |
+
+</details>
+
+<details closed><summary>app.components.organism.ModalWrapper</summary>
+
+| File                                                                                                                                                             | Summary                                                                                                                                                                                   |
+| ---                                                                                                                                                              | ---                                                                                                                                                                                       |
+| [ModalWrapper.module.css](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/components/organism/ModalWrapper/ModalWrapper.module.css) | TODO: Document summary for this file |
+| [ModalWrapper.tsx](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/components/organism/ModalWrapper/ModalWrapper.tsx)               | TODO: Document summary for this file  |
+
+</details>
+
+<details closed><summary>app.components.organism.MembershipCard</summary>
+
+| File                                                                                                                                                                   | Summary                                                                                                                                                                                                                                                                      |
+| ---                                                                                                                                                                    | ---                                                                                                                                                                                                                                                                          |
+| [MembershipCard.tsx](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/components/organism/MembershipCard/MembershipCard.tsx)               | TODO: Document summary for this file  |
+| [MembershipCard.module.css](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/components/organism/MembershipCard/MembershipCard.module.css) | TODO: Document summary for this file |
+
+</details>
+
+<details closed><summary>app.components.organism.AuthForms</summary>
+
+| File                                                                                                                                      | Summary                                                                                                                                                                                                                                                                                                                                                               |
+| ---                                                                                                                                       | ---                                                                                                                                                                                                                                                                                                                                                                   |
+| [AuthForms.tsx](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/components/organism/AuthForms/AuthForms.tsx) | TODO: Document summary for this file |
+
+</details>
+
+<details closed><summary>app.components.molecules</summary>
+
+| File                                                                                                                                           | Summary                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| ---                                                                                                                                            | ---                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| [UsernameForm.tsx](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/components/molecules/UsernameForm.tsx)         | TODO: Document summary for this file                                                                                                                                                                                                                                                                                 |
+| [EventItem.tsx](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/components/molecules/EventItem.tsx)               | TODO: Document summary for this file                                                                                       |
+| [FAQItem.tsx](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/components/molecules/FAQItem.tsx)                   | TODO: Document summary for this file                                                                                                                                                                                                                                                                                       |
+| [LoginForm.tsx](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/components/molecules/LoginForm.tsx)               | TODO: Document summary for this file                                                                                                                                                                                                         |
+| [FeaturedItem.tsx](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/components/molecules/FeaturedItem.tsx)         | TODO: Document summary for this file                                                                                                        |
+| [SignUpForm.tsx](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/components/molecules/SignUpForm.tsx)             | TODO: Document summary for this file                                                                                                                                                                                                    |
+| [TitleDescription.tsx](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/components/molecules/TitleDescription.tsx) | TODO: Document summary for this file                                                                                                                                                                                                                                                    |
+| [FooterLink.tsx](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/components/molecules/FooterLink.tsx)             | TODO: Document summary for this file                                                                                                                                                                                  |
+| [StatisticItem.tsx](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/components/molecules/StatisticItem.tsx)       | TODO: Document summary for this file                                                                                                                                                                                                                                                              |
+| [IconText.tsx](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/components/molecules/IconText.tsx)                 | TODO: Document summary for this file |
+| [AuthorizeForm.tsx](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/components/molecules/AuthorizeForm.tsx)       | TODO: Document summary for this file                                                                                                                                                                                                                                                                                                                    |
+
+</details>
+
+<details closed><summary>app.components.molecules.ModalContent</summary>
+
+| File                                                                                                                                                | Summary                                                                                                                                                                                                             |
+| ---                                                                                                                                                 | ---                                                                                                                                                                                                                 |
+| [ModalContent.tsx](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/components/molecules/ModalContent/ModalContent.tsx) | TODO: Document summary for this file |
+
+</details>
+
+<details closed><summary>app.components.molecules.PriceToggle</summary>
+
+| File                                                                                                                                                           | Summary                                                                                                                                                                                                   |
+| ---                                                                                                                                                            | ---                                                                                                                                                                                                       |
+| [PriceToggle.tsx](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/components/molecules/PriceToggle/PriceToggle.tsx)               | TODO: Document summary for this file |
+| [PriceToggle.module.css](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/components/molecules/PriceToggle/PriceToggle.module.css) | TODO: Document summary for this file          |
+
+</details>
+
+<details closed><summary>app.auth</summary>
+
+| File                                                                                                                                 | Summary                                                                                                                                                                                                                                                                                                                                                                                                          |
+| ---                                                                                                                                  | ---                                                                                                                                                                                                                                                                                                                                                                                                              |
+| [user.server.ts](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/auth/user.server.ts)                   | TODO: Document summary for this file                                                                                                                                                  |
+| [session.ts](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/auth/session.ts)                           | TODO: Document summary for this file |
+| [storage.server.ts](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/auth/storage.server.ts)             | TODO: Document summary for this file                                                                                          |
+| [steam.server.ts](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/auth/steam.server.ts)                 | TODO: Document summary for this file                                                                                                                                                                                                                            |
+| [authenticator.server.ts](https://github.com/imperfectandcompany/imperfect-gamers-site/blob/master/app/auth/authenticator.server.ts) | TODO: Document summary for this file                                                                                                                                                                                    |
+</details>
+
+</details>
+
+---
+
+## 🚀 Getting Started
+
+***Requirements***
+
+Ensure you have the following dependencies installed on your system:
+
+* **NPM**: `version >=18.x`
+  [Download npm](https://www.npmjs.com/get-npm) | 
+  [Update npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm#updating-npm) | 
+  [npm install](https://docs.npmjs.com/cli/v7/commands/npm-install)
+
+### ⚙️ Installation
 
 To get a local copy up and running, follow these simple steps:
 
 1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/imperfectandcompany/imperfect-gamers-site.git
-   ```
+```sh
+git clone https://github.com/imperfectandcompany/imperfect-gamers-site.git
+```
 
 3. **Navigate to the project directory:**
-   ```bash
-   cd store-module
-   ```
+```sh
+cd imperfect-gamers-site
+```
 3. **Install dependencies:**
-   ```bash
-   npm install
-   ```
-4. **Start the development server:**
-   ```bash
-   npm run dev
-   ```
-
-   ## Quick Commands and Known Commands
-
-- **To start development server:** `npm run dev`
-- **To build for production:** `npm run build`
-- **To run tests:** `npm test`
-- **To deploy:** `npm run deploy`
-
-# React and Remix in Action
-
-At the heart of the Imperfect Gamers Store Module lies our commitment to leveraging the best of modern web development technologies to enhance our platform's usability, performance, and search engine visibility. This commitment is exemplified through our extensive use of React and Remix, two powerful tools that have significantly shaped the project's architecture and functionality.
-
-## React Functional Components
-
-React's functional components are central to our development approach, offering a streamlined, efficient way to build our user interface. For instance, our use of functional components can be seen in the `IconElement.tsx` and `Button.tsx` files, where we define reusable UI elements that enhance the user experience through props for customization and React hooks for managing state and side effects.
-
-### Example from `Button.tsx`
-
-```tsx
-const Button = ({ variant = 'primary', children, onClick }) => {
-  return (
-    <button className={`button ${variant}`} onClick={onClick}>
-      {children}
-    </button>
-  );
-};
+```sh
+npm install
 ```
 
-This snippet demonstrates the modularity and reusability of our components, principles that are integral to our design philosophy.
+### 🤖 Running imperfect-gamers-site
 
-## Remix for Enhanced SEO and Performance
+Use the following command to run imperfect-gamers-site:
 
-Remix's emphasis on server-side rendering (SSR) and efficient data handling plays a crucial role in our application, particularly for SEO and performance optimization. In entry.server.tsx, we leverage Remix loaders to fetch and prepare data server-side before rendering, ensuring that our content is fully crawlable by search engines and quickly accessible to users.
-
-### Simplified example from entry.server.tsx
-```tsx
-export const loader: LoaderFunction = async ({ request }) => {
-  const userData = await fetchUserData(request);
-  return json({ userData });
-};
-```
-Moreover, our authenticator.server.ts file showcases how we handle authentication seamlessly with Remix actions, providing a secure and efficient user login process that benefits from Remix's server-side capabilities.
-
-### Simplified example from authenticator.server.ts
-```tsx
-export let action: ActionFunction = async ({ request }) => {
-  const form = await request.formData();
-  const email = form.get('email');
-  const password = form.get('password');
-  // Authentication logic...
-};
-```
-These examples underscore how React and Remix are not just technological choices but foundational pillars that support the Imperfect Gamers Store Module's goals of creating a fast, SEO-friendly, and highly interactive online store. By adopting these technologies, we ensure that our platform not only meets the current web standards but is also poised for future scalability and enhancements.
-
-# Component Modularity: Embracing Atomic Design
-
-In crafting the Imperfect Gamers Store Module, our approach to UI development is deeply rooted in the principles of Atomic Design. This methodology allows us to break down our interface into fundamental building blocks (atoms), assemble them into usable units (molecules), combine those into larger, functional sections (organisms), and, finally, organize these sections within page-level containers (templates). This hierarchical structure enhances our UI's modularity, making it highly reusable and scalable.
-
-## Atoms: The Foundations
-
-Atoms are the smallest, most basic UI elements that can't be broken down further without losing their functionality. For example, in our Button.tsx and Input.tsx components, we define the essential styles and behaviors for buttons and input fields, respectively, that are used throughout the application.
-```tsx
-// Example from Input.tsx
-const Input = ({ type = 'text', placeholder, onChange }) => {
-  return <input type={type} placeholder={placeholder} onChange={onChange} />;
-};
+```sh
+npm run dev
 ```
 
-These atom components are used as the foundational elements in more complex components, ensuring consistency and efficiency in UI development.
+### 🧪 Tests
 
-## Molecules: Building Complexity
+`Pending (view Project Roadmap)`
 
-Molecules consist of groups of atoms bonded together and are the smallest fundamental units of a compound. These groups of atoms take on their own properties and serve as the backbone of our UI design. For instance, the AuthorizeForm.tsx combines Input and Button atoms into a functional login form, illustrating a molecule in action.
-```tsx
-// Example from AuthorizeForm.tsx
-const AuthorizeForm = () => {
-  return (
-    <form>
-      <Input type="email" placeholder="Email" />
-      <Input type="password" placeholder="Password" />
-      <Button type="submit">Login</Button>
-    </form>
-  );
-};
+---
+
+## 🚀 Strategy
+
+<details closed><summary>Phases</summary>
+
+### Phase 1: Foundation and Core Setup
+- [x] **Milestone 1: Project Initialization**
+  - [x] Repository setup and initial commit
+  - [x] Base tooling and framework selection
+- [x] **Milestone 2: Environment Setup**
+  - [x] Integration of Tailwind CSS
+  - [x] Setup of build and deployment pipelines
+- [ ] **Milestone 3: Developer Tooling**
+  - [ ] Integrate Jest and Enzyme for testing
+
+### Phase 2: Feature Development and Integration
+- [x] **Milestone 4: Authentication System**
+  - [x] Implement basic AuthForms and session management
+  - [x] E2E login, registration, and logout implementation
+  - [x] Secure Steam integration
+- [x] **Milestone 5: Validation**
+  - [x] Validate Onboarding
+  - [x] Validate Account Steam integration
+
+### Phase 3: Store Page MVP
+- [ ] **Milestone 6: Store Module Functionality**
+  - [x] Ensure user meets all requirements before triggering store
+  - [x] Allow user to complete onboarding and steam integration within flow
+  - [ ] Create webhook and perform delivery for payment event
+
+### Phase 4: User Experience Enhancement
+- [x] **Milestone 7: User Interface Polish**
+  - [x] Complete Atomic Design conversion for components
+  - [x] Enhance signup and login flow with UX improvements
+- [x] **Milestone 8: Advanced Features Integration**
+  - [x] Integrate Headless Tebex API features for behind-the-scenes product management
+  - [x] Integrate TebexJS 1.0.0 Checkout Modal for a seamless checkout experience
+
+### Phase 5: Optimization and Scaling
+- [ ] **Milestone 9: Performance Tuning**
+  - [ ] Optimize application loading times
+  - [ ] Implement comprehensive caching strategies
+- [ ] **Milestone 10: Preparation for Scale**
+  - [ ] Maximize test coverage to ensure stability
+  - [ ] Perform benchmark tests for future comparison
+  - [ ] Review infrastructure scalability for anticipated growth
+
+### Phase 6: Store Pre-Launch and Launch
+- [ ] **Milestone 11: Pre-Launch Checks**
+  - [ ] Conduct final security audits
+  - [ ] Perform user acceptance testing (UAT)
+- [ ] **Milestone 12: Launch**
+  - [ ] Go-live with the store page
+  - [ ] Document real-time user feedback on Discord and from staff
+  - [ ] Monitor system performance
+
+### Phase 7: Post-Launch Activities
+- [ ] **Milestone 13: Post-Launch Support and Maintenance**
+  - [ ] Address immediate post-launch feedback and issues
+  - [ ] Plan and initiate the next iteration of features and improvements
+
+### Phase 8: Automated Feedback Loop
+- [ ] **Milestone 14: Continuous Feedback Implementation**
+  - [ ] E2E implementation of contact form for guests
+  - [ ] E2E implementation of support tickets for users
+  - [ ] E2E implementation for reviews
+
+### Phase 9: Account Permissions Utility
+- [ ] **Milestone 15: Role-Based Access Control**
+  - [ ] Map logged-in user to role
+  - [ ] Create wrapper passed with expected permission for rendering
+
+### Phase 10: Admin Dashboard
+- [ ] **Milestone 16: Admin Tools and Reviews**
+  - [ ] E2E implementation of support tickets for users
+  - [ ] E2E implementation for reviews (product/site/server/general)
+
+</details>
+
+## 🛠 Project Roadmap
+
+<details closed><summary>Tasks</summary>
+
+### Completed Tasks
+- [X] Integrate Tailwind CSS for styling
+- [X] Create Store page layout
+- [X] Design and split the page into sections using the Atomic Design methodology
+- [X] Convert all components to use Atomic Design, with detailed examples in the Button folder under molecules
+- [X] Introduce default prop fallbacks, design tokens, and variants
+- [X] Setup modal for Premium Membership CTA
+- [X] Implement AuthForms with conditional rendering
+  - [X] SignUp/SignIn/LoggedInView
+  - [X] OnboardingRequiredView/SteamIntegrationRequiredView/LoggedInAndValidatedView
+- [X] Integrate `remix-validated-form` with Zod for form validation
+- [X] Design and set up the sign-up process
+- [X] Set up Remix session storage for state management
+- [X] Implement end-to-end login and onboarding validation
+- [X] Add live check for username availability during onboarding
+- [X] Integrate Steam validation and flow within the product flow
+- [X] Add Tebex product management API calls
+- [X] Integrate ESLint and Prettier to enforce coding style
+- [X] Setup `remix-utilities` for header IP fetching
+- [X] Call Tebex API with user IP and UID to create and manage user basket
+  - [X] Automatically add Premium Membership to user basket
+- [X] Implement `remix-dev` for easier testing
+- [X] Setup logout with user data cleanup
+- [X] Setup validation/error handling for Tebex API
+- [X] Add cookie session management for Tebex checkout API data
+- [X] Document files across the project
+- [X] Set up dev branch, rename master to production
+- [X] Integrate TebexJS 1.0.0 for e-commerce checkout popup
+- [X] Secure Steam integration
+- [X] Finalize logout functionality with token invalidation
+- [X] Finish registration process
+- [X] Enforce cookie typing for checkout process
+- [X] Setup protected dev branch for PR merges
+- [X] Setup GitHub Action for ESLint compliance checks
+- [X] Setup GitHub Action to build Docker image (`remix vite:build`)
+- [X] Setup webhook action for server updates
+
+### Upcoming Tasks
+- [ ] Refactor other existing pages on ImperfectGamers.org
+- [ ] Further enhance the integration of design tokens across components
+- [ ] Expand the Tebex integration to support additional product types
+- [ ] Optimize performance and loading times across all modules
+- [ ] Extend authentication flows to include more third-party integrations
+- [ ] Develop more comprehensive user analytics features
+- [ ] Add jest / enzyme unit and integration test coverage across components
+
+</details>
+
+---
+
+## 📄 License
+
+```
+/* © Imperfect and Company LLC - All Rights Reserved
+ * Unauthorized copying of this file, via any medium is strictly prohibited
+ * Proprietary and Read-only, April 2024
+ */
 ```
 
-This encapsulation strategy allows us to build complex UIs from simple, reusable components, improving the application's maintainability and adaptability.
+---
 
-## Organisms: Creating Functional Units
+## 👏 Acknowledgments
 
-Organisms are complex UI components that form distinct sections of an interface, incorporating multiple molecules and atoms. The StoreHeader.tsx is an example of an organism, assembling logo, navigation links (molecules), and buttons (atoms) into a comprehensive header for the store.
-```tsx
-// Simplified example from StoreHeader.tsx
-const StoreHeader = () => {
-  return (
-    <header>
-      <Logo />
-      <NavigationLinks />
-      <Button>Sign In</Button>
-    </header>
-  );
-};
-```
+Case Study / Strategic Partnership with [Tebex](https://www.tebex.io/).
 
-## Templates: Establishing Layouts
+<a href="https://imperfectgamers.org"><img src="https://cdn.imperfectgamers.org/inc/assets/img/textlogo.png" width="15" height="15" title="Imperfect Gamers" alt="Logo"></a> Copyright 2020 © <a href="https://imperfectgamers.org" target="_blank">Imperfect Gamers</a>.
 
-Templates consist of groups of organisms stitched together to form pages. They place components into a layout and demonstrate the design's flow. In our StoreTemplate.tsx, we layout the header, main content, and footer organisms to compose the store's page structure.
-```tsx
-// Example from StoreTemplate.tsx
-const StoreTemplate = ({ children }) => {
-  return (
-    <div>
-      <StoreHeader />
-      <main>{children}</main>
-      <StoreFooter />
-    </div>
-  );
-};
-```
+[**Return**](#-quick-links)
 
-This layered approach to component architecture, informed by Atomic Design, allows our team to construct and manage the UI with unparalleled precision and flexibility. By adhering to this methodology, we ensure that the Imperfect Gamers Store Module remains scalable, maintainable, and ready to adapt to future needs or enhancements.
-
-# Our Styling Approach: Tailwind CSS and CSS Modules
-
-Our approach to styling in the Imperfect Gamers Store Module is a testament to the flexibility and power of Tailwind CSS, complemented by strategic use of CSS modules and a centralized stylesheet. This multi-faceted styling strategy enables rapid UI development, ensures consistency, and supports scoped styling for enhanced maintainability.
-
-## Tailwind CSS: The Core of Our Styling
-
-At the core of our styling strategy lies tailwind.css, a utility-first CSS framework that has revolutionized the way we approach UI design. Tailwind's utility classes allow us to quickly build custom designs without leaving our HTML, significantly speeding up the development process.
-
-For instance, our Button atom leverages Tailwind's utility classes to apply styles directly in the component, providing a clear, concise, and readable way to style elements:
-```tsx
-// Example from Button.tsx
-const Button = ({ variant = 'primary', children }) => {
-  return (
-    <button className={`px-4 py-2 text-white ${variant === 'primary' ? 'bg-blue-500' : 'bg-gray-500'}`}>
-      {children}
-    </button>
-  );
-};
-```
-
-## Tailwind Config: Extending with Custom Themes
-
-Our project extends Tailwind's default configuration through tailwind.config.js, introducing custom themes and variants specific to our branding needs. This customization enables us to define bespoke color palettes, spacing, breakpoints, and more, ensuring that our UI components align perfectly with the Imperfect Gamers aesthetic.
-
-## Scoped Styling with CSS Modules
-
-For components requiring specific styles that go beyond utility classes, we employ CSS modules, as seen in ToggleSwitch.module.css and MembershipCard.module.css. This approach allows us to encapsulate styles at the component level, avoiding global namespace pollution and ensuring styles are scoped only to the components they are meant for.
-```tsx
-/* Example from ToggleSwitch.module.css */
-.toggleSwitch {
-  /* Custom switch styles */
-}
-```
-
-CSS modules enhance our component's reusability and maintainability by keeping the styling localized, reducing the risk of style conflicts across the application.
-
-## Button Props and Variants: Encapsulating Design Logic
-
-The Button component exemplifies our sophisticated use of props and variants to control styling dynamically. By passing a variant prop, we dictate the button's appearance, leveraging Tailwind's utility classes and custom styles defined in our CSS modules or main stylesheet:
-```tsx
-// Enhanced example from Button.tsx to showcase variants
-const buttonStyles = {
-  primary: 'bg-blue-500 hover:bg-blue-700',
-  secondary: 'bg-gray-500 hover:bg-gray-700',
-  // Additional variants...
-};
-
-const Button = ({ variant = 'primary', children }) => {
-  return <button className={`px-4 py-2 text-white ${buttonStyles[variant]}`}>{children}</button>;
-};
-```
-
-This pattern offers an elegant solution for managing multiple button styles within the application, showcasing the blend of Tailwind CSS's utility-first approach with traditional CSS to achieve a highly flexible and maintainable styling system.
-
-## Tailwind CSS vs. CSS Modules: A Balanced Approach
-
-Our styling strategy reflects a balance between the utility-first approach of Tailwind CSS and the scoped styling provided by CSS modules. Tailwind CSS excels in rapidly prototyping and building consistent UIs with its utility classes, while CSS modules offer granular control over component-specific styles, ideal for complex or unique component designs that utility classes alone cannot handle.
-
-By leveraging both approaches, we capitalize on Tailwind CSS for broad, application-wide styles and consistency, and CSS modules for component-specific styles, ensuring our styling is both efficient and scalable.
-
-## Conclusion
-
-Our diverse styling strategy—embracing Tailwind CSS for utility and speed, extending its capabilities with custom configurations, and complementing it with CSS modules for scoped styling—demonstrates our commitment to building a high-quality, maintainable, and scalable UI for the Imperfect Gamers Store Module. This approach allows our team to navigate the trade-offs between rapid development, customization, and maintainability, ensuring our platform remains at the forefront of modern web design practices.
-
-# Authentication Flow in the Imperfect Gamers Store Module
-
-The authentication flow within the Imperfect Gamers Store Module is a critical component, ensuring a secure and seamless user experience. This flow is meticulously designed, leveraging the capabilities of Remix to handle data loading, form submissions, and session management. Here’s an in-depth look at how the authentication process is orchestrated across different files and components:
-
-## Step 1: Initiating Authentication (entry.server.tsx and root.tsx)
-
-The journey begins with `entry.server.tsx`, where the server-side entry point is defined. This file is crucial for managing initial requests and loading necessary data for rendering. Through server-side rendering (SSR), we ensure that the authentication state is correctly initialized based on the user's session.
-
-```tsx
-// entry.server.tsx
-// Server-side logic to check user's authentication state
-```
-
-`root.tsx` plays a pivotal role in setting up the application context, including user session data passed from the server, ensuring that the authentication state is accessible throughout the application.
-
-## Step 2: Displaying the Authentication Form (`AuthForms.tsx`)
-
-`AuthForms.tsx` serves as the central component for rendering the login and signup forms. It dynamically displays the appropriate form based on the user's action (e.g., clicking a login button). This component utilizes Remix's `useActionData` to handle server-side validation errors and feedback.
-
-```tsx
-// AuthForms.tsx
-// Renders Login or Signup forms with validation feedback
-```
-
-## Step 3: Submitting the Form (`authenticator.server.ts`)
-
-Upon form submission, `authenticator.server.ts` takes center stage. This file defines an action function that processes the login request. It interacts with the backend authentication service to validate user credentials. Successful authentication results in session creation, using utilities from `session.ts` to manage session data securely.
-
-```tsx
-// authenticator.server.ts
-// Handles login logic and session creation
-```
-
-## Step 4: Managing Sessions (`session.ts`)
-
-`session.ts` is integral to managing user sessions. It utilizes Remix's session management capabilities to create, update, and destroy session data. This file ensures that user authentication states are accurately maintained across the application.
-
-```tsx
-// session.ts
-// Session management logic
-```
-
-## Step 5: User Feedback and Redirection (`root.tsx` and `useEffect` Hooks)
-
-Upon successful login, the user is redirected to their intended destination or a default route, such as the user profile page. This behavior is facilitated by a combination of `root.tsx` and React’s `useEffect` hooks within our components, ensuring a smooth transition post-authentication.
-
-```tsx
-// useEffect in relevant component
-// Redirects user upon successful login
-```
-
-## Entry Points and Server-Side Rendering
-
-### entry.server.tsx
-
-This file elaborates on the sophisticated server-side rendering logic, emphasizing error handling and shell rendering. The detailed setup for managing the rendering process for both bot and browser requests underscores a robust infrastructure aimed at optimizing performance and user experience across different platforms.
-
-## Styling and UI Components
-
-### store.css
-
-The CSS details for FAQ items, including hover effects and transitions, reflect a keen attention to interactivity and user engagement within the FAQ section. Styling for `.faq-item` and `.faq-question` indicates a user-friendly approach, enhancing the readability and accessibility of FAQ content. The use of Font Awesome for indicators and smooth transition effects for answers showcases an effort to create a polished, intuitive UI.
-
-### MembershipCard.module.css
-
-This brief segment hints at responsive design considerations for the membership card, specifically targeting smaller screens. The hidden `.membership-card__spinback-effect` in smaller viewports suggests an adaptation of animations and effects to accommodate various devices, prioritizing user experience and interface clarity.
-
-## Deeper Dive into Technical Implementation
-
-### Server Rendering and Error Handling
-
-The continued examination of `entry.server.tsx` highlights the detailed server-side rendering logic used in the project. The use of `renderToPipeableStream` from React 18 for streaming HTML responses and handling errors demonstrates a sophisticated approach to optimizing the loading experience and managing errors efficiently.
-
-### Enhanced Styling Techniques
-
-Additional CSS in `store.css` reveals more advanced styling techniques, including animations and hover effects that enhance user interaction and visual appeal. The project employs creative transitions and animations to engage users, contributing to a dynamic and immersive web experience.
-
-### Authentication and User Experience
-
-#### authenticator.server.ts
-
-Upon form submission, `authenticator.server.ts` takes center stage. This file defines an action function that processes the login request. It interacts with the backend authentication service to validate user credentials. Successful authentication results in session creation, using utilities from `session.ts` to manage session data securely.
-
-## Conclusion
-These insights reveal a deeply thought-out strategy that spans technical implementation, user experience, legal compliance, and visual design. The project appears to be leveraging advanced web development practices to not only ensure the site is performant and SEO-friendly but also engaging and trustworthy for the user. The attention to detail in animations, styling, and dynamic content presentation, alongside the handling of authentication and user sessions, indicates a commitment to creating a seamless and immersive experience for the community.
-Through this orchestrated sequence of interactions across various files, the Imperfect Gamers Store Module implements a secure, efficient, and user-friendly authentication flow. This comprehensive approach not only enhances security but also ensures a seamless user experience from initial login to accessing protected content.
+---
