@@ -20,15 +20,6 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Generate .env file
-        run: |
-          echo "Generating .env file..."
-          echo "STEAM_API_KEY=${{ secrets.STEAM_API_KEY }}" >> $GITHUB_ENV
-          echo "TEBEX_SECRET_KEY=${{ secrets.TEBEX_SECRET_KEY }}" >> $GITHUB_ENV
-          echo "TEBEX_WEBSTORE_IDENTIFIER=${{ secrets.TEBEX_WEBSTORE_IDENTIFIER }}" >> $GITHUB_ENV
-          echo "AUTHORIZATION_URL=${{ secrets.AUTHORIZATION_URL }}" >> $GITHUB_ENV
-          echo ".env file generated successfully."
-
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
