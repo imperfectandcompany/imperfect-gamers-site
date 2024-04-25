@@ -36,7 +36,7 @@ export async function createTebexBasket(
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
-				Authorization: `Basic ${btoa(`${TEBEX_WEBSTORE_IDENTIFIER}:${TEBEX_SECRET_KEY}`)}`
+				Authorization: `Basic ${btoa(`${TEBEX_WEBSTORE_IDENTIFIER}:${TEBEX_SECRET_KEY}`)}`,
 			},
 			body: JSON.stringify(requestBody),
 		},
@@ -44,7 +44,7 @@ export async function createTebexBasket(
 
 	if (!response.ok) {
 		// Handle error appropriately
-		throw new Error(`Tebex basket creation failed: ${response.statusText}`);
+		throw new Error(`Tebex basket creation failed: ${response.statusText}`)
 	}
 	const basketData = await response.json()
 	return basketData.data
