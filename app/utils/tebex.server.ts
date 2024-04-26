@@ -2,8 +2,8 @@ import type { Basket, Data } from './tebex.interface'
 
 // Tebex API details
 const TEBEX_API_BASE = 'https://headless.tebex.io'
-const TEBEX_SECRET_KEY = process.env.TEBEX_SECRET_KEY // Ensure this is set in your environment
-const TEBEX_WEBSTORE_IDENTIFIER = process.env.TEBEX_WEBSTORE_IDENTIFIER // Ensure this is set in your environment
+const TEBEX_SECRET_KEY = process.env.TEBEX_SECRET_KEY
+const TEBEX_WEBSTORE_IDENTIFIER = process.env.TEBEX_WEBSTORE_IDENTIFIER
 
 // Function to create a basket on Tebex
 export async function createTebexBasket(
@@ -23,7 +23,10 @@ export async function createTebexBasket(
 		},
 	}
 
-	if (process.env.NODE_ENV !== 'development') {
+	if (process.env.NODE_ENV === 'development') {
+		console.log('Development mode - using test IP address')
+	} else {
+		// Add the IP address to the request body
 		requestBody.ip_address = ipAddress
 	}
 
@@ -33,6 +36,7 @@ export async function createTebexBasket(
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
+				Authorization: `Basic ${btoa(`${TEBEX_WEBSTORE_IDENTIFIER}:${TEBEX_SECRET_KEY}`)}`,
 			},
 			body: JSON.stringify(requestBody),
 		},
@@ -92,8 +96,6 @@ export async function Request<T>(
 		if (typeof value === 'boolean') value = value ? '1' : '0'
 		url.searchParams.append(key, value)
 	})
-
-	console.log(JSON.stringify(body))
 
 	const headers: Record<string, string> = {
 		'Content-Type': 'application/json',
