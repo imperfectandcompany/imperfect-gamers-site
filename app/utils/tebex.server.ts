@@ -2,8 +2,8 @@ import type { Basket, Data } from './tebex.interface'
 
 // Tebex API details
 const TEBEX_API_BASE = 'https://headless.tebex.io'
-const TEBEX_SECRET_KEY = process.env.TEBEX_SECRET_KEY
-const TEBEX_WEBSTORE_IDENTIFIER = process.env.TEBEX_WEBSTORE_IDENTIFIER
+const TEBEX_SECRET_KEY = process.env.TEBEX_SECRET_KEY // Ensure this is set in your environment
+const TEBEX_WEBSTORE_IDENTIFIER = process.env.TEBEX_WEBSTORE_IDENTIFIER // Ensure this is set in your environment
 
 // Function to create a basket on Tebex
 export async function createTebexBasket(
@@ -23,10 +23,7 @@ export async function createTebexBasket(
 		},
 	}
 
-	if (process.env.NODE_ENV === 'development') {
-		console.log('Development mode - using test IP address')
-	} else {
-		// Add the IP address to the request body
+	if (process.env.NODE_ENV !== 'development') {
 		requestBody.ip_address = ipAddress
 	}
 
@@ -36,15 +33,27 @@ export async function createTebexBasket(
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
-				Authorization: `Basic ${btoa(`${TEBEX_WEBSTORE_IDENTIFIER}:${TEBEX_SECRET_KEY}`)}`,
 			},
 			body: JSON.stringify(requestBody),
 		},
 	)
 
 	if (!response.ok) {
-		// Handle error appropriately
-		throw new Error(`Tebex basket creation failed: ${response.statusText}`)
+		const errorData = await response.json()
+		if (errorData.ok) {
+			console.log(`Status: ${errorData.status}
+			Type: ${errorData.type}
+			Title: ${errorData.title}
+			Detail: ${errorData.detail}
+			Error Code: ${errorData.error_code}
+			Field Details: ${errorData.field_details.length > 0 ? errorData.field_details.join(', ') : 'None'}
+			Meta: ${errorData.meta.length > 0 ? errorData.meta.join(', ') : 'None'}`);
+			throw new Error(`Tebex basket creation failed: ${response.statusText}`)
+		} else {
+			throw new Error(
+				`Tebex basket creation failed: ${response.statusText}`,
+			)
+		}
 	}
 	const basketData = await response.json()
 	return basketData.data
@@ -96,6 +105,8 @@ export async function Request<T>(
 		if (typeof value === 'boolean') value = value ? '1' : '0'
 		url.searchParams.append(key, value)
 	})
+
+	console.log(JSON.stringify(body))
 
 	const headers: Record<string, string> = {
 		'Content-Type': 'application/json',
