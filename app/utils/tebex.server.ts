@@ -2,8 +2,8 @@ import type { Basket, Data } from './tebex.interface'
 
 // Tebex API details
 const TEBEX_API_BASE = 'https://headless.tebex.io'
-const TEBEX_SECRET_KEY = process.env.TEBEX_SECRET_KEY // Ensure this is set in your environment
-const TEBEX_WEBSTORE_IDENTIFIER = process.env.TEBEX_WEBSTORE_IDENTIFIER // Ensure this is set in your environment
+const TEBEX_SECRET_KEY = process.env.TEBEX_SECRET_KEY
+const TEBEX_WEBSTORE_IDENTIFIER = process.env.TEBEX_WEBSTORE_IDENTIFIER
 
 // Function to create a basket on Tebex
 export async function createTebexBasket(
@@ -33,6 +33,7 @@ export async function createTebexBasket(
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
+				Authorization: `Basic ${btoa(`${TEBEX_WEBSTORE_IDENTIFIER}:${TEBEX_SECRET_KEY}`)}`,
 			},
 			body: JSON.stringify(requestBody),
 		},
@@ -40,14 +41,14 @@ export async function createTebexBasket(
 
 	if (!response.ok) {
 		const errorData = await response.json()
-		if (errorData.ok) {
+		if (errorData) {
 			console.log(`Status: ${errorData.status}
-			Type: ${errorData.type}
-			Title: ${errorData.title}
-			Detail: ${errorData.detail}
-			Error Code: ${errorData.error_code}
-			Field Details: ${errorData.field_details.length > 0 ? errorData.field_details.join(', ') : 'None'}
-			Meta: ${errorData.meta.length > 0 ? errorData.meta.join(', ') : 'None'}`);
+			Type: ${errorData?.type}
+			Title: ${errorData?.title}
+			Detail: ${errorData?.detail}
+			Error Code: ${errorData?.error_code}
+			Field Details: ${errorData.field_details?.length > 0 ? errorData.field_details.join(', ') : 'None'}
+			Meta: ${errorData.meta?.length > 0 ? errorData.meta.join(', ') : 'None'}`);
 			throw new Error(`Tebex basket creation failed: ${response.statusText}`)
 		} else {
 			throw new Error(
