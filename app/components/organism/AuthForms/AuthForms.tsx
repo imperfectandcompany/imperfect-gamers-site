@@ -2,12 +2,13 @@
 
 import { useFetcher, useLoaderData } from '@remix-run/react'
 import type React from 'react'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useCallback } from 'react'
 import AuthorizeForm from '~/components/molecules/AuthorizeForm'
 import LoginForm from '~/components/molecules/LoginForm'
 import SignUpForm from '~/components/molecules/SignUpForm'
 import UsernameForm from '~/components/molecules/UsernameForm'
 import type { LoaderData } from '~/routes/store'
+import { TebexCheckoutConfig } from '~/utils/tebex.interface'
 
 // TODO update docs for this
 interface AuthFormProps {
@@ -64,65 +65,77 @@ const AuthForms: React.FC<AuthFormProps> = ({ isOpen }) => {
 	const switchForm = () => {
 		setIsLoginForm(!isLoginForm)
 	}
+	const prevIsOpen = useRef(isOpen)
 
 	const [didBasketExist] = useState(basketId ? true : false)
 
-	/**
-	 * Handles the logout action by submitting a POST request to the "/logout" endpoint.
-	 */
 	const handleLogout = () => {
 		fetcher.submit({}, { method: 'post', action: '/logout' })
 	}
 
-	function UseTebexCheckout(checkoutId: string, theme: 'light' | 'dark') {
-		if (window.Tebex) {
-			const config = {
+	// UseTebexCheckout function
+	const UseTebexCheckout = useCallback(
+		(checkoutId: string, theme: 'light' | 'dark') => {
+			const { Tebex } = window
+			if (!Tebex) return
+	
+			const config: TebexCheckoutConfig = {
 				ident: checkoutId,
 				theme: theme,
 			}
-			window.Tebex.checkout.init(config)
-			window.Tebex.checkout.launch()
-		}
-	}
-
-	const initiateCheckout = () => {
+	
+			Tebex.checkout.init(config)
+			Tebex.checkout.launch()
+	
+			Tebex.checkout.on(Tebex.events.PAYMENT_COMPLETE, event => {
+				// Handle payment completion here
+			})
+	
+			Tebex.checkout.on(Tebex.events.PAYMENT_ERROR, event => {
+				// Handle payment error here
+			})
+	
+			Tebex.checkout.on(Tebex.events.CLOSE, event => {
+				// Handle modal close here
+				console.log('Tebex Event Handler Close');
+			})
+	
+			Tebex.checkout.on(Tebex.events.OPEN, event => {
+				// Handle modal open here
+				console.log('Tebex Event Handler Open');
+			})
+		},
+		[],
+	)
+	
+	const initiateCheckout = useCallback(() => {
 		if (packages && basketId && isAuthorized) {
 			console.log('Checkout launching...')
 			UseTebexCheckout(basketId, 'dark')
 		}
-	}
+	}, [packages, basketId, isAuthorized, UseTebexCheckout])
 
-	useEffect(() => {
-		if (
-			isOpen &&
-			basketId &&
-			isAuthorized &&
-			packages &&
-			!storeTebexCheckoutmodalTriggeredRef.current
-		) {
-			// setup some onload thing later that calls initiate checkout
-			if (basketId) {
-				console.log('checkout initiated')
-				initiateCheckout()
-			}
-		}
-	}, [isOpen, isAuthorized, basketId, packages, initiateCheckout])
+	// useEffect(() => {
+	// 	if (isOpen && isAuthenticated && !prevIsAuthenticated.current) {
+	// 		initiateCheckout()
+	// 	}
+	// 	prevIsAuthenticated.current = isAuthenticated
+	// }, [isOpen, isAuthenticated, initiateCheckout])
 
 	useEffect(() => {
 		const authorizationStatus = isAuthenticated && isOnboarded && isSteamLinked
 		setIsAuthorized(authorizationStatus)
 		console.log('Authorization status updated:', authorizationStatus)
 
-		// Reset store request trigger if logged out
 		if (!isAuthenticated && prevIsAuthenticated.current) {
 			storeRequestTriggeredRef.current = false
+			storeTebexCheckoutmodalTriggeredRef.current = false
+			setIsAuthorized(false)
 			console.log('User logged out, reset store request trigger.')
+			return // Exit the useEffect callback function early
 		}
 		prevIsAuthenticated.current = isAuthenticated
-	}, [isAuthenticated, isOnboarded, isSteamLinked])
 
-	useEffect(() => {
-		// Trigger store request if all conditions are met and it has not been done before
 		if (
 			isOpen &&
 			isAuthorized &&
@@ -130,7 +143,6 @@ const AuthForms: React.FC<AuthFormProps> = ({ isOpen }) => {
 			storeSecondRequestTriggeredRef
 		) {
 			if (!packages.some(pkg => pkg.id === 6154841)) {
-				// Determine the correct action based on whether a basketId exists if package 6154841 is not in the packages array
 				const action = didBasketExist ? '/store/add' : '/store/create'
 				console.log(`Triggering store request to ${action}...`)
 				fetcher.submit(null, { method: 'post', action })
@@ -140,11 +152,24 @@ const AuthForms: React.FC<AuthFormProps> = ({ isOpen }) => {
 			}
 
 			storeRequestTriggeredRef.current = true
-		} else if (!isOpen) {
-			// Clean up if modal is closed
+		} else if (!isOpen && prevIsOpen.current) {
 			storeRequestTriggeredRef.current = false
 			storeTebexCheckoutmodalTriggeredRef.current = false
 			console.log('Modal closed, cleaning up store request trigger.')
+		}
+
+		prevIsOpen.current = isOpen
+
+		if (
+			isOpen &&
+			!didBasketExist &&
+			basketId &&
+			isAuthorized &&
+			packages &&
+			!storeSecondRequestTriggeredRef.current
+		) {
+			fetcher.submit(null, { method: 'post', action: '/store/add' })
+			storeSecondRequestTriggeredRef.current = true
 		}
 	}, [
 		isOpen,
@@ -154,36 +179,16 @@ const AuthForms: React.FC<AuthFormProps> = ({ isOpen }) => {
 		packages,
 		didBasketExist,
 		fetcher,
-	])
-
-	useEffect(() => {
-		// Only attempt to add a package to the basket if the basket was created successfully for the first time
-		if (
-			isOpen &&
-			!didBasketExist &&
-			basketId &&
-			isAuthorized &&
-			packages &&
-			!storeSecondRequestTriggeredRef.current
-		) {
-			// Attempt to add package to newly created basket here
-			fetcher.submit(null, { method: 'post', action: '/store/add' })
-			storeSecondRequestTriggeredRef.current = true
-		}
-	}, [
-		isOpen,
-		isAuthorized,
-		didBasketExist,
+		isAuthenticated,
+		isOnboarded,
+		isSteamLinked,
 		basketId,
-		packages,
-		fetcher,
-		storeSecondRequestTriggeredRef,
+		initiateCheckout,
 	])
 
-	// Function to handle successful Steam linking
-	const handleSteamLinkSuccess = () => {
-		setIsAuthorized(true) // Assume other conditions are met for simplicity
-	}
+	const handleSteamLinkSuccess = useCallback(() => {
+		setIsAuthorized(true)
+	}, [])
 
 	return (
 		<>
