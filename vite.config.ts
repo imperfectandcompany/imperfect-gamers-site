@@ -8,6 +8,9 @@ installGlobals()
 
 export default defineConfig({
 	plugins: [remixDevTools(), remix(), tsconfigPaths()],
+	define: {
+		__DEV__: process.env.NODE_ENV === 'development',
+	},
 	ssr: {
 		noExternal: ['remix-utils', 'is-ip'],
 	},
