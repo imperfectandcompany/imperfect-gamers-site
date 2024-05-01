@@ -48,12 +48,10 @@ export async function createTebexBasket(
 			Detail: ${errorData?.detail}
 			Error Code: ${errorData?.error_code}
 			Field Details: ${errorData.field_details?.length > 0 ? errorData.field_details.join(', ') : 'None'}
-			Meta: ${errorData.meta?.length > 0 ? errorData.meta.join(', ') : 'None'}`);
+			Meta: ${errorData.meta?.length > 0 ? errorData.meta.join(', ') : 'None'}`)
 			throw new Error(`Tebex basket creation failed: ${response.statusText}`)
 		} else {
-			throw new Error(
-				`Tebex basket creation failed: ${response.statusText}`,
-			)
+			throw new Error(`Tebex basket creation failed: ${response.statusText}`)
 		}
 	}
 	const basketData = await response.json()

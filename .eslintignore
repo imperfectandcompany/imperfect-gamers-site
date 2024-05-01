@@ -1,3 +1,5 @@
 node_modules/
 public/1.0.0.js
+public/mockServiceWorker.js
+build
 README.md

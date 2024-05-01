@@ -2,48 +2,19 @@
 
 import { useFetcher, useLoaderData } from '@remix-run/react'
 import type React from 'react'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useCallback } from 'react'
 import AuthorizeForm from '~/components/molecules/AuthorizeForm'
 import LoginForm from '~/components/molecules/LoginForm'
 import SignUpForm from '~/components/molecules/SignUpForm'
 import UsernameForm from '~/components/molecules/UsernameForm'
 import type { LoaderData } from '~/routes/store'
+import { useFetcherWithPromise } from '~/utils/general'
+import type { TebexCheckoutConfig } from '~/utils/tebex.interface'
 
-// TODO update docs for this
 interface AuthFormProps {
 	isOpen?: boolean
 }
 
-/**
- * Renders the authentication forms based on the user's authentication status.
- *
- * @remarks
- * This component follows the atomic design methodology, where it is categorized as an organism component.
- * It is built using Remix React, a framework for building server-rendered React applications.
- *
- * @example
- * ```tsx
- * import AuthForms from '~/components/organism/AuthForms/AuthForms';
- *
- * const App: React.FC = () => {
- *   return (
- *     <div>
- *       <h1>Welcome to Imperfect Gamers Store</h1>
- *       <AuthForms />
- *     </div>
- *   );
- * };
- * ```
- *
- * @concept Atomic Design Methodology
- * The `AuthForms` component follows the atomic design methodology, which is a way of organizing components based on their complexity and reusability. In atomic design, components are categorized into atoms, molecules, organisms, templates, and pages. The `AuthForms` component is categorized as an organism component, which represents a combination of molecules and atoms to form a more complex UI element.
- *
- * @concept Remix React
- * Remix React is a framework for building server-rendered React applications. It provides a set of tools and conventions to simplify the development of server-rendered React applications. The `AuthForms` component is built using Remix React and leverages its features such as server-side rendering and data loading.
- *
- * @concept Modal
- * The `AuthForms` component is designed to be consumed inside a modal. A modal is a UI component that overlays the main content and is used to display additional information or perform specific actions. By integrating the `AuthForms` component inside a modal, users can interact with the authentication forms without leaving the current context or page.
- */
 const AuthForms: React.FC<AuthFormProps> = ({ isOpen }) => {
 	const {
 		isAuthenticated,
@@ -52,157 +23,203 @@ const AuthForms: React.FC<AuthFormProps> = ({ isOpen }) => {
 		isOnboarded,
 		username,
 		basketId,
-		packages,
+		packages = [],
 	} = useLoaderData<LoaderData>()
 	const [isLoginForm, setIsLoginForm] = useState(true)
 	const [isAuthorized, setIsAuthorized] = useState(false)
 	const storeRequestTriggeredRef = useRef(false)
-	const storeSecondRequestTriggeredRef = useRef(false)
-	const storeTebexCheckoutmodalTriggeredRef = useRef(false)
+	const { submit } = useFetcherWithPromise()
 	const prevIsAuthenticated = useRef(isAuthenticated)
 	const fetcher = useFetcher()
-	const switchForm = () => {
-		setIsLoginForm(!isLoginForm)
-	}
+	const prevIsOpen = useRef(isOpen)
 
-	const [didBasketExist] = useState(basketId ? true : false)
+	const [basketExists, setBasketExists] = useState(!!basketId)
 
-	/**
-	 * Handles the logout action by submitting a POST request to the "/logout" endpoint.
-	 */
+	useEffect(() => {
+		setBasketExists(!!basketId)
+	}, [basketId])
+
 	const handleLogout = () => {
 		fetcher.submit({}, { method: 'post', action: '/logout' })
 	}
 
-	function UseTebexCheckout(checkoutId: string, theme: 'light' | 'dark') {
-		if (window.Tebex) {
-			const config = {
+	const switchForm = () => {
+		setIsLoginForm(!isLoginForm)
+	}
+
+	const UseTebexCheckout = useCallback(
+		(checkoutId: string, theme: 'light' | 'dark') => {
+			const { Tebex } = window
+			if (!Tebex) return
+
+			const config: TebexCheckoutConfig = {
 				ident: checkoutId,
 				theme: theme,
 			}
-			window.Tebex.checkout.init(config)
-			window.Tebex.checkout.launch()
+
+			Tebex.checkout.init(config)
+			Tebex.checkout.launch()
+
+			Tebex.checkout.on(Tebex.events.PAYMENT_COMPLETE, event => {
+				// Handle payment completion here
+			})
+
+			Tebex.checkout.on(Tebex.events.PAYMENT_ERROR, event => {
+				// Handle payment error here
+			})
+
+			Tebex.checkout.on(Tebex.events.CLOSE, event => {
+				// Handle modal close here
+				console.log('Tebex Event Handler Close')
+			})
+
+			Tebex.checkout.on(Tebex.events.OPEN, event => {
+				// Handle modal open here
+				console.log('Tebex Event Handler Open')
+			})
+		},
+		[],
+	)
+
+	const createBasket = async () => {
+		console.log('Creating basket...')
+		try {
+			const response = await submit(null, {
+				method: 'post',
+				action: '/store/create',
+			})
+			return response.basketId
+		} catch (error) {
+			console.error('Failed to create basket:', error)
+			throw error
 		}
 	}
 
-	const initiateCheckout = () => {
-		if (packages && basketId && isAuthorized) {
-			console.log('Checkout launching...')
-			UseTebexCheckout(basketId, 'dark')
+	const addPackageToBasket = async (basketId: string) => {
+		console.log('Adding package to basket...')
+		try {
+			const response = await submit(
+				{ basketId },
+				{ method: 'post', action: '/store/add' },
+			)
+			return response.packages
+		} catch (error) {
+			console.error('Failed to add package:', error)
+			throw error
 		}
 	}
 
-	useEffect(() => {
-		if (
-			isOpen &&
-			basketId &&
-			isAuthorized &&
-			packages &&
-			!storeTebexCheckoutmodalTriggeredRef.current
-		) {
-			// setup some onload thing later that calls initiate checkout
-			if (basketId) {
-				console.log('checkout initiated')
-				initiateCheckout()
+	const initiateCheckout = (basketId: string) => {
+		console.log('Initiating checkout...')
+		UseTebexCheckout(basketId, 'dark')
+	}
+
+	const handleStoreInteractions = useCallback(async () => {
+		if (!isAuthorized || !isOpen) return
+
+		let localBasketId = basketId
+		let localPackages = packages
+
+		// Step 1: Create the basket if it doesn't exist
+		if (!localBasketId) {
+			const result = await createBasket()
+			if (result) {
+				localBasketId = result // Update the package with the response
+				setBasketExists(true)
 			}
 		}
-	}, [isOpen, isAuthorized, basketId, packages, initiateCheckout])
+
+		// Step 2: Add a package if it's not already in the basket
+		if (localBasketId && !packages.some(pkg => pkg.id === 6154841)) {
+			const result = await addPackageToBasket(localBasketId)
+			if (result) {
+				localPackages = result // Update the package with the response
+			}
+		}
+
+		// Step 3: Initiate checkout
+		if (localBasketId && localPackages.some(pkg => pkg.id === 6154841)) {
+			initiateCheckout(localBasketId)
+		}
+	}, [basketId, packages, isAuthorized, isOpen, UseTebexCheckout, submit])
 
 	useEffect(() => {
 		const authorizationStatus = isAuthenticated && isOnboarded && isSteamLinked
 		setIsAuthorized(authorizationStatus)
-		console.log('Authorization status updated:', authorizationStatus)
 
-		// Reset store request trigger if logged out
 		if (!isAuthenticated && prevIsAuthenticated.current) {
 			storeRequestTriggeredRef.current = false
-			console.log('User logged out, reset store request trigger.')
+			setIsAuthorized(false)
+			setBasketExists(false) // Reset on logout
+			return // Exit if user is not authenticated
 		}
+
 		prevIsAuthenticated.current = isAuthenticated
-	}, [isAuthenticated, isOnboarded, isSteamLinked])
 
-	useEffect(() => {
-		// Trigger store request if all conditions are met and it has not been done before
-		if (
-			isOpen &&
-			isAuthorized &&
-			!storeRequestTriggeredRef.current &&
-			storeSecondRequestTriggeredRef
-		) {
-			if (!packages.some(pkg => pkg.id === 6154841)) {
-				// Determine the correct action based on whether a basketId exists if package 6154841 is not in the packages array
-				const action = didBasketExist ? '/store/add' : '/store/create'
-				console.log(`Triggering store request to ${action}...`)
-				fetcher.submit(null, { method: 'post', action })
-			} else {
-				console.log('Package already in basket, skipping store request.')
-				initiateCheckout()
-			}
+		// Trigger interactions only when necessary and prevent multiple triggers
+		if (isOpen && isAuthorized && !storeRequestTriggeredRef.current) {
+			handleStoreInteractions()
+			storeRequestTriggeredRef.current = true // Prevent re-triggering until conditions change
+		}
 
-			storeRequestTriggeredRef.current = true
-		} else if (!isOpen) {
-			// Clean up if modal is closed
+		// Reset trigger when modal closes or user logs out
+		if (!isOpen && prevIsOpen.current) {
 			storeRequestTriggeredRef.current = false
-			storeTebexCheckoutmodalTriggeredRef.current = false
-			console.log('Modal closed, cleaning up store request trigger.')
 		}
+
+		prevIsOpen.current = isOpen
 	}, [
 		isOpen,
 		isAuthorized,
-		storeRequestTriggeredRef,
-		storeSecondRequestTriggeredRef,
-		packages,
-		didBasketExist,
-		fetcher,
+		isAuthenticated,
+		handleStoreInteractions,
+		basketExists,
 	])
 
-	useEffect(() => {
-		// Only attempt to add a package to the basket if the basket was created successfully for the first time
-		if (
-			isOpen &&
-			!didBasketExist &&
-			basketId &&
-			isAuthorized &&
-			packages &&
-			!storeSecondRequestTriggeredRef.current
-		) {
-			// Attempt to add package to newly created basket here
-			fetcher.submit(null, { method: 'post', action: '/store/add' })
-			storeSecondRequestTriggeredRef.current = true
+	const handleSteamLinkSuccess = useCallback(() => {
+		setIsAuthorized(true)
+	}, [])
+
+	const UserStatus = () => {
+		if (!basketId) {
+			return <div>Loading or creating your basket...</div>
 		}
-	}, [
-		isOpen,
-		isAuthorized,
-		didBasketExist,
-		basketId,
-		packages,
-		fetcher,
-		storeSecondRequestTriggeredRef,
-	])
 
-	// Function to handle successful Steam linking
-	const handleSteamLinkSuccess = () => {
-		setIsAuthorized(true) // Assume other conditions are met for simplicity
+		// Check if fetching data or processing a request
+		if (fetcher.state === 'loading') {
+			return <div>Processing...</div>
+		}
+
+		// Check if fetching data or processing a request
+		if ((fetcher.data as { error: string })?.error) {
+			return <div>Error: {(fetcher.data as { error: string }).error}</div>
+		}
+
+		if (!packages.some(pkg => pkg.id === 6154841)) {
+			return <div>Loading or adding premium package to basket...</div>
+		}
+
+		if (!username) {
+			return <UsernameForm />
+		}
+
+		if (isSteamLinked) {
+			return (
+				<>
+					<div>Steam Linked with ID: {steamId}</div>
+					<div>Onboarded as: {username}</div>
+				</>
+			)
+		}
+
+		return <AuthorizeForm onSuccess={handleSteamLinkSuccess} />
 	}
 
 	return (
 		<>
 			<div className="flex flex-col space-y-6">
 				{isAuthenticated ? (
-					<>
-						{username ? (
-							isSteamLinked ? (
-								<>
-									<div>Steam Linked with ID: {steamId}</div>
-									<div>Onboarded as: {username}</div>
-								</>
-							) : (
-								<AuthorizeForm onSuccess={handleSteamLinkSuccess} />
-							)
-						) : (
-							<UsernameForm />
-						)}
-					</>
+					<UserStatus />
 				) : isLoginForm ? (
 					<LoginForm />
 				) : (

@@ -1,4 +1,5 @@
-// components/molecules/LoginForm.tsx
+// ~app/components/molecules/LoginForm.tsx
+
 import { useFetcher } from '@remix-run/react'
 import { withZod } from '@remix-validated-form/with-zod'
 import type React from 'react'
@@ -40,6 +41,7 @@ const LoginForm: React.FC = () => {
 
 	return (
 		<ValidatedForm
+			data-testid="login-form"
 			validator={validator}
 			method="post"
 			action="/login"
