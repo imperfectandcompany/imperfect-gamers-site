@@ -17,7 +17,7 @@ const ABORT_DELAY = 5_000
 
 if (process.env.NODE_ENV === 'development') {
 	server.listen()
-  }
+}
 
 export default async function handleRequest(
 	request: Request,

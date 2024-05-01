@@ -9,7 +9,7 @@ import SignUpForm from '~/components/molecules/SignUpForm'
 import UsernameForm from '~/components/molecules/UsernameForm'
 import type { LoaderData } from '~/routes/store'
 import { useFetcherWithPromise } from '~/utils/general'
-import { TebexCheckoutConfig } from '~/utils/tebex.interface'
+import type { TebexCheckoutConfig } from '~/utils/tebex.interface'
 
 interface AuthFormProps {
 	isOpen?: boolean
@@ -28,7 +28,7 @@ const AuthForms: React.FC<AuthFormProps> = ({ isOpen }) => {
 	const [isLoginForm, setIsLoginForm] = useState(true)
 	const [isAuthorized, setIsAuthorized] = useState(false)
 	const storeRequestTriggeredRef = useRef(false)
-	const { submit, data } = useFetcherWithPromise()
+	const { submit } = useFetcherWithPromise()
 	const prevIsAuthenticated = useRef(isAuthenticated)
 	const fetcher = useFetcher()
 	const prevIsOpen = useRef(isOpen)
@@ -82,31 +82,37 @@ const AuthForms: React.FC<AuthFormProps> = ({ isOpen }) => {
 	)
 
 	const createBasket = async () => {
-		console.log('Creating basket...');
+		console.log('Creating basket...')
 		try {
-		  const response = await submit(null, { method: 'post', action: '/store/create' });
-		  return response.basketId;
+			const response = await submit(null, {
+				method: 'post',
+				action: '/store/create',
+			})
+			return response.basketId
 		} catch (error) {
-		  console.error('Failed to create basket:', error);
-		  throw error;
+			console.error('Failed to create basket:', error)
+			throw error
 		}
-	  };
-	  
+	}
+
 	const addPackageToBasket = async (basketId: string) => {
-		console.log('Adding package to basket...');
+		console.log('Adding package to basket...')
 		try {
-			const response = await submit({ basketId }, { method: 'post', action: '/store/add' });
-			return response.packages;
+			const response = await submit(
+				{ basketId },
+				{ method: 'post', action: '/store/add' },
+			)
+			return response.packages
 		} catch (error) {
-			console.error('Failed to add package:', error);
-			throw error;
+			console.error('Failed to add package:', error)
+			throw error
 		}
-	};
-	  
+	}
+
 	const initiateCheckout = (basketId: string) => {
-		console.log('Initiating checkout...');
-		UseTebexCheckout(basketId, 'dark');
-	};
+		console.log('Initiating checkout...')
+		UseTebexCheckout(basketId, 'dark')
+	}
 
 	const handleStoreInteractions = useCallback(async () => {
 		if (!isAuthorized || !isOpen) return
@@ -117,8 +123,8 @@ const AuthForms: React.FC<AuthFormProps> = ({ isOpen }) => {
 		// Step 1: Create the basket if it doesn't exist
 		if (!localBasketId) {
 			const result = await createBasket()
-			if(result){
-				localBasketId = result  // Update the package with the response
+			if (result) {
+				localBasketId = result // Update the package with the response
 				setBasketExists(true)
 			}
 		}
@@ -126,8 +132,8 @@ const AuthForms: React.FC<AuthFormProps> = ({ isOpen }) => {
 		// Step 2: Add a package if it's not already in the basket
 		if (localBasketId && !packages.some(pkg => pkg.id === 6154841)) {
 			const result = await addPackageToBasket(localBasketId)
-			if(result){
-				localPackages = result  // Update the package with the response
+			if (result) {
+				localPackages = result // Update the package with the response
 			}
 		}
 

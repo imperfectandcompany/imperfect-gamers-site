@@ -1,20 +1,20 @@
 // ~/utils/tebex.interface.ts
 export interface TebexCheckoutConfig {
-    ident: string
-    theme: 'light' | 'dark'
+	ident: string
+	theme: 'light' | 'dark'
 }
 
 export interface TebexCheckout {
-    init: (config: TebexCheckoutConfig) => void
-    launch: () => void
-    on: (event: string, callback: (event?: any) => void) => void
+	init: (config: TebexCheckoutConfig) => void
+	launch: () => void
+	on: (event: string, callback: (event?: any) => void) => void
 }
 
 export interface TebexEvents {
-    OPEN: string
-    CLOSE: string
-    PAYMENT_COMPLETE: string
-    PAYMENT_ERROR: string
+	OPEN: string
+	CLOSE: string
+	PAYMENT_COMPLETE: string
+	PAYMENT_ERROR: string
 }
 
 /**
