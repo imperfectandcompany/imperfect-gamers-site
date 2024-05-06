@@ -1,6 +1,6 @@
+---
 name: Task Creation
-description: Create a task for a bug fix, feature implementation, spike
-  investigation, or security vulnerability fix.
+description: Create a task for a bug fix, feature implementation, spike investigation, or security vulnerability fix.
 title: "[Task][Type]: "
 labels:
   - task
@@ -11,8 +11,7 @@ body:
     id: task-type
     attributes:
       label: Task Type
-      description: Select the type of task you are creating. This choice will
-        determine additional labels and required fields.
+      description: Select the type of task you are creating. This choice will determine additional labels and required fields.
       options:
         - Bug Fix
         - Feature Implementation
@@ -20,6 +19,7 @@ body:
         - Security Vulnerability Fix
     validations:
       required: true
+
   - type: input
     id: title
     attributes:
@@ -28,6 +28,7 @@ body:
       placeholder: Enter task title here
     validations:
       required: true
+
   - type: textarea
     id: description
     attributes:
@@ -36,6 +37,7 @@ body:
       placeholder: Describe the task here
     validations:
       required: true
+
   - type: textarea
     id: objective
     attributes:
@@ -44,6 +46,7 @@ body:
       placeholder: Specify the objective of the task
     validations:
       required: true
+
   - type: textarea
     id: reproduction-steps
     attributes:
@@ -52,61 +55,62 @@ body:
       placeholder: Describe reproduction steps if applicable
     validations:
       required: false
+
   - type: textarea
     id: technical-approach
     attributes:
       label: Technical Approach
-      description: (Optional for Features/Spike/Security) Suggest a technical approach
-        or solution for the task.
+      description: (Optional for Features/Spike/Security) Suggest a technical approach or solution for the task.
       placeholder: Describe the technical approach if applicable
     validations:
       required: false
+
   - type: textarea
     id: expected-outcome
     attributes:
       label: Expected Outcome
-      description: What is the expected outcome or deliverable of this task? Include
-        performance or integration targets.
+      description: What is the expected outcome or deliverable of this task? Include performance or integration targets.
       placeholder: Describe the expected outcome
     validations:
       required: true
+
   - type: checkboxes
     id: requirements
     attributes:
       label: Additional Requirements
-      description: Please check any that apply to your task. Different task types may
-        trigger different requirements.
+      description: Please check any that apply to your task. Different task types may trigger different requirements.
       options:
         - label: Requires additional research
         - label: Requires security review
         - label: Needs testing
         - label: Documentation update required
         - label: UI/UX design needed
+
   - type: textarea
     id: acceptance-criteria
     attributes:
       label: Acceptance Criteria
-      description: Define clear criteria for what finishing the task successfully
-        looks like.
-      default: |
-        - Criteria 1: 
+      description: Define clear criteria for what finishing the task successfully looks like.
+      placeholder: |
+        - Criteria 1:
           - Sub-criteria 1
           - Sub-criteria 2
-        - Criteria 2: 
+        - Criteria 2:
           - Sub-criteria 1
           - Sub-criteria 2
     validations:
       required: true
+
   - type: checkboxes
     id: acceptance-confirmation
     attributes:
       label: Acceptance Criteria Confirmation
-      description: Please confirm that you have reviewed and agreed to the acceptance
-        criteria.
+      description: Please confirm that you have reviewed and agreed to the acceptance criteria.
       options:
         - label: I confirm that I have reviewed and agree to the acceptance criteria.
     validations:
       required: true
+
   - type: dropdown
     id: milestone
     attributes:
@@ -129,6 +133,7 @@ body:
         - Role-Based Access Control
         - Admin Tools and Reviews
         - Pre-Launch Checks
+
   - type: textarea
     id: notes
     attributes:
@@ -137,7 +142,7 @@ body:
       placeholder: Add any additional notes here
     validations:
       required: false
+
   - type: markdown
     attributes:
-      value: Please ensure all provided information is accurate and complete. Thank
-        you for contributing!
+      value: Please ensure all provided information is accurate and complete. Thank you for contributing!
