@@ -1,0 +1,179 @@
+Software License Agreement
+
+This Software License Agreement ("Agreement") is made and entered into as of
+2024-05-05 ("Effective Date") by and between Imperfect and Company LLC, a
+registered company, having its principal place of business at 6633 18 Mile Rd,
+United States ("Licensor"), and the entity or individual accepting this
+Agreement ("Licensee").
+
+The "Licensee" refers to any entity or individual who has legally obtained
+the Software, either directly from the Licensor or through an authorized
+distributor, and who agrees to the terms of this Agreement, irrespective of
+geographic location. Unauthorized acquisition, use, or distribution of the
+Software does not confer any rights under this Agreement and is subject to
+legal action.
+
+1. Definition of Software:
+   The term "Software" refers to the Imperfect Gamers Site, including any
+   updates, modifications, or associated documentation provided by the Licensor.
+
+2. Intellectual Property Rights:
+   All intellectual property rights in the Software shall remain the property
+   of the Licensor. The Licensee does not acquire any rights to the Software
+   except for the limited use rights specified in this Agreement.
+
+3. Licensor hereby grants Licensee a non-exclusive, non-transferable, limited
+   license to use the Software solely for evaluation purposes and at the
+   discretion of the Licensor. This License does not grant any rights to
+   modify, distribute, or create derivative works of any kind.
+
+4. Scope of License:
+   The software is licensed, not sold. Imperfect and Company LLC reserves all
+   other rights. Unless applicable law gives you more rights despite this
+   limitation, you will not (and have no right to):
+   - Work around any technical limitations in the software that only allow you
+     to use it in certain ways;
+   - Remove, minimize, block, or modify any notices of Imperfect and Company
+     LLC or its partners in the software;
+   - Use the software for any purpose that is unlawful or prohibited by this
+     Agreement.
+
+5. Ownership and Intellectual Property:
+   All rights, title, and interest in and to the Software and its related
+   documentation are owned by Imperfect and Company LLC. The Software is
+   provided under this License on an "as is" basis and is not subject to
+   modification, distribution, or unauthorized use.
+
+6. Definition of Evaluation Purposes:
+   Evaluation purposes are strictly limited to authorized parties who have
+   been granted explicit permission by Imperfect and Company LLC to evaluate.
+   Evaluation consists of accessing the production, live-hosted official
+   version of the Software to review and analyze Imperfect and Company or
+   Imperfect Gamers (a division under Imperfect and Company) for potential
+   investment or partnership. Evaluators are not permitted to test, use, or
+   interact with the Software itself apart from what is provided on the
+   live-hosted platform. Evaluators are permitted to view the repository's
+   code in a read-only format under condition that the official repository is
+   purposefully set to public visibility, without the ability or permission
+   to download, copy, modify, or interact with the software beyond what is
+   provided on the live-hosted platform. No commercial use is permitted under
+   this License.
+
+7. Authorized Access:
+   Access to the Software and its repository is granted only to individuals or
+   entities directly authorized by Imperfect and Company LLC. However, if the
+   repository URL is obtained through third-party sharing or incidental
+   discovery, individuals or entities may express their interest in partnership
+   or evaluation by contacting Imperfect and Company LLC to undergo a formal
+   authorization process. Unauthorized access does not confer the right to
+   interact with the Software outside of accessing our publicly available
+   hosted production live on imperfectgamers.org. All potential partners or
+   evaluators must comply with the established procedures, including signing a
+   Non-Disclosure Agreement (NDA) and obtaining explicit permission from
+   Imperfect and Company LLC before any further engagement with the Software or
+   related materials.
+
+8. Restrictions:
+   The Licensee agrees not to modify, reproduce, redistribute, reverse
+   engineer, decompile, or disassemble the Software. The Software shall only be
+   accessed via the official repository link provided by Imperfect and Company
+   LLC and is not to be hosted or run on any servers not expressly authorized
+   by Imperfect and Company LLC. Developers authorized by Imperfect and Company
+   LLC may update the Software directly to the official repository. However,
+   they are strictly prohibited from creating forks, branches, or redistributing
+   the software in any form.
+
+9. Visibility Clause:
+   The Software repository is publicly accessible to allow potential investors,
+   partners, and other expressly authorized parties to review its capabilities
+   for evaluation purposes under a controlled setting. While the repository's
+   public status facilitates transparency and engagement opportunities, it does
+   not grant any rights for public use, copying, modification, or any
+   interaction beyond read-only access. Unauthorized access, use, or
+   redistribution of the repository's contents without express written consent
+   from Imperfect and Company LLC is strictly prohibited and may lead to legal
+   action. This includes incidental discovery of the repository through shared
+   links or any other means not explicitly sanctioned by Imperfect and Company
+   LLC. This public status is not an invitation for public use, copying, or
+   modification. Imperfect and Company LLC retains the right to transition the
+   repository to a private status based on strategic business milestones or at
+   its discretion.
+
+10. Separability of the License:
+    If any provision of this License is found to be invalid, illegal, or
+    unenforceable by a court of competent jurisdiction, such provision shall be
+    severed from the License. The remaining provisions shall continue to be
+    valid and enforceable, ensuring the integrity of the License as a whole.
+
+11. Confidentiality and Non-Disclosure:
+    Access to the Software by potential investors or partners is subject to the
+    terms of a Non-Disclosure Agreement (NDA) that must be signed prior to such
+    access. This agreement strictly prohibits the disclosure, copying, or
+    unauthorized use of any part of the Software and its related materials.
+
+12. Hosting and Operational Rights:
+    Hosting and operation of the Software environment must be conducted
+    exclusively by Imperfect and Company LLC and only under the domain
+    imperfectgamers.org. This condition applies as long as the domain is owned
+    by Imperfect and Company LLC or Daiyaan Ijaz, or while Daiyaan Ijaz is a
+    member of Imperfect and Company LLC. If ownership or authorization
+    privileges related to the domain or software are changed, these license
+    terms may be renegotiated and reestablished by Daiyaan Ijaz at any point in
+    time.
+
+13. Application to Repository Packages and CI/CD Pipelines:
+    These licensing terms also apply to all repository packages available at
+    https://github.com/orgs/imperfectandcompany/packages?repo_name=imperfect-
+    gamers-site and proprietary software used in our CI/CD pipelines, such as
+    the Imperfect Host Webhook at
+    https://github.com/imperfectandcompany/Imperfect-Host-Webhook. This webhook
+    is triggered to pull the latest updates from our running containers when
+    packages are published or updated as a result of successful merges into the
+    development branch.
+
+14. Termination:
+    This License is effective until terminated by Licensor at any point with or
+    without notice. Upon termination, the Licensee must cease all use of the
+    Software and destroy all copies made.
+
+15. Limitation on and Exclusion of Damages:
+    If you have any basis for recovering damages, you can recover from Imperfect
+    and Company LLC and its suppliers only direct damages up to U.S. $5.00. You
+    cannot recover any other damages, including consequential, lost profits,
+    special, indirect, or incidental damages. This limitation applies to:
+    - Anything related to the software, services, or content (including code) on
+      third party Internet sites, or third party applications;
+    - Claims for breach of contract, breach of warranty, guarantee or condition,
+      strict liability, negligence, or other tort to the extent permitted by
+      applicable law.
+
+16. Governing Law:
+    This Agreement shall be governed by and construed in accordance with the
+    laws of the United States.
+
+17. Reinforcement of Proprietary Rights:
+    The Imperfect Gamers site, including its UI/UX and technical
+    implementation, design, and strategy, is the proprietary property of
+    Imperfect Gamers, which is owned by Imperfect and Company LLC. Public
+    viewing of the Software is permitted solely for evaluation and potential
+    business engagement with Imperfect and Company LLC. No rights are granted
+    for use beyond this scope.
+
+18. Enforcement of License Terms:
+    Imperfect and Company LLC reserves the right to seek legal recourse against
+    any party who violates the terms of this license. This includes unauthorized
+    use, copying, modification, or distribution of the Software, regardless of
+    the means by which access was gained. Enforcement actions may include claims
+    for damages, injunctive relief to prevent ongoing violations, and other
+    legal remedies available under the laws of the United States.
+
+19. Upcoming Revision Notice:
+    The Licensor hereby notifies the Licensee that there will be an upcoming
+    revision to this Agreement. The revision is expected to be published during
+    the week following the Effective Date of this Agreement. Licensee is
+    encouraged to review the revised Agreement upon its publication.
+
+IN WITNESS WHEREOF, the parties have executed this Software License Agreement
+as of the Effective Date.
+
+Licensor: Imperfect and Company LLC
