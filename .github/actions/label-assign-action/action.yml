@@ -1,0 +1,5 @@
+name: 'Label Assigner'
+description: 'Assigns labels to issues based on the content of the issue'
+runs:
+  using: 'node12'
+  main: 'index.js'
