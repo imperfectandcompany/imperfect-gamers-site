@@ -1,15 +1,18 @@
 name: Task Creation
-description: Create a task for a bug fix, feature implementation, spike investigation, or security vulnerability fix.
-title: "[Task][Type]: "  # Dynamically update based on the task type selected
-labels: ["task"]  # Default label, can dynamically update based on task type if handled via GitHub Actions
+description: Create a task for a bug fix, feature implementation, spike
+  investigation, or security vulnerability fix.
+title: "[Task][Type]: "
+labels:
+  - task
 projects:
-  - imperfectandcompany/imperfect-gamers-site/5  # Automatically adds to the Imperfect Gamers Site Development project
+  - imperfectandcompany/5
 body:
   - type: dropdown
     id: task-type
     attributes:
       label: Task Type
-      description: Select the type of task you are creating. This choice will determine additional labels and required fields.
+      description: Select the type of task you are creating. This choice will
+        determine additional labels and required fields.
       options:
         - Bug Fix
         - Feature Implementation
@@ -17,80 +20,98 @@ body:
         - Security Vulnerability Fix
     validations:
       required: true
-
   - type: input
     id: title
     attributes:
       label: Task Title
       description: Provide a concise title for the task.
+      placeholder: Enter task title here
     validations:
       required: true
-
   - type: textarea
     id: description
     attributes:
       label: Task Description
       description: Provide a detailed description of the task.
+      placeholder: Describe the task here
     validations:
       required: true
-
   - type: textarea
     id: objective
     attributes:
       label: Objective
       description: What is the goal or expected impact of this task?
+      placeholder: Specify the objective of the task
     validations:
       required: true
-
   - type: textarea
     id: reproduction-steps
     attributes:
       label: Reproduction Steps
-      description: "(Required for Bug Fixes) Provide steps to reproduce the issue."
+      description: (Required for Bug Fixes) Provide steps to reproduce the issue.
+      placeholder: Describe reproduction steps if applicable
     validations:
-      required: false  # Conditionally required based on the task type
-
+      required: false
   - type: textarea
     id: technical-approach
     attributes:
       label: Technical Approach
-      description: "(Optional for Features/Spike/Security) Suggest a technical approach or solution for the task."
+      description: (Optional for Features/Spike/Security) Suggest a technical approach
+        or solution for the task.
+      placeholder: Describe the technical approach if applicable
     validations:
       required: false
-
   - type: textarea
     id: expected-outcome
     attributes:
       label: Expected Outcome
-      description: What is the expected outcome or deliverable of this task? Include performance or integration targets.
+      description: What is the expected outcome or deliverable of this task? Include
+        performance or integration targets.
+      placeholder: Describe the expected outcome
     validations:
       required: true
-
   - type: checkboxes
     id: requirements
     attributes:
       label: Additional Requirements
-      description: Please check any that apply to your task. Different task types may trigger different requirements.
+      description: Please check any that apply to your task. Different task types may
+        trigger different requirements.
       options:
         - label: Requires additional research
         - label: Requires security review
         - label: Needs testing
         - label: Documentation update required
         - label: UI/UX design needed
-
   - type: textarea
     id: acceptance-criteria
     attributes:
       label: Acceptance Criteria
-      description: Define clear criteria for what finishing the task successfully looks like.
+      description: Define clear criteria for what finishing the task successfully
+        looks like.
+      default: |
+        - Criteria 1: 
+          - Sub-criteria 1
+          - Sub-criteria 2
+        - Criteria 2: 
+          - Sub-criteria 1
+          - Sub-criteria 2
     validations:
       required: true
-
+  - type: checkboxes
+    id: acceptance-confirmation
+    attributes:
+      label: Acceptance Criteria Confirmation
+      description: Please confirm that you have reviewed and agreed to the acceptance
+        criteria.
+      options:
+        - label: I confirm that I have reviewed and agree to the acceptance criteria.
+    validations:
+      required: true
   - type: dropdown
     id: milestone
     attributes:
       label: Link to Milestone
-      description: "Select the milestone this task contributes to."
+      description: Select the milestone this task contributes to.
       options:
         - Project Initialization
         - Environment Setup
@@ -108,15 +129,16 @@ body:
         - Role-Based Access Control
         - Admin Tools and Reviews
         - Pre-Launch Checks
-
   - type: textarea
     id: notes
     attributes:
       label: Additional Notes
       description: Any other comments or notes related to the task?
+      placeholder: Add any additional notes here
     validations:
       required: false
-
+markdown:
   - type: markdown
     attributes:
-      value: "Please ensure all provided information is accurate and complete. Thank you for contributing!"
+      value: Please ensure all provided information is accurate and complete. Thank
+        you for contributing!
