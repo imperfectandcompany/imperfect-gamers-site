@@ -137,7 +137,6 @@ body:
       placeholder: Add any additional notes here
     validations:
       required: false
-markdown:
   - type: markdown
     attributes:
       value: Please ensure all provided information is accurate and complete. Thank
