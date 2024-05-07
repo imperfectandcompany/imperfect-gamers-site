@@ -13,6 +13,15 @@ interface ModalWrapperProps {
 	children: ReactElement
 }
 
+export enum CloseInterceptReason {
+	None = 'None',
+	UnsavedChanges = 'UnsavedChanges',
+	ActivePopup = 'ActivePopup',
+	RequestInProgress = 'RequestInProgress',
+	AdditionalModalOpen = 'AdditionalModalOpen',
+	AlertDialogOpen = 'AlertDialogOpen',
+}
+
 /**
  * ModalWrapper component displays a modal dialog with a title, content, and children.
  * It manages the state of the modal and provides functions to open and close it.
@@ -33,11 +42,25 @@ const ModalWrapper: React.FC<ModalWrapperProps> = ({
 		setIsOpen(true)
 	}
 
+	const [closeInterceptReason, setCloseInterceptReason] = useState(
+		CloseInterceptReason.None,
+	)
+
+	const shouldClose = () => closeInterceptReason === CloseInterceptReason.None
+
 	/**
 	 * Closes the modal dialog by setting the isOpen state to false.
 	 */
 	const closeModal = () => {
-		setIsOpen(false)
+		if (shouldClose()) {
+			setIsOpen(false)
+		}
+		// TODO: Implement UI/UX enhancements for when the modal close attempt is intercepted
+		// due to unsaved changes or an active popup window. Consider adding a confirmation
+		// dialog or visual feedback to inform the user why the modal cannot be closed and
+		// what actions they might need to take to securely close it.
+		//
+		// SEE: https://github.com/imperfectandcompany/imperfect-gamers-site/issues/54
 	}
 
 	return (
@@ -50,6 +73,7 @@ const ModalWrapper: React.FC<ModalWrapperProps> = ({
 					content={content}
 					footer={footer}
 					isOpen={isOpen}
+					setCloseInterceptReason={setCloseInterceptReason}
 				/>
 				{/** Escape modal button **/}
 				<div

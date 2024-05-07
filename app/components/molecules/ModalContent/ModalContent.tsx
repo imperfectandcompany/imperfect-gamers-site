@@ -3,6 +3,7 @@ import React from 'react'
 import { type ReactNode } from 'react'
 import Heading from '~/components/atoms/Heading/Heading'
 import Paragraph from '~/components/atoms/Paragraph/Paragraph'
+import { CloseInterceptReason } from '~/components/organism/ModalWrapper/ModalWrapper'
 
 type ModalContentProps = {
 	title: string
@@ -10,12 +11,14 @@ type ModalContentProps = {
 	content: ReactNode
 	footer?: ReactNode
 	isOpen?: boolean
+	setCloseInterceptReason: (reason: CloseInterceptReason) => void
 }
 
 /**
  * Renders the content of a modal.
  *
  * TODO ENTIRE REFACTOR OF ARCHITECTURE FOR THIS COMPONENT
+ * STATUS: IN PROGRESS
  *
  * @component
  * @param {Object} props - The component props.
@@ -29,6 +32,7 @@ const ModalContent: React.FC<ModalContentProps> = ({
 	content,
 	footer,
 	isOpen,
+	setCloseInterceptReason,
 }) => {
 	return (
 		<div>
@@ -41,7 +45,10 @@ const ModalContent: React.FC<ModalContentProps> = ({
 			{typeof content === 'string' ? (
 				<Paragraph>{content}</Paragraph>
 			) : React.isValidElement(content) ? (
-				React.cloneElement(content as React.ReactElement<any>, { isOpen })
+				React.cloneElement(content as React.ReactElement<any>, {
+					isOpen,
+					setCloseInterceptReason,
+				})
 			) : null}
 			{/** TODO setup standard footer for modals with fall backs */}
 			{footer ? footer : null}
