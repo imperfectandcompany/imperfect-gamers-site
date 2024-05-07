@@ -1,9 +1,9 @@
 name: 'Label Assigner'
 description: 'Assigns labels to issues based on the content of the issue'
-runs:
-  using: 'node20'  // Updated to use Node.js 20
-  main: 'index.js'
 inputs:
   github-token:
     description: 'GitHub token for API access'
     required: true
+runs:
+  using: 'node16'
+  main: 'index.js'
