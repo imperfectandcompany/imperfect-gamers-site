@@ -17,7 +17,7 @@ interface AuthFormProps {
 	setCloseInterceptReason?: (reason: CloseInterceptReason) => void
 }
 
-const AuthForms: React.FC<AuthFormProps> = ({ isOpen }) => {
+const AuthForms: React.FC<AuthFormProps> = ({ isOpen, setCloseInterceptReason }) => {
 	const {
 		isAuthenticated,
 		isSteamLinked,
@@ -223,7 +223,7 @@ const AuthForms: React.FC<AuthFormProps> = ({ isOpen }) => {
 				{isAuthenticated ? (
 					<UserStatus />
 				) : isLoginForm ? (
-					<LoginForm />
+				<LoginForm setCloseInterceptReason={setCloseInterceptReason} />
 				) : (
 					<SignUpForm />
 				)}
