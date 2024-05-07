@@ -17,6 +17,6 @@ jobs:
         node-version: '20.x'
 
     - name: Extract task type and update title
-      uses: ./.github/actions/title-update-action
+      uses: ./.github/actions/update-issue-title
       with:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
