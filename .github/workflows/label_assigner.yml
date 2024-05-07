@@ -23,4 +23,4 @@ jobs:
     - name: Assign labels based on issue content
       uses: ./.github/actions/label-assign-action
       with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
+        github-token: ${{ secrets.FINE_GRAINED_PAT }} # Using the PAT instead of GITHUB_TOKEN
