@@ -3,6 +3,7 @@ name: Dynamic Label Assignment
 on:
   issues:
     types: [opened, edited]
+
 jobs:
   assign-labels:
     runs-on: ubuntu-latest
@@ -12,3 +13,5 @@ jobs:
       
     - name: Assign labels based on issue content
       uses: ./.github/actions/label-assign-action
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
