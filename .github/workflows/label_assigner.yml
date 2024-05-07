@@ -11,6 +11,15 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
       
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+
+    - name: Install dependencies
+      run: npm install
+      working-directory: ./.github/actions/label-assign-action
+
     - name: Assign labels based on issue content
       uses: ./.github/actions/label-assign-action
       with:
