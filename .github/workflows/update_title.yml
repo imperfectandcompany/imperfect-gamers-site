@@ -2,16 +2,22 @@ name: Update Issue Title
 
 on:
   issues:
-    types: [opened, edited]
+    types: [opened]
 
 jobs:
   update-title:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - name: Checkout repository
+      uses: actions/checkout@v3
 
-      - name: Update Issue Title
-        uses: ./.github/actions/update-issue-title
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+
+    - name: Extract task type and update title
+      run: node .github/actions/update-issue-title
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        ISSUE_NUMBER: ${{ github.event.issue.number }}
