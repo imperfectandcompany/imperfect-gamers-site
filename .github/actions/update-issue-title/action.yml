@@ -1,0 +1,9 @@
+name: 'Update Issue Title'
+description: 'Updates the issue title based on the task type selected'
+inputs:
+  GITHUB_TOKEN:
+    description: 'GitHub token needed to authenticate API requests'
+    required: true
+runs:
+  using: 'node16'
+  main: 'index.js'
