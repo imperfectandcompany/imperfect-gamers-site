@@ -6,7 +6,18 @@ import {
 } from '@remix-run/node'
 import type { ExternalScriptsHandle } from 'remix-utils/external-scripts'
 import { getSession, storeCookie } from '~/auth/storage.server' // Make sure this matches your file structure
-import { StoreHeader } from '~/components/templates/store'
+import {
+	FeaturedSection,
+	StoreContact,
+	StoreEvents,
+	StoreFAQ,
+	StoreFooter,
+	StoreHeader,
+	StorePartnership,
+	StoreStatistics,
+	StoreTestimonials,
+	StoreTiers,
+} from '~/components/templates/store'
 import '~/styles/store.css'
 import type { BasketPackage } from '~/utils/tebex.interface'
 
@@ -161,21 +172,35 @@ export default function Store() {
 		<>
 			<StoreHeader />
 
-			{/* Hidden while we focus on everything else 
-
-			<div className="flex flex-wrap justify-between">
+			{/* <div className="rotate-90 text-xs">
 				<StoreStatistics />
-				<StoreTiers />
-				<FeaturedSection />
-				<StoreTestimonials />
-				<StoreFAQ />
-				<StorePartnership />
-				<StoreEvents />
-				<StoreContact />
-				<StoreFooter />
+			</div> */}
+
+			<div className="flex">
+				<div className="flex-grow">
+					<div className="flex-grow">
+						<FeaturedSection />
+						<StoreTiers />
+					</div>
+					{/* 
+					TODO: Have the stats come vertically across the page stretched
+
+					replace hidden w/ inline-flex 
+					*/}
+					<div className="ml-auto hidden flex-shrink-0 rotate-90 items-center justify-center bg-red-500">
+						<StoreStatistics />
+					</div>
+				</div>
 			</div>
-			
-			*/}
+
+			<StoreTestimonials />
+			<StoreFAQ />
+			<StorePartnership />
+
+			<StoreEvents />
+
+			<StoreContact />
+			<StoreFooter />
 		</>
 	)
 }

@@ -1,7 +1,7 @@
 // @/app/auth/authenticator.server.ts
 import { commitSession, getSession } from './storage.server'
 
-const apiBase = 'https://api.imperfectgamers.org'
+export const apiBase = 'https://api.imperfectgamers.org'
 
 type User = {
 	email: string
@@ -108,23 +108,19 @@ export async function login(request: Request) {
 				error: 'Authentication failed, please check your credentials.',
 			}
 		}
-
 		const session = await getSession()
 		if (user.data?.userToken && user.data?.uid && user.data?.email) {
 			session.set('userToken', user.data.userToken)
 			session.set('uid', user.data.uid)
 			session.set('email', user.data.email)
-
 			const hasSteamAccount = await checkSteamAccount(user.data?.userToken)
 			if (hasSteamAccount.hasSteam) {
 				session.set('steamId', hasSteamAccount.steamId ?? undefined)
 			}
-
 			const onboardingDetails = await checkOnboarded(user.data?.userToken)
 			if (onboardingDetails && onboardingDetails.onboarded) {
 				session.set('username', onboardingDetails.username)
 			}
-
 			const cookieHeader = await commitSession(session)
 			return { ok: true, cookieHeader }
 		} else {

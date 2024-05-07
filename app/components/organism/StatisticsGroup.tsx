@@ -30,7 +30,7 @@ const StatisticsGroup: React.FC<StatisticsGroupProps> = ({
 }) => (
 	<div className={`flex flex-wrap justify-between ${className}`}>
 		{statistics.map((stat, index) => (
-			<StatisticItem key={index} {...stat} className="mb-4 mr-8" />
+			<StatisticItem key={index} {...stat} className="" />
 		))}
 	</div>
 )

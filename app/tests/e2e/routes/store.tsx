@@ -4,6 +4,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import '@testing-library/jest-dom'
 import Store from '~/routes/store'
+import { server } from '~/mocks/node'
 
 // @vitest-environment jsdom
 
@@ -31,9 +32,7 @@ const RemixStub = createRemixStub([
 	},
 ])
 
-// beforeAll(() => server.listen()); // Start the server before all tests
-// afterEach(() => server.resetHandlers()); // Reset any runtime request handlers after each test
-// afterAll(() => server.close()); // Close the server after all tests
+
 
 describe('LoginForm', () => {
 	test('submits correct credentials and handles response', async () => {

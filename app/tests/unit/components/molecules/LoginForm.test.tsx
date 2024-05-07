@@ -80,7 +80,7 @@ describe('LoginForm', () => {
 	/**
 	 * Tests if submitting the form triggers the submit event.
 	 */
-	test('submits the form', () => {
+	test('submits the form', async () => {
 		const { form } = setup()
 		let isSubmitted = false
 		form.onsubmit = () => {
@@ -89,7 +89,10 @@ describe('LoginForm', () => {
 
 		fireEvent.submit(form)
 
-		expect(isSubmitted).toBe(true)
+		// Use waitFor to handle any asynchronous operations involved in form submission
+		await waitFor(() => {
+			expect(isSubmitted).toBe(true)
+		})
 	})
 
 	/**
