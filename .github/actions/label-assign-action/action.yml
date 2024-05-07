@@ -1,7 +1,7 @@
 name: 'Label Assigner'
-description: 'Assigns labels to issues based on the content of the issue and existing labels in the repo'
+description: 'Assigns labels to issues based on the content of the issue'
 runs:
-  using: 'node12'
+  using: 'node20'  // Updated to use Node.js 20
   main: 'index.js'
 inputs:
   github-token:
