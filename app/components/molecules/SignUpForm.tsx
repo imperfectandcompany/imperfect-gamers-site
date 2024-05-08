@@ -2,12 +2,12 @@
 import { useFetcher } from '@remix-run/react'
 import { withZod } from '@remix-validated-form/with-zod'
 import type React from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { ValidatedForm } from 'remix-validated-form'
 import { z } from 'zod'
 import Button from '~/components/atoms/Button/Button'
 import Input from '~/components/atoms/Input/Input'
 import { CloseInterceptReason } from '../organism/ModalWrapper/ModalWrapper'
-import { useCallback, useEffect, useState } from 'react'
 
 /**
  * Sign up form component.

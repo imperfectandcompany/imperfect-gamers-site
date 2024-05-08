@@ -2,12 +2,12 @@
 
 import { useFetcher } from '@remix-run/react'
 import { withZod } from '@remix-validated-form/with-zod'
-import { z } from 'zod'
 import { useState, useEffect, useCallback } from 'react'
 import { ValidatedForm } from 'remix-validated-form'
+import { z } from 'zod'
 import Button from '../atoms/Button/Button'
-import { CloseInterceptReason } from '../organism/ModalWrapper/ModalWrapper'
 import Input from '../atoms/Input/Input'
+import { CloseInterceptReason } from '../organism/ModalWrapper/ModalWrapper'
 
 /**
  * LoginForm component renders a login form with email and password fields.

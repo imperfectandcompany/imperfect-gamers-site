@@ -8,7 +8,7 @@ import { CloseInterceptReason } from '../organism/ModalWrapper/ModalWrapper'
 interface AuthorizeFormProps {
 	onSuccess: () => void
 	setCloseInterceptReason?: (reason: CloseInterceptReason) => void
-	    setPopupWindow?: (window: Window | null) => void;
+	setPopupWindow?: (window: Window | null) => void
 }
 
 /**
@@ -17,7 +17,7 @@ interface AuthorizeFormProps {
 const AuthorizeForm: React.FC<AuthorizeFormProps> = ({
 	onSuccess,
 	setCloseInterceptReason,
-	    setPopupWindow 
+	setPopupWindow,
 }) => {
 	const [showFallback, setShowFallback] = useState(false)
 	const [fallbackUrl, setFallbackUrl] = useState('')
@@ -54,8 +54,8 @@ const AuthorizeForm: React.FC<AuthorizeFormProps> = ({
 					setShowFallback(true)
 					setSteamPopupOpened(false)
 					if (setPopupWindow) {
-						setPopupWindow(null); // Set the popup window in ModalWrapper's state
-					}			
+						setPopupWindow(null) // Set the popup window in ModalWrapper's state
+					}
 					// TODO - REDIRECT ALTERNATIVE - ISSUE NOT YET TRACKED
 					setFallbackUrl(data.url)
 					if (setCloseInterceptReason) {
@@ -63,9 +63,9 @@ const AuthorizeForm: React.FC<AuthorizeFormProps> = ({
 					}
 				} else {
 					setSteamPopup(popup)
-					            if (setPopupWindow) {
-                setPopupWindow(popup); // Set the popup window in ModalWrapper's state
-            }
+					if (setPopupWindow) {
+						setPopupWindow(popup) // Set the popup window in ModalWrapper's state
+					}
 					setSteamPopupOpened(true)
 					if (setCloseInterceptReason) {
 						setCloseInterceptReason(CloseInterceptReason.ActivePopup)
@@ -82,8 +82,8 @@ const AuthorizeForm: React.FC<AuthorizeFormProps> = ({
 			setShowFallback(true)
 			setSteamPopupOpened(false)
 			if (setPopupWindow) {
-                setPopupWindow(null); // Set the popup window in ModalWrapper's state
-            }			
+				setPopupWindow(null) // Set the popup window in ModalWrapper's state
+			}
 			// TODO - REDIRECT ALTERNATIVE - ISSUE NOT YET TRACKED
 			// const returnURL = '' // Proper URL should be configured
 			// setFallbackUrl(await generateSteamLoginURL(returnURL))
@@ -102,8 +102,8 @@ const AuthorizeForm: React.FC<AuthorizeFormProps> = ({
 					setSteamPopup(null)
 					setSteamPopupOpened(false)
 					if (setPopupWindow) {
-						setPopupWindow(null); // Set the popup window in ModalWrapper's state
-					}			
+						setPopupWindow(null) // Set the popup window in ModalWrapper's state
+					}
 					setShowFallback(false) // Optionally show fallback or reset any state as needed
 					if (setCloseInterceptReason) {
 						setCloseInterceptReason(CloseInterceptReason.None)

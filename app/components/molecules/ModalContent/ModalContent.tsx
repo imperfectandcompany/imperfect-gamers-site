@@ -3,7 +3,7 @@ import React from 'react'
 import { type ReactNode } from 'react'
 import Heading from '~/components/atoms/Heading/Heading'
 import Paragraph from '~/components/atoms/Paragraph/Paragraph'
-import { CloseInterceptReason } from '~/components/organism/ModalWrapper/ModalWrapper'
+import type { CloseInterceptReason } from '~/components/organism/ModalWrapper/ModalWrapper'
 
 type ModalContentProps = {
 	title: string
