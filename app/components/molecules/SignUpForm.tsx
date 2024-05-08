@@ -7,7 +7,7 @@ import { z } from 'zod'
 import Button from '~/components/atoms/Button/Button'
 import Input from '~/components/atoms/Input/Input'
 import { CloseInterceptReason } from '../organism/ModalWrapper/ModalWrapper'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 /**
  * Sign up form component.
@@ -22,25 +22,38 @@ import { useEffect, useState } from 'react'
  * @returns {JSX.Element} The rendered SignUpForm component.
  */
 const SignUpForm: React.FC<SignUpFormProps> = ({ setCloseInterceptReason }) => {
-	const [formValues, setFormValues] = useState({
-		email: '',
-		password: '',
-		confirmPassword: '',
-	})
-	const [initialFormValues, setInitialFormValues] = useState({ ...formValues })
+	const fetcher = useFetcher()
+
+    const [formValues, setFormValues] = useState<FormValues>({
+        email: '',
+        password: '',
+        confirmPassword: '',
+    })
+    const [initialFormValues, setInitialFormValues] = useState<FormValues>({ ...formValues })
 
 	const isFormDirty =
 		JSON.stringify(formValues) !== JSON.stringify(initialFormValues)
 
-	useEffect(() => {
-		if (setCloseInterceptReason) {
-			setCloseInterceptReason(
-				isFormDirty
-					? CloseInterceptReason.UnsavedChanges
-					: CloseInterceptReason.None,
-			)
-		}
-	}, [isFormDirty, setCloseInterceptReason])
+	/**
+	 * Update the close intercept reason based on the form's dirty state.
+	 */
+    const updateCloseInterceptReason = useCallback(() => {
+        let reason = CloseInterceptReason.None;
+    
+        if (fetcher.state === 'submitting' || fetcher.state === 'loading') {
+            reason = CloseInterceptReason.RequestInProgress;
+        } else if (isFormDirty) {
+            reason = CloseInterceptReason.UnsavedChanges;
+        } else if ((fetcher.data && typeof fetcher.data === 'object' && ((fetcher.data as { success: boolean })?.success || 'error' in fetcher.data)) || fetcher.state === 'idle') {
+            reason = CloseInterceptReason.None;
+        }
+    
+        if (setCloseInterceptReason) {
+            setCloseInterceptReason(reason);
+        }
+    }, [fetcher.state, isFormDirty, setCloseInterceptReason]);
+
+    useEffect(updateCloseInterceptReason, [updateCloseInterceptReason]);
 
 	const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		setFormValues({
@@ -49,14 +62,12 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ setCloseInterceptReason }) => {
 		})
 	}
 
-	const fetcher = useFetcher()
-
 	// React to the fetcher's state after submission
 	if ((fetcher.data as { success: boolean })?.success) {
 		return <p>Registration Successful!</p>
 	}
 
-	if (fetcher.state === 'submitting') {
+	if (fetcher.state === 'submitting' || fetcher.state === 'loading') {
 		return <div>Registering...</div>
 	}
 
@@ -112,6 +123,12 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ setCloseInterceptReason }) => {
  */
 interface SignUpFormProps {
 	setCloseInterceptReason?: (reason: CloseInterceptReason) => void
+}
+
+interface FormValues {
+	email: string
+	password: string
+	confirmPassword: string
 }
 
 /**

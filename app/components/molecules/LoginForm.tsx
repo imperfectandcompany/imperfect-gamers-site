@@ -3,7 +3,7 @@
 import { useFetcher } from "@remix-run/react"
 import { withZod } from "@remix-validated-form/with-zod"
 import { z } from 'zod'
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { ValidatedForm } from "remix-validated-form"
 import Button from "../atoms/Button/Button"
 import { CloseInterceptReason } from "../organism/ModalWrapper/ModalWrapper"
@@ -22,19 +22,32 @@ import Input from "../atoms/Input/Input"
  */
 const LoginForm: React.FC<LoginFormProps> = ({ setCloseInterceptReason }) => {
     const fetcher = useFetcher()
-	const [formValues, setFormValues] = useState({ email: '', password: '' })
-    const [initialFormValues, setInitialFormValues] = useState({ ...formValues })
+    const [formValues, setFormValues] = useState<FormValues>({
+        email: '',
+        password: '',
+    })
+    const [initialFormValues, setInitialFormValues] = useState<FormValues>({ ...formValues })
 
     const isFormDirty = JSON.stringify(formValues) !== JSON.stringify(initialFormValues)
 
-    /**
-     * Update the close intercept reason based on the form's dirty state.
-     */
-    useEffect(() => {
-        if (setCloseInterceptReason) {
-            setCloseInterceptReason(isFormDirty ? CloseInterceptReason.UnsavedChanges : CloseInterceptReason.None)
+
+    const updateCloseInterceptReason = useCallback(() => {
+        let reason = CloseInterceptReason.None;
+    
+        if (fetcher.state === 'submitting' || fetcher.state === 'loading') {
+            reason = CloseInterceptReason.RequestInProgress;
+        } else if (isFormDirty) {
+            reason = CloseInterceptReason.UnsavedChanges;
+        } else if ((fetcher.data && typeof fetcher.data === 'object' && ((fetcher.data as { success: boolean })?.success || 'error' in fetcher.data)) || fetcher.state === 'idle') {
+            reason = CloseInterceptReason.None;
         }
-    }, [isFormDirty, setCloseInterceptReason])
+    
+        if (setCloseInterceptReason) {
+            setCloseInterceptReason(reason);
+        }
+    }, [fetcher.state, isFormDirty, setCloseInterceptReason]);
+
+    useEffect(updateCloseInterceptReason, [updateCloseInterceptReason]);
 
     /**
      * Mark the form as dirty when an input value changes.
@@ -46,19 +59,9 @@ const LoginForm: React.FC<LoginFormProps> = ({ setCloseInterceptReason }) => {
         })
     }
 
-    // Show a loading state while the form is submitting or loading data
-    if (fetcher.state === 'submitting' || fetcher.state === 'loading') {
-		if (setCloseInterceptReason) {
-            setCloseInterceptReason(CloseInterceptReason.RequestInProgress)
-        }
+    if (fetcher.state === 'submitting') {
         return <div>Logging in...</div>
     }
-
-    if (fetcher.state === 'idle') {
-        if (setCloseInterceptReason) {
-            setCloseInterceptReason(isFormDirty ? CloseInterceptReason.UnsavedChanges : CloseInterceptReason.None)
-        }
-	}
 
     return (
         <ValidatedForm
@@ -83,6 +86,14 @@ const LoginForm: React.FC<LoginFormProps> = ({ setCloseInterceptReason }) => {
             </div>
         </ValidatedForm>
     )
+}
+
+/**
+ * Represents the values of a login form.
+ */
+interface FormValues {
+    email: string;
+    password: string;
 }
 
 /**
