@@ -3,6 +3,7 @@ import React from 'react'
 import { type ReactNode } from 'react'
 import Heading from '~/components/atoms/Heading/Heading'
 import Paragraph from '~/components/atoms/Paragraph/Paragraph'
+import type { CloseInterceptReason } from '~/components/organism/ModalWrapper/ModalWrapper'
 
 type ModalContentProps = {
 	title: string
@@ -10,12 +11,15 @@ type ModalContentProps = {
 	content: ReactNode
 	footer?: ReactNode
 	isOpen?: boolean
+	setCloseInterceptReason?: (reason: CloseInterceptReason) => void
+	setPopupWindow?: (window: Window | null) => void
 }
 
 /**
  * Renders the content of a modal.
  *
  * TODO ENTIRE REFACTOR OF ARCHITECTURE FOR THIS COMPONENT
+ * STATUS: IN PROGRESS
  *
  * @component
  * @param {Object} props - The component props.
@@ -29,6 +33,8 @@ const ModalContent: React.FC<ModalContentProps> = ({
 	content,
 	footer,
 	isOpen,
+	setCloseInterceptReason,
+	setPopupWindow,
 }) => {
 	return (
 		<div>
@@ -41,12 +47,22 @@ const ModalContent: React.FC<ModalContentProps> = ({
 			{typeof content === 'string' ? (
 				<Paragraph>{content}</Paragraph>
 			) : React.isValidElement(content) ? (
-				React.cloneElement(content as React.ReactElement<any>, { isOpen })
+				React.cloneElement(content as React.ReactElement<ContentElementProps>, {
+					...(setCloseInterceptReason ? { setCloseInterceptReason } : {}),
+					...(setPopupWindow ? { setPopupWindow } : {}),
+					isOpen,
+				})
 			) : null}
 			{/** TODO setup standard footer for modals with fall backs */}
 			{footer ? footer : null}
 		</div>
 	)
+}
+
+interface ContentElementProps {
+	isOpen: boolean
+	setCloseInterceptReason?: (reason: CloseInterceptReason) => void
+	setPopupWindow?: (popup: Window | null) => void
 }
 
 export default ModalContent

@@ -1,7 +1,9 @@
 ---
 name: Task Creation
-description: Create a task for a bug fix, feature implementation, spike investigation, or security vulnerability fix.
-title: "[Task][Type]: "
+description:
+  Create a task for a bug fix, feature implementation, spike investigation, or
+  security vulnerability fix.
+title: '[Task][Type]: '
 labels:
   - task
 projects:
@@ -11,7 +13,9 @@ body:
     id: task-type
     attributes:
       label: Task Type
-      description: Select the type of task you are creating. This choice will determine additional labels and required fields.
+      description:
+        Select the type of task you are creating. This choice will determine
+        additional labels and required fields.
       options:
         - Bug Fix
         - Feature Implementation
@@ -51,7 +55,8 @@ body:
     id: reproduction-steps
     attributes:
       label: Reproduction Steps
-      description: (Required for Bug Fixes) Provide steps to reproduce the issue.
+      description:
+        (Required for Bug Fixes) Provide steps to reproduce the issue.
       placeholder: Describe reproduction steps if applicable
     validations:
       required: false
@@ -60,7 +65,9 @@ body:
     id: technical-approach
     attributes:
       label: Technical Approach
-      description: (Optional for Features/Spike/Security) Suggest a technical approach or solution for the task.
+      description:
+        (Optional for Features/Spike/Security) Suggest a technical approach or
+        solution for the task.
       placeholder: Describe the technical approach if applicable
     validations:
       required: false
@@ -69,7 +76,9 @@ body:
     id: expected-outcome
     attributes:
       label: Expected Outcome
-      description: What is the expected outcome or deliverable of this task? Include performance or integration targets.
+      description:
+        What is the expected outcome or deliverable of this task? Include
+        performance or integration targets.
       placeholder: Describe the expected outcome
     validations:
       required: true
@@ -78,7 +87,9 @@ body:
     id: requirements
     attributes:
       label: Additional Requirements
-      description: Please check any that apply to your task. Different task types may trigger different requirements.
+      description:
+        Please check any that apply to your task. Different task types may
+        trigger different requirements.
       options:
         - label: Requires additional research
         - label: Requires security review
@@ -90,7 +101,9 @@ body:
     id: acceptance-criteria
     attributes:
       label: Acceptance Criteria
-      description: Define clear criteria for what finishing the task successfully looks like.
+      description:
+        Define clear criteria for what finishing the task successfully looks
+        like.
       placeholder: |
         - Criteria 1:
           - Sub-criteria 1
@@ -105,9 +118,12 @@ body:
     id: acceptance-confirmation
     attributes:
       label: Acceptance Criteria Confirmation
-      description: Please confirm that you have reviewed and agreed to the acceptance criteria.
+      description:
+        Please confirm that you have reviewed and agreed to the acceptance
+        criteria.
       options:
-        - label: I confirm that I have reviewed and agree to the acceptance criteria.
+        - label:
+            I confirm that I have reviewed and agree to the acceptance criteria.
     validations:
       required: true
 
@@ -145,4 +161,6 @@ body:
 
   - type: markdown
     attributes:
-      value: Please ensure all provided information is accurate and complete. Thank you for contributing!
+      value:
+        Please ensure all provided information is accurate and complete. Thank
+        you for contributing!

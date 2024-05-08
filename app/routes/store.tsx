@@ -160,22 +160,6 @@ export default function Store() {
 	return (
 		<>
 			<StoreHeader />
-
-			{/* Hidden while we focus on everything else 
-
-			<div className="flex flex-wrap justify-between">
-				<StoreStatistics />
-				<StoreTiers />
-				<FeaturedSection />
-				<StoreTestimonials />
-				<StoreFAQ />
-				<StorePartnership />
-				<StoreEvents />
-				<StoreContact />
-				<StoreFooter />
-			</div>
-			
-			*/}
 		</>
 	)
 }

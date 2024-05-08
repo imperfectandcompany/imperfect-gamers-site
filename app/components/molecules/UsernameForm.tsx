@@ -5,17 +5,11 @@ import { ValidatedForm } from 'remix-validated-form'
 import { z } from 'zod'
 import Button from '~/components/atoms/Button/Button'
 import Input from '~/components/atoms/Input/Input'
+import { CloseInterceptReason } from '../organism/ModalWrapper/ModalWrapper'
 
-const usernameSchema = z.object({
-	username: z
-		.string()
-		.min(3, 'Username must be at least 3 characters long')
-		.max(20, 'Username cannot exceed 20 characters'),
-})
-
-const validator = withZod(usernameSchema)
-
-const UsernameForm: React.FC = () => {
+const UsernameForm: React.FC<UsernameFormProps> = ({
+	setCloseInterceptReason,
+}) => {
 	const fetcher = useFetcher()
 	const [username, setUsername] = useState('')
 	const [usernameStatus, setUsernameStatus] = useState<string | null>(null)
@@ -32,8 +26,31 @@ const UsernameForm: React.FC = () => {
 		}, [...dependencies, delay])
 	}
 
+	const handleFetch = (username: string) => {
+		let reason = CloseInterceptReason.None
+
+		if (fetcher.state === 'submitting' || fetcher.state === 'loading') {
+			reason = CloseInterceptReason.RequestInProgress
+		} else if (username) {
+			reason = CloseInterceptReason.UnsavedChanges
+		} else if (
+			(fetcher.data &&
+				typeof fetcher.data === 'object' &&
+				((fetcher.data as { success: boolean })?.success ||
+					'error' in fetcher.data)) ||
+			fetcher.state === 'idle'
+		) {
+			reason = CloseInterceptReason.None
+		}
+
+		if (setCloseInterceptReason) {
+			setCloseInterceptReason(reason)
+		}
+	}
+
 	useDebouncedEffect(
 		() => {
+			handleFetch(username)
 			if (username.length >= 3) {
 				fetcher.submit(
 					{ username },
@@ -43,11 +60,12 @@ const UsernameForm: React.FC = () => {
 				setUsernameStatus(null) // Clear status when below 3 characters
 			}
 		},
-		[username],
+		[username, fetcher.state],
 		300,
 	)
 
 	useEffect(() => {
+		handleFetch(username)
 		if (username.length > 0 && username.length < 3) {
 			setUsernameStatus('Username too short.') // Warning for short username
 		} else if (fetcher.data) {
@@ -68,10 +86,19 @@ const UsernameForm: React.FC = () => {
 				setFinalizing(false)
 			}
 		}
-	}, [fetcher.data, username])
+	}, [fetcher.data, username, fetcher.state])
 
 	const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		setUsername(event.target.value)
+		if (event.target.value) {
+			// If the input field is not empty, set the close intercept reason to UnsavedChanges
+			setCloseInterceptReason &&
+				setCloseInterceptReason(CloseInterceptReason.UnsavedChanges)
+		} else {
+			// If the input field is empty, clear the close intercept reason
+			setCloseInterceptReason &&
+				setCloseInterceptReason(CloseInterceptReason.None)
+		}
 	}
 
 	const handleFormSubmit = (
@@ -95,6 +122,7 @@ const UsernameForm: React.FC = () => {
 				Choose a username to continue with your setup.
 			</p>
 			<ValidatedForm
+				key="UsernameForm"
 				validator={validator}
 				method="post"
 				action={finalizing ? '/auth/finalize/username' : '/auth/check/username'}
@@ -103,6 +131,7 @@ const UsernameForm: React.FC = () => {
 				className="flex flex-col space-y-4"
 			>
 				<Input
+					key="UsernameChange"
 					name="username"
 					type="text"
 					value={username}
@@ -126,5 +155,18 @@ const UsernameForm: React.FC = () => {
 		</div>
 	)
 }
+
+interface UsernameFormProps {
+	setCloseInterceptReason?: (reason: CloseInterceptReason) => void
+}
+
+const usernameSchema = z.object({
+	username: z
+		.string()
+		.min(3, 'Username must be at least 3 characters long')
+		.max(20, 'Username cannot exceed 20 characters'),
+})
+
+const validator = withZod(usernameSchema)
 
 export default UsernameForm

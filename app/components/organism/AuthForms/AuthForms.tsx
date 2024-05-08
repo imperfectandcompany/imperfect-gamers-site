@@ -10,12 +10,19 @@ import UsernameForm from '~/components/molecules/UsernameForm'
 import type { LoaderData } from '~/routes/store'
 import { useFetcherWithPromise } from '~/utils/general'
 import type { TebexCheckoutConfig } from '~/utils/tebex.interface'
+import { CloseInterceptReason } from '../ModalWrapper/ModalWrapper'
 
 interface AuthFormProps {
 	isOpen?: boolean
+	setCloseInterceptReason?: (reason: CloseInterceptReason) => void
+	setPopupWindow?: (window: Window | null) => void
 }
 
-const AuthForms: React.FC<AuthFormProps> = ({ isOpen }) => {
+const AuthForms: React.FC<AuthFormProps> = ({
+	isOpen,
+	setCloseInterceptReason,
+	setPopupWindow,
+}) => {
 	const {
 		isAuthenticated,
 		isSteamLinked,
@@ -50,6 +57,7 @@ const AuthForms: React.FC<AuthFormProps> = ({ isOpen }) => {
 	const UseTebexCheckout = useCallback(
 		(checkoutId: string, theme: 'light' | 'dark') => {
 			const { Tebex } = window
+
 			if (!Tebex) return
 
 			const config: TebexCheckoutConfig = {
@@ -58,27 +66,39 @@ const AuthForms: React.FC<AuthFormProps> = ({ isOpen }) => {
 			}
 
 			Tebex.checkout.init(config)
+
+			// Listen for Tebex checkout events and set modal close intercept reasons accordingly
+			Tebex.checkout.on(Tebex.events.OPEN, () => {
+				console.log('Tebex Checkout Opened')
+				if (setCloseInterceptReason) {
+					setCloseInterceptReason(CloseInterceptReason.ActivePopup)
+				}
+			})
+
+			Tebex.checkout.on(Tebex.events.CLOSE, () => {
+				console.log('Tebex Checkout Closed')
+				if (setCloseInterceptReason) {
+					setCloseInterceptReason(CloseInterceptReason.None)
+				}
+			})
+
+			Tebex.checkout.on(Tebex.events.PAYMENT_COMPLETE, () => {
+				console.log('Payment Complete')
+				if (setCloseInterceptReason) {
+					setCloseInterceptReason(CloseInterceptReason.None)
+				}
+			})
+
+			Tebex.checkout.on(Tebex.events.PAYMENT_ERROR, () => {
+				console.log('Payment Error')
+				if (setCloseInterceptReason) {
+					setCloseInterceptReason(CloseInterceptReason.None)
+				}
+			})
+
 			Tebex.checkout.launch()
-
-			Tebex.checkout.on(Tebex.events.PAYMENT_COMPLETE, event => {
-				// Handle payment completion here
-			})
-
-			Tebex.checkout.on(Tebex.events.PAYMENT_ERROR, event => {
-				// Handle payment error here
-			})
-
-			Tebex.checkout.on(Tebex.events.CLOSE, event => {
-				// Handle modal close here
-				console.log('Tebex Event Handler Close')
-			})
-
-			Tebex.checkout.on(Tebex.events.OPEN, event => {
-				// Handle modal open here
-				console.log('Tebex Event Handler Open')
-			})
 		},
-		[],
+		[setCloseInterceptReason],
 	)
 
 	const createBasket = async () => {
@@ -180,7 +200,9 @@ const AuthForms: React.FC<AuthFormProps> = ({ isOpen }) => {
 		setIsAuthorized(true)
 	}, [])
 
+	// After user is logged in (authenticated) and onboarded (verified)
 	const UserStatus = () => {
+		// Step 2: Does user have a basket (required)
 		if (!basketId) {
 			return <div>Loading or creating your basket...</div>
 		}
@@ -195,14 +217,12 @@ const AuthForms: React.FC<AuthFormProps> = ({ isOpen }) => {
 			return <div>Error: {(fetcher.data as { error: string }).error}</div>
 		}
 
+		// Step 3: Does user have premium package in basket (final process)
 		if (!packages.some(pkg => pkg.id === 6154841)) {
 			return <div>Loading or adding premium package to basket...</div>
 		}
 
-		if (!username) {
-			return <UsernameForm />
-		}
-
+		// Step 4: Show final screen (ready)
 		if (isSteamLinked) {
 			return (
 				<>
@@ -212,18 +232,33 @@ const AuthForms: React.FC<AuthFormProps> = ({ isOpen }) => {
 			)
 		}
 
-		return <AuthorizeForm onSuccess={handleSteamLinkSuccess} />
+		return (
+			<AuthorizeForm
+				onSuccess={handleSteamLinkSuccess}
+				setCloseInterceptReason={setCloseInterceptReason}
+			/>
+		)
 	}
 
 	return (
 		<>
 			<div className="flex flex-col space-y-6">
 				{isAuthenticated ? (
-					<UserStatus />
+					!username ? (
+						<UsernameForm setCloseInterceptReason={setCloseInterceptReason} />
+					) : !isSteamLinked ? (
+						<AuthorizeForm
+							onSuccess={handleSteamLinkSuccess}
+							setCloseInterceptReason={setCloseInterceptReason}
+							setPopupWindow={setPopupWindow} // Pass setPopupWindow to AuthorizeForm
+						/>
+					) : (
+						<UserStatus />
+					)
 				) : isLoginForm ? (
-					<LoginForm />
+					<LoginForm setCloseInterceptReason={setCloseInterceptReason} />
 				) : (
-					<SignUpForm />
+					<SignUpForm setCloseInterceptReason={setCloseInterceptReason} />
 				)}
 			</div>
 			<div className="mx-auto mt-4 flex flex-col text-center text-sm text-white">
