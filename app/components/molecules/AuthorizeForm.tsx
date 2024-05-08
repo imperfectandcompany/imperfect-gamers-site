@@ -1,7 +1,7 @@
 // ~/app/components/molecules/AuthorizeForm.tsx
 import { useEffect, useState } from 'react'
 import Button from '~/components/atoms/Button/Button'
-import { generateSteamLoginURL } from '~/utils/steamAuth'
+// import { generateSteamLoginURL } from '~/utils/steamAuth'
 import { CloseInterceptReason } from '../organism/ModalWrapper/ModalWrapper'
 
 // Add setCloseInterceptReason to the props interface
