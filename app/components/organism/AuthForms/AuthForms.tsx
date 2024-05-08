@@ -225,7 +225,7 @@ const AuthForms: React.FC<AuthFormProps> = ({ isOpen, setCloseInterceptReason })
 				) : isLoginForm ? (
 				<LoginForm setCloseInterceptReason={setCloseInterceptReason} />
 				) : (
-					<SignUpForm />
+					<SignUpForm setCloseInterceptReason={setCloseInterceptReason} />
 				)}
 			</div>
 			<div className="mx-auto mt-4 flex flex-col text-center text-sm text-white">
