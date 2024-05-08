@@ -56,37 +56,50 @@ const AuthForms: React.FC<AuthFormProps> = ({
 
 	const UseTebexCheckout = useCallback(
 		(checkoutId: string, theme: 'light' | 'dark') => {
-			const { Tebex } = window
-			if (!Tebex) return
-
+			const { Tebex } = window;
+	
+			if (!Tebex) return;
+	
 			const config: TebexCheckoutConfig = {
 				ident: checkoutId,
 				theme: theme,
-			}
-
-			Tebex.checkout.init(config)
-			Tebex.checkout.launch()
-
-			Tebex.checkout.on(Tebex.events.PAYMENT_COMPLETE, event => {
-				// Handle payment completion here
-			})
-
-			Tebex.checkout.on(Tebex.events.PAYMENT_ERROR, event => {
-				// Handle payment error here
-			})
-
-			Tebex.checkout.on(Tebex.events.CLOSE, event => {
-				// Handle modal close here
-				console.log('Tebex Event Handler Close')
-			})
-
-			Tebex.checkout.on(Tebex.events.OPEN, event => {
-				// Handle modal open here
-				console.log('Tebex Event Handler Open')
-			})
+			};
+	
+			Tebex.checkout.init(config);
+	
+			// Listen for Tebex checkout events and set modal close intercept reasons accordingly
+			Tebex.checkout.on(Tebex.events.OPEN, () => {
+				console.log('Tebex Checkout Opened');
+				if (setCloseInterceptReason) {
+					setCloseInterceptReason(CloseInterceptReason.ActivePopup);
+				}
+			});
+	
+			Tebex.checkout.on(Tebex.events.CLOSE, () => {
+				console.log('Tebex Checkout Closed');
+				if (setCloseInterceptReason) {
+					setCloseInterceptReason(CloseInterceptReason.None);
+				}
+			});
+	
+			Tebex.checkout.on(Tebex.events.PAYMENT_COMPLETE, () => {
+				console.log('Payment Complete');
+				if (setCloseInterceptReason) {
+					setCloseInterceptReason(CloseInterceptReason.None);
+				}
+			});
+	
+			Tebex.checkout.on(Tebex.events.PAYMENT_ERROR, () => {
+				console.log('Payment Error');
+				if (setCloseInterceptReason) {
+					setCloseInterceptReason(CloseInterceptReason.None);
+				}
+			});
+	
+			Tebex.checkout.launch();
 		},
-		[],
-	)
+		[setCloseInterceptReason]
+	);
 
 	const createBasket = async () => {
 		console.log('Creating basket...')
