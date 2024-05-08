@@ -15,11 +15,13 @@ import { CloseInterceptReason } from '../ModalWrapper/ModalWrapper'
 interface AuthFormProps {
 	isOpen?: boolean
 	setCloseInterceptReason?: (reason: CloseInterceptReason) => void
+	setPopupWindow?: (window: Window | null) => void
 }
 
 const AuthForms: React.FC<AuthFormProps> = ({
 	isOpen,
 	setCloseInterceptReason,
+	setPopupWindow,
 }) => {
 	const {
 		isAuthenticated,
@@ -185,15 +187,8 @@ const AuthForms: React.FC<AuthFormProps> = ({
 		setIsAuthorized(true)
 	}, [])
 
-
 	// After user is logged in (authenticated) and onboarded (verified)
 	const UserStatus = () => {
-		// Step 1:	Does user have Steam attached (authorized)
-
-		if (!isSteamLinked) {
-			return <AuthorizeForm onSuccess={handleSteamLinkSuccess} />
-		}
-
 		// Step 2: Does user have a basket (required)
 		if (!basketId) {
 			return <div>Loading or creating your basket...</div>
@@ -224,7 +219,12 @@ const AuthForms: React.FC<AuthFormProps> = ({
 			)
 		}
 
-		return <AuthorizeForm onSuccess={handleSteamLinkSuccess} />
+		return (
+			<AuthorizeForm
+				onSuccess={handleSteamLinkSuccess}
+				setCloseInterceptReason={setCloseInterceptReason}
+			/>
+		)
 	}
 
 	return (
@@ -233,6 +233,12 @@ const AuthForms: React.FC<AuthFormProps> = ({
 				{isAuthenticated ? (
 					!username ? (
 						<UsernameForm setCloseInterceptReason={setCloseInterceptReason} />
+					) : !isSteamLinked ? (
+						<AuthorizeForm
+							onSuccess={handleSteamLinkSuccess}
+							setCloseInterceptReason={setCloseInterceptReason}
+							setPopupWindow={setPopupWindow} // Pass setPopupWindow to AuthorizeForm
+						/>
 					) : (
 						<UserStatus />
 					)

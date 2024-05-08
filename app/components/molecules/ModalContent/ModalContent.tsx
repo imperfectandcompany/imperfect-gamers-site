@@ -11,7 +11,8 @@ type ModalContentProps = {
 	content: ReactNode
 	footer?: ReactNode
 	isOpen?: boolean
-	setCloseInterceptReason: (reason: CloseInterceptReason) => void
+	setCloseInterceptReason?: (reason: CloseInterceptReason) => void
+	setPopupWindow?: (window: Window | null) => void
 }
 
 /**
@@ -33,6 +34,7 @@ const ModalContent: React.FC<ModalContentProps> = ({
 	footer,
 	isOpen,
 	setCloseInterceptReason,
+	setPopupWindow,
 }) => {
 	return (
 		<div>
@@ -45,15 +47,22 @@ const ModalContent: React.FC<ModalContentProps> = ({
 			{typeof content === 'string' ? (
 				<Paragraph>{content}</Paragraph>
 			) : React.isValidElement(content) ? (
-				React.cloneElement(content as React.ReactElement<any>, {
+				React.cloneElement(content as React.ReactElement<ContentElementProps>, {
+					...(setCloseInterceptReason ? { setCloseInterceptReason } : {}),
+					...(setPopupWindow ? { setPopupWindow } : {}),
 					isOpen,
-					setCloseInterceptReason,
 				})
 			) : null}
 			{/** TODO setup standard footer for modals with fall backs */}
 			{footer ? footer : null}
 		</div>
 	)
+}
+
+interface ContentElementProps {
+	isOpen: boolean
+	setCloseInterceptReason?: (reason: CloseInterceptReason) => void
+	setPopupWindow?: (popup: Window | null) => void
 }
 
 export default ModalContent

@@ -34,25 +34,29 @@ const ModalWrapper: React.FC<ModalWrapperProps> = ({
 	children,
 }) => {
 	const [isOpen, setIsOpen] = useState(false)
+	const [popupWindow, setPopupWindow] = useState<Window | null>(null)
 
 	/**
 	 * Opens the modal dialog by setting the isOpen state to true.
 	 */
-	const openModal = () => {
-		setIsOpen(true)
-	}
+	const openModal = () => setIsOpen(true)
 
-	const [closeInterceptReason, setCloseInterceptReason] = useState(
-		CloseInterceptReason.None,
-	)
+	const [closeInterceptReason, setCloseInterceptReason] =
+		useState<CloseInterceptReason>(CloseInterceptReason.None)
 
 	const shouldClose = () => closeInterceptReason === CloseInterceptReason.None
 
-	/**
-	 * Closes the modal dialog by setting the isOpen state to false.
-	 */
+	const handlePopupWindow = () => {
+		if (popupWindow && !popupWindow.closed) {
+			popupWindow.focus() // Focus the popup window if it's still open
+			setCloseInterceptReason(CloseInterceptReason.ActivePopup)
+			return true
+		}
+		return false
+	}
+
 	const closeModal = () => {
-		if (shouldClose()) {
+		if (!handlePopupWindow() && shouldClose()) {
 			setIsOpen(false)
 		}
 		// TODO: Implement UI/UX enhancements for when the modal close attempt is intercepted
@@ -74,6 +78,7 @@ const ModalWrapper: React.FC<ModalWrapperProps> = ({
 					footer={footer}
 					isOpen={isOpen}
 					setCloseInterceptReason={setCloseInterceptReason}
+					setPopupWindow={setPopupWindow}
 				/>
 				{/** Escape modal button **/}
 				<div
