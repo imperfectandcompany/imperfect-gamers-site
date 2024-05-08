@@ -24,12 +24,14 @@ import { useCallback, useEffect, useState } from 'react'
 const SignUpForm: React.FC<SignUpFormProps> = ({ setCloseInterceptReason }) => {
 	const fetcher = useFetcher()
 
-    const [formValues, setFormValues] = useState<FormValues>({
-        email: '',
-        password: '',
-        confirmPassword: '',
-    })
-    const [initialFormValues, setInitialFormValues] = useState<FormValues>({ ...formValues })
+	const [formValues, setFormValues] = useState<FormValues>({
+		email: '',
+		password: '',
+		confirmPassword: '',
+	})
+	const [initialFormValues, setInitialFormValues] = useState<FormValues>({
+		...formValues,
+	})
 
 	const isFormDirty =
 		JSON.stringify(formValues) !== JSON.stringify(initialFormValues)
@@ -37,23 +39,29 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ setCloseInterceptReason }) => {
 	/**
 	 * Update the close intercept reason based on the form's dirty state.
 	 */
-    const updateCloseInterceptReason = useCallback(() => {
-        let reason = CloseInterceptReason.None;
-    
-        if (fetcher.state === 'submitting' || fetcher.state === 'loading') {
-            reason = CloseInterceptReason.RequestInProgress;
-        } else if (isFormDirty) {
-            reason = CloseInterceptReason.UnsavedChanges;
-        } else if ((fetcher.data && typeof fetcher.data === 'object' && ((fetcher.data as { success: boolean })?.success || 'error' in fetcher.data)) || fetcher.state === 'idle') {
-            reason = CloseInterceptReason.None;
-        }
-    
-        if (setCloseInterceptReason) {
-            setCloseInterceptReason(reason);
-        }
-    }, [fetcher.state, isFormDirty, setCloseInterceptReason]);
+	const updateCloseInterceptReason = useCallback(() => {
+		let reason = CloseInterceptReason.None
 
-    useEffect(updateCloseInterceptReason, [updateCloseInterceptReason]);
+		if (fetcher.state === 'submitting' || fetcher.state === 'loading') {
+			reason = CloseInterceptReason.RequestInProgress
+		} else if (isFormDirty) {
+			reason = CloseInterceptReason.UnsavedChanges
+		} else if (
+			(fetcher.data &&
+				typeof fetcher.data === 'object' &&
+				((fetcher.data as { success: boolean })?.success ||
+					'error' in fetcher.data)) ||
+			fetcher.state === 'idle'
+		) {
+			reason = CloseInterceptReason.None
+		}
+
+		if (setCloseInterceptReason) {
+			setCloseInterceptReason(reason)
+		}
+	}, [fetcher.state, isFormDirty, setCloseInterceptReason])
+
+	useEffect(updateCloseInterceptReason, [updateCloseInterceptReason])
 
 	const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		setFormValues({
@@ -73,6 +81,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ setCloseInterceptReason }) => {
 
 	return (
 		<ValidatedForm
+			key="SignUpForm"
 			validator={validate}
 			method="post"
 			action="/register"
@@ -86,6 +95,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ setCloseInterceptReason }) => {
 			className="flex flex-col space-y-4"
 		>
 			<Input
+				key="SignUpEmail"
 				name="email"
 				type="email"
 				placeholder="Email"
@@ -93,6 +103,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ setCloseInterceptReason }) => {
 				onChange={handleInputChange}
 			/>
 			<Input
+				key="SignUpPassword"
 				name="password"
 				type="password"
 				placeholder="Password"
@@ -100,6 +111,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ setCloseInterceptReason }) => {
 				onChange={handleInputChange}
 			/>
 			<Input
+				key="SignUpConfirmPassword"
 				name="confirmPassword"
 				type="password"
 				placeholder="Confirm Password"

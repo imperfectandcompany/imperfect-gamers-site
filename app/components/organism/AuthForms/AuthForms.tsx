@@ -17,7 +17,10 @@ interface AuthFormProps {
 	setCloseInterceptReason?: (reason: CloseInterceptReason) => void
 }
 
-const AuthForms: React.FC<AuthFormProps> = ({ isOpen, setCloseInterceptReason }) => {
+const AuthForms: React.FC<AuthFormProps> = ({
+	isOpen,
+	setCloseInterceptReason,
+}) => {
 	const {
 		isAuthenticated,
 		isSteamLinked,
@@ -182,7 +185,16 @@ const AuthForms: React.FC<AuthFormProps> = ({ isOpen, setCloseInterceptReason })
 		setIsAuthorized(true)
 	}, [])
 
+
+	// After user is logged in (authenticated) and onboarded (verified)
 	const UserStatus = () => {
+		// Step 1:	Does user have Steam attached (authorized)
+
+		if (!isSteamLinked) {
+			return <AuthorizeForm onSuccess={handleSteamLinkSuccess} />
+		}
+
+		// Step 2: Does user have a basket (required)
 		if (!basketId) {
 			return <div>Loading or creating your basket...</div>
 		}
@@ -197,14 +209,12 @@ const AuthForms: React.FC<AuthFormProps> = ({ isOpen, setCloseInterceptReason })
 			return <div>Error: {(fetcher.data as { error: string }).error}</div>
 		}
 
+		// Step 3: Does user have premium package in basket (final process)
 		if (!packages.some(pkg => pkg.id === 6154841)) {
 			return <div>Loading or adding premium package to basket...</div>
 		}
 
-		if (!username) {
-			return <UsernameForm />
-		}
-
+		// Step 4: Show final screen (ready)
 		if (isSteamLinked) {
 			return (
 				<>
@@ -221,9 +231,13 @@ const AuthForms: React.FC<AuthFormProps> = ({ isOpen, setCloseInterceptReason })
 		<>
 			<div className="flex flex-col space-y-6">
 				{isAuthenticated ? (
-					<UserStatus />
+					!username ? (
+						<UsernameForm setCloseInterceptReason={setCloseInterceptReason} />
+					) : (
+						<UserStatus />
+					)
 				) : isLoginForm ? (
-				<LoginForm setCloseInterceptReason={setCloseInterceptReason} />
+					<LoginForm setCloseInterceptReason={setCloseInterceptReason} />
 				) : (
 					<SignUpForm setCloseInterceptReason={setCloseInterceptReason} />
 				)}
