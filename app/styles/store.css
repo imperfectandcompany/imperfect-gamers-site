@@ -223,6 +223,82 @@ body {
   }
 }
 
+
+/**
+ * FILEPATH: /Users/dijaz/Documents/Coding/GitHub/imperfect-gamers-site/app/styles/store.css
+ * 
+ * This CSS section contains styles for input validation, error messages, and transitions.
+ */
+
+/* Styles for input validation */
+.input-error {
+  border-color: red;
+}
+
+.input-valid {
+  border-color: green;
+}
+
+.input-neutral {
+  border-color: #4B5563; /* stone-700 */
+}
+
+.input-typing {
+  border-color: yellow; /* Set the border color to yellow */
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; /* Apply the pulse animation */
+}
+
+@keyframes pulse {
+  0%, 100% {
+    border-color: yellow; /* Start and end with yellow border color */
+  }
+  50% {
+    border-color: transparent; /* Middle with transparent border color */
+  }
+}
+
+/* Styles for input validation on hover and focus */
+.input-hover-error:hover, .input-error:focus {
+  border-color: red;
+}
+
+.input-hover-valid:hover, .input-valid:focus {
+  border-color: green;
+}
+
+.input-hover-neutral:hover, .input-neutral:focus {
+  border-color: #4B5563; /* stone-700 */
+}
+
+/* Transition styles */
+.transition-border {
+  transition: border-color 0.5s, opacity 0.5s, visibility 0.5s;
+}
+
+.error-message {
+  max-height: 0;
+  overflow: hidden;
+  color: red;
+  font-size: 0.875rem; /* 14px */
+  margin-top: 0.25rem; /* 4px */
+  transition: max-height 0.5s ease-in-out, opacity 0.5s ease-in-out;
+}
+
+.error-message.show {
+  max-height: 1rem; /* Allow enough space for the message */
+  opacity: 1;
+  filter: blur(0);
+}
+.confirm-password-transition {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.5s ease-in-out, opacity 0.5s ease-in-out;
+}
+.confirm-password-transition.show {
+  max-height: 5rem; /* Allow enough space for the input */
+  opacity: 1;
+}
+
 /* FAQ Section Styles */
 .faq-section {
   width: 100%;
