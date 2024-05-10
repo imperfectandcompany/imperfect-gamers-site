@@ -1,14 +1,14 @@
 // components/templates/store/StoreHeader.tsx
 import { useLoaderData } from '@remix-run/react'
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useMemo} from 'react'
 import Button from '~/components/atoms/Button/Button'
 import AuthForms from '~/components/organism/AuthForms/AuthForms'
 import { MembershipCard } from '~/components/organism/MembershipCard/MembershipCard'
 import ModalWrapper from '~/components/organism/ModalWrapper/ModalWrapper'
+import { ProcessProvider } from '~/components/pending/ProcessProvider'
+import Register from '~/components/pending/Register'
 
 import type { LoaderData } from '~/routes/store'
-import SignUpForm from '~/components/molecules/SignUpForm'
-import { Register } from '~/components/pending/Register'
 
 /**
  * Renders the header component for the store page.
@@ -50,8 +50,9 @@ export default function StoreHeader() {
 						Please log in or sign up to join the club.
 					</p>
 				) : null}
-
+				<ProcessProvider>
 				<Register />
+				</ProcessProvider>
 
 				{/* <div className="flex min-h-screen items-center justify-center">
 					<div className="w-96 rounded-lg border border-stone-800 bg-black p-8">

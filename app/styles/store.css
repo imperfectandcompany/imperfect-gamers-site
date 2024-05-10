@@ -315,6 +315,49 @@ body {
   perspective: 1000px;
 }
 
+.error-message-fade {
+  position: relative;
+  animation: fadeOut 5s forwards;
+  color: #9EA8A2;
+  text-align: center;
+}
+
+.message-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+ /*  background-color: #1a1a1a; Dark background for contrast */
+  color: white;
+}
+
+.progress-container {
+  width: 16px; 
+  height: 16px;
+}
+
+.progress-ring {
+  width: 100%;
+  height: 100%;
+}
+
+.base-circle {
+  stroke: rgba(0, 0, 0, 0.5);
+}
+
+.progress-circle {
+  stroke: white;
+  animation: fillCircle 5s linear forwards, fadeOut 1s linear 4s forwards;
+}
+
+@keyframes fillCircle {
+  from { stroke-dashoffset: 251.2; }
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
 
 .form-title{
   color: #E0E0E0;

@@ -1,12 +1,17 @@
 // components/pending/SignUpForm.tsx
-import { Form, useFetcher, useLoaderData } from '@remix-run/react'
+import { useFetcher } from '@remix-run/react'
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Button from '~/components/atoms/Button/Button'
-import type { LoaderData } from '~/routes/store'
-import { useField, useIsSubmitting, ValidatedForm } from 'remix-validated-form'
+import { useField, ValidatedForm } from 'remix-validated-form'
 import { withZod } from '@remix-validated-form/with-zod'
 import { z } from 'zod'
 import { CloseInterceptReason } from '../organism/ModalWrapper/ModalWrapper'
+import {
+	useFetcherWithPromiseAndReset,
+	useFetcherWithReset,
+} from '~/utils/general'
+import { ProcessProvider, useProcessDispatch, useProcessState } from './ProcessProvider'
+import MessageContainer from './MessageContainer'
 
 interface UseInputReturn {
 	value: string
@@ -154,7 +159,7 @@ const ErrorMessage = memo<ErrorMessageProps>(({ showError, message, id }) => {
 })
 
 const Register: React.FC<RegisterProps> = ({ setCloseInterceptReason }) => {
-	const fetcher = useFetcher()
+	const fetcher = useFetcherWithReset()
 
 	const [formValues, setFormValues] = useState<FormValues>({
 		email: '',
@@ -244,11 +249,55 @@ const Register: React.FC<RegisterProps> = ({ setCloseInterceptReason }) => {
 		)
 	}
 
+	const [submissionState, setSubmissionState] = useState({ submitting: false, showError: false });
+
+	const FadeMessage = () => {
+		useEffect(() => {
+			let timeout: string | number | NodeJS.Timeout | undefined;
+			if (submissionState.showError) {
+				timeout = setTimeout(() => {
+					setSubmissionState(prev => ({ ...prev, showError: false }));
+					fetcher.reset();
+				}, 5000);
+			}
+			return () => clearTimeout(timeout);
+		}, [submissionState.showError]);
+	
+		if (!submissionState.showError) return null;
+	
+		return (
+			<div className="message-container mb-4">
+				<div className="error-message-fade">{(fetcher.data as { error: string }).error}</div>
+				<div className="progress-container">
+					<svg className="progress-ring" viewBox="0 0 100 100">
+						<circle className="base-circle" strokeWidth="10" cx="50" cy="50" r="40" fill="transparent"></circle>
+						<circle className="progress-circle" strokeWidth="10" strokeLinecap="round" cx="50" cy="50" r="40" fill="transparent"
+							strokeDasharray="251.2"
+							strokeDashoffset="251.2"
+							style={{ transition: 'strokeDashoffset 5s linear' }}
+						></circle>
+					</svg>
+				</div>
+			</div>
+		);
+	};
+
+	// useEffect(() => {
+	// 	// fetcher.data is the value return from action, you can toast base on the value
+	// 	if ((fetcher.data as { error: boolean })?.error) {
+	// 		console.log('F REMIX')
+	// 		setSubmissionState({ submitting: false, showError: true }); // Stop submitting, show error if needed
+	// 	}
+	//   }, [fetcher.data])
+
+
 	useEffect(() => {
 		confirmPasswordInput.setError(
 			confirmPasswordInput.value !== passwordInput.value,
 		)
 	}, [passwordInput.value, confirmPasswordInput.value])
+	const startProcess = useProcessDispatch();
+    const { inProgress } = useProcessState();
 
 	return (
 		<div className="flex min-h-screen items-center justify-center">
@@ -256,29 +305,27 @@ const Register: React.FC<RegisterProps> = ({ setCloseInterceptReason }) => {
 				<h1 className="form-title mb-6 select-none text-2xl text-white">
 					Sign Up
 				</h1>
-				{(fetcher.data as { error: string })?.error ? (
-					<div className="error-message show mr-0">
-						{(fetcher.data as { error: string }).error}
-					</div>
-				) : null}
+				{(fetcher.data as { error: boolean })?.error && <FadeMessage />}
+				{inProgress && <MessageContainer message='ayoo' />}
 				<ValidatedForm
 					key="SignUpForm"
 					validator={validate}
+					fetcher={fetcher}
 					method="post"
 					action="/register"
-					fetcher={fetcher}
-					onSubmit={data => {
-						if (
-							(fetcher.state === 'submitting' || fetcher.state === 'loading') &&
-							formIsValid
-						) {
-							console.log('Submitting form...')
-							// Handle the form submission with the data
-							fetcher.submit(data)
-							// This will mark the form as not dirty after submission.
-							setInitialFormValues({ ...formValues })
+					onSubmit={async data => {
+						if (formIsValid && fetcher.state !== 'submitting') {
+							try {
+								console.log('Submitting...')
+								await fetcher.submit(data);
+							startProcess("Processing login...")
+							} catch (error) {
+								console.error('Failed to submit form', error);
+								setSubmissionState({ submitting: false, showError: true }); // Ensure spinner doesn't show up on failure
+							}
 						}
 					}}
+					// Set visibility to true every time message changes
 					className="flex flex-col space-y-4"
 				>
 					<div>
