@@ -1,11 +1,12 @@
 // components/pending/SignUpForm.tsx
-import { Form, useLoaderData } from '@remix-run/react'
+import { Form, useFetcher, useLoaderData } from '@remix-run/react'
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Button from '~/components/atoms/Button/Button'
 import type { LoaderData } from '~/routes/store'
 import { useField, useIsSubmitting, ValidatedForm } from 'remix-validated-form'
 import { withZod } from '@remix-validated-form/with-zod'
 import { z } from 'zod'
+import { CloseInterceptReason } from '../organism/ModalWrapper/ModalWrapper'
 
 interface UseInputReturn {
 	value: string
@@ -13,7 +14,7 @@ interface UseInputReturn {
 	error: boolean
 	setError: React.Dispatch<React.SetStateAction<boolean>>
 	isFocused: boolean
-    isValid: boolean
+	isValid: boolean
 	handleValueChange: (e: React.ChangeEvent<HTMLInputElement>) => void
 	handleFocus: () => void
 	handleBlur: () => void
@@ -31,27 +32,25 @@ function useInput(
 	const [error, setError] = useState(false)
 	const [isFocused, setIsFocused] = useState(false)
 	const [isTyping, setIsTyping] = useState(false)
-    const [isValid, setIsValid] = useState(false);
-
+	const [isValid, setIsValid] = useState(false)
 
 	const typingTimeoutRef = useRef<null | NodeJS.Timeout>(null)
 
-const handleValueChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-        const newValue = e.target.value;
-        setValue(newValue);  // Set value immediately for user feedback
-        setIsTyping(true);
+	const handleValueChange = useCallback(
+		(e: React.ChangeEvent<HTMLInputElement>) => {
+			const newValue = e.target.value
+			setValue(newValue) // Set value immediately for user feedback
+			setIsTyping(true)
 
-        clearTimeout(typingTimeoutRef.current!);  // Clear existing timeout
+			clearTimeout(typingTimeoutRef.current!) // Clear existing timeout
 
-        typingTimeoutRef.current = setTimeout(() => {
-            setIsTyping(false);
-            setError(!validate(newValue));  // Validate after user has stopped typing
-        }, 200);  // Consider reducing the timeout to improve responsiveness
-    },
-    [validate],
-);
-
+			typingTimeoutRef.current = setTimeout(() => {
+				setIsTyping(false)
+				setError(!validate(newValue)) // Validate after user has stopped typing
+			}, 0) // Consider reducing the timeout to improve responsiveness
+		},
+		[validate],
+	)
 
 	const handleFocus = () => setIsFocused(true)
 	const handleBlur = () => {
@@ -80,10 +79,9 @@ const handleValueChange = useCallback(
 		return () => clearTimeout(timeoutId)
 	}, [value])
 
-    useEffect(() => {
-        setIsValid(!error && value.trim() !== ''); // Update validity based on error and value
-    }, [error, value]);
-
+	useEffect(() => {
+		setIsValid(!error && value.trim() !== '') // Update validity based on error and value
+	}, [error, value])
 
 	return {
 		value,
@@ -91,7 +89,7 @@ const handleValueChange = useCallback(
 		error,
 		setError,
 		isFocused,
-        isValid,
+		isValid,
 		handleValueChange,
 		handleFocus,
 		handleBlur,
@@ -117,12 +115,12 @@ interface InputProps {
 }
 
 const Input = memo<InputProps>(({ name, type, placeholder, inputProps }) => {
-	const { getInputProps, error } = useField(name, {formId: 'register'})
+	const { getInputProps, error } = useField(name, { formId: 'register' })
 	return (
 		<>
 			<input
 				{...getInputProps({ id: name, type })}
-                className={`w-full rounded ${inputProps.inputClassName} border border-white/5 bg-white/5 input-background p-2 text-white transition-all duration-300 ease-in-out placeholder:text-white/35 focus:outline-none focus:border-white/30`}
+				className={`w-full rounded ${inputProps.inputClassName} input-background border border-white/5 bg-white/5 p-2 text-white transition-all duration-300 ease-in-out placeholder:text-white/35 focus:border-white/30 focus:outline-none`}
 				placeholder={placeholder}
 				value={inputProps.value}
 				onChange={inputProps.handleValueChange}
@@ -155,8 +153,47 @@ const ErrorMessage = memo<ErrorMessageProps>(({ showError, message, id }) => {
 	)
 })
 
-export default function Register() {
-    const [isSubmitting, setSubmitting] = useState(false); // Local state to manage submission state
+const Register: React.FC<RegisterProps> = ({ setCloseInterceptReason }) => {
+	const fetcher = useFetcher()
+
+	const [formValues, setFormValues] = useState<FormValues>({
+		email: '',
+		password: '',
+		confirmPassword: '',
+	})
+	const [initialFormValues, setInitialFormValues] = useState<FormValues>({
+		...formValues,
+	})
+
+	const isFormDirty =
+		JSON.stringify(formValues) !== JSON.stringify(initialFormValues)
+
+	/**
+	 * Update the close intercept reason based on the form's dirty state.
+	 */
+	const updateCloseInterceptReason = useCallback(() => {
+		let reason = CloseInterceptReason.None
+
+		if (fetcher.state === 'submitting' || fetcher.state === 'loading') {
+			reason = CloseInterceptReason.RequestInProgress
+		} else if (isFormDirty) {
+			reason = CloseInterceptReason.UnsavedChanges
+		} else if (
+			(fetcher.data &&
+				typeof fetcher.data === 'object' &&
+				((fetcher.data as { success: boolean })?.success ||
+					'error' in fetcher.data)) ||
+			fetcher.state === 'idle'
+		) {
+			reason = CloseInterceptReason.None
+		}
+
+		if (setCloseInterceptReason) {
+			setCloseInterceptReason(reason)
+		}
+	}, [fetcher.state, isFormDirty, setCloseInterceptReason])
+
+	useEffect(updateCloseInterceptReason, [updateCloseInterceptReason])
 
 	const emailInput = useInput(
 		'',
@@ -173,35 +210,39 @@ export default function Register() {
 		value => value === passwordInput.value,
 		'confirm-password-error',
 	)
-    const formIsValid = useMemo(() => emailInput.isValid && passwordInput.isValid && confirmPasswordInput.isValid, [emailInput.isValid, passwordInput.isValid, confirmPasswordInput.isValid]);
+	const formIsValid = useMemo(
+		() =>
+			emailInput.isValid &&
+			passwordInput.isValid &&
+			confirmPasswordInput.isValid,
+		[emailInput.isValid, passwordInput.isValid, confirmPasswordInput.isValid],
+	)
 
+	// Submit Button with dynamic disabling and loading state
+	const SubmitButton: React.FC = () => {
+		const isSubmitting =
+			fetcher.state === 'submitting' || fetcher.state === 'loading'
+		const [shake, setShake] = useState(false)
 
-    const handleSubmit = async (event: React.FormEvent) => {
-        event.preventDefault();
-        if (!formIsValid) {
-            alert('Please correct the errors before submitting.');
-            return;
-        }
-        
-        setSubmitting(true); // Set loading state
-        // Simulate a network request or handle data submission
-        setTimeout(() => {
-            console.log('Form data:', { email: emailInput.value, password: passwordInput.value });
-            setSubmitting(false); // Reset submission state
-        }, 2000);
-    };
+		const handleClick = () => {
+			if (isSubmitting || !formIsValid) {
+				// Trigger shake animation if the form is invalid or submitting
+				setShake(true)
+				setTimeout(() => setShake(false), 820)
+			}
+		}
 
-
-    // Submit Button with dynamic disabling and loading state
-    const SubmitButton: React.FC = () => (
-        <Button
-            type="submit"
-            disabled={isSubmitting || !formIsValid}
-            className={`justify-center border-transparent text-sm font-medium text-white focus:outline-none transition-opacity duration-300 disabled:opacity-50`}
-        >
-            {isSubmitting ? 'Submitting...' : 'Submit'}
-        </Button>
-    );
+		return (
+			<Button
+				type="submit"
+				disabled={isSubmitting || !formIsValid}
+				onClick={handleClick}
+				className={`justify-center border-transparent text-sm font-medium text-white transition-opacity duration-300 focus:outline-none ${shake ? 'shake' : ''}`}
+			>
+				{isSubmitting ? 'Submitting...' : 'Submit'}
+			</Button>
+		)
+	}
 
 	useEffect(() => {
 		confirmPasswordInput.setError(
@@ -209,13 +250,38 @@ export default function Register() {
 		)
 	}, [passwordInput.value, confirmPasswordInput.value])
 
-
 	return (
 		<div className="flex min-h-screen items-center justify-center">
 			<div className="w-96 rounded-lg border border-stone-800 bg-black p-8">
-				<h1 className="mb-6 text-2xl text-white form-title">Sign Up</h1>
-				<Form id="register" method="post" navigate={false} preventScrollReset>
-					<div className="mb-4">
+				<h1 className="form-title mb-6 select-none text-2xl text-white">
+					Sign Up
+				</h1>
+				{(fetcher.data as { error: string })?.error ? (
+					<div className="error-message show mr-0">
+						{(fetcher.data as { error: string }).error}
+					</div>
+				) : null}
+				<ValidatedForm
+					key="SignUpForm"
+					validator={validate}
+					method="post"
+					action="/register"
+					fetcher={fetcher}
+					onSubmit={data => {
+						if (
+							(fetcher.state === 'submitting' || fetcher.state === 'loading') &&
+							formIsValid
+						) {
+							console.log('Submitting form...')
+							// Handle the form submission with the data
+							fetcher.submit(data)
+							// This will mark the form as not dirty after submission.
+							setInitialFormValues({ ...formValues })
+						}
+					}}
+					className="flex flex-col space-y-4"
+				>
+					<div>
 						<Input
 							name="email"
 							type="email"
@@ -228,7 +294,7 @@ export default function Register() {
 							id="email-error"
 						/>
 					</div>
-					<div className="mb-4">
+					<div>
 						<Input
 							name="password"
 							type="password"
@@ -243,7 +309,7 @@ export default function Register() {
 					</div>
 					{passwordInput.value && !passwordInput.error && (
 						<div
-							className={`confirm-password-transition mb-4 ${passwordInput.value && !passwordInput.error ? 'show' : ''}`}
+							className={`confirm-password-transition ${passwordInput.value && !passwordInput.error ? 'show' : ''}`}
 						>
 							<Input
 								name="confirmPassword"
@@ -261,7 +327,7 @@ export default function Register() {
 					<div className="flex justify-end">
 						<SubmitButton />
 					</div>
-				</Form>
+				</ValidatedForm>
 
 				<div className="mt-6 flex flex-col items-center justify-between text-center text-sm">
 					<div>
@@ -274,11 +340,62 @@ export default function Register() {
 					</div>
 					<div className="mt-8 text-xs text-stone-400">
 						By signing up, you agree to our{' '}
-						<span className="underline form-secondary-links">Terms of Service</span> and{' '}
-						<span className="form-secondary-links underline">Privacy policy</span>
+						<a
+							href="https://imperfectgamers.org/terms-of-service"
+							target="_blank"
+							className="form-secondary-links underline"
+						>
+							Terms of Service
+						</a>{' '}
+						and{' '}
+						<a
+							href="https://imperfectgamers.org/privacy-policy"
+							target="_blank"
+							className="form-secondary-links underline"
+						>
+							Privacy policy
+						</a>
 					</div>
 				</div>
 			</div>
 		</div>
 	)
 }
+
+/**
+ * Props for the LoginForm component.
+ */
+interface RegisterProps {
+	setCloseInterceptReason?: (reason: CloseInterceptReason) => void
+}
+
+interface FormValues {
+	email: string
+	password: string
+	confirmPassword: string
+}
+
+/**
+ * Represents the sign up schema for the form.
+ */
+const signUpSchema = z
+	.object({
+		email: z.string().email({ message: 'Invalid email address' }),
+		password: z
+			.string()
+			.min(6, { message: 'Password must be at least 6 characters' }),
+		confirmPassword: z.string(),
+	})
+	.refine(data => data.password === data.confirmPassword, {
+		message: "Passwords don't match",
+		path: ['confirmPassword'],
+	})
+
+/**
+ * Validates the sign-up form using the provided schema.
+ *
+ * @param schema - The schema to validate the form against.
+ * @returns A function that can be used to validate the form.
+ */
+const validate = withZod(signUpSchema)
+export default Register

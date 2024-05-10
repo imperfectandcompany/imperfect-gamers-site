@@ -2,13 +2,13 @@
 import { useLoaderData } from '@remix-run/react'
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Button from '~/components/atoms/Button/Button'
-import Register from '~/components/pending/Register'
 import AuthForms from '~/components/organism/AuthForms/AuthForms'
 import { MembershipCard } from '~/components/organism/MembershipCard/MembershipCard'
 import ModalWrapper from '~/components/organism/ModalWrapper/ModalWrapper'
 
 import type { LoaderData } from '~/routes/store'
 import SignUpForm from '~/components/molecules/SignUpForm'
+import { Register } from '~/components/pending/Register'
 
 /**
  * Renders the header component for the store page.
@@ -50,18 +50,16 @@ export default function StoreHeader() {
 						Please log in or sign up to join the club.
 					</p>
 				) : null}
-				<div className="flex min-h-screen items-center justify-center">
+
+				<Register />
+
+				{/* <div className="flex min-h-screen items-center justify-center">
 					<div className="w-96 rounded-lg border border-stone-800 bg-black p-8">
 						<h1 className="mb-6 text-2xl text-white">Sign Up</h1>
 						<div className="mb-4"></div>
-							<SignUpForm />
-							<div className="flex justify-between items-center text-sm mt-4">
-                            <p className="text-gray-500">Already have an account? <a href="#" className="text-red-500">Sign in</a></p>
-                            <p className="text-gray-500"><a href="#" className="text-red-500">Forgot password</a></p>
-                        </div>
+						<SignUpForm />
 					</div>
-				</div>
-				<Register />
+				</div> */}
 			</div>
 		</div>
 	)

@@ -2,7 +2,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import type React from 'react'
 import { type ButtonProps } from './ButtonProps'
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const buttonVariants = {
 	primary:
@@ -25,7 +25,6 @@ const buttonVariants = {
  * @param {boolean} [props.disabled] - For disabled button
  * @returns {JSX.Element} The rendered Button component.
  */
-
 const Button: React.FC<ButtonProps> = ({
     variant = 'primary',
     type = 'button',
@@ -35,20 +34,27 @@ const Button: React.FC<ButtonProps> = ({
     className,
     disabled = false
 }) => {
-	
     const [shake, setShake] = useState(false);
 
-    const handleClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-        if (disabled) {
-            // Trigger the shake animation if the button is functionally "disabled"
-            setShake(true);
-            setTimeout(() => setShake(false), 820);  // Reset shake after animation duration
-            e.preventDefault(); // Prevent any further actions intended by the button click
-        } else {
-            // Proceed with the normal onClick function if not disabled
-            onClick
+    // Handle click events on the button
+const handleClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+	if (disabled) {
+		setShake(true);  // Trigger shake
+		e.preventDefault(); // Stop all other handlers
+		console.log("Shake due to disabled state.");
+	} else {
+		onClick?.(); // Remove the argument from the function call
+	}
+};
+    // Effect to reset shake state
+    useEffect(() => {
+        if (shake) {
+            const timer = setTimeout(() => {
+                setShake(false);  // Reset shake after animation duration
+            }, 820); // Duration of shake animation
+            return () => clearTimeout(timer); // Cleanup timeout on component unmount or before the effect runs again
         }
-    };
+    }, [shake]);
 
     const baseStyles = "button text-white py-2 px-5 tracking-wide";
     const variantClasses = buttonVariants[variant] || buttonVariants.primary;
@@ -57,8 +63,8 @@ const Button: React.FC<ButtonProps> = ({
     return (
         <button
             type={type}
-            className={`${baseStyles} ${variantClasses} ${disabledClasses} ${className} ${shake ? 'shake cursor-wait' : ''}`}
-			onClick={!disabled ? onClick : e => (handleClick(e))}
+            className={`${baseStyles} ${variantClasses} ${disabledClasses} ${className} ${shake ? 'shake cursor-grab' : ''}`}
+            onClick={handleClick}
         >
             {icon ? <FontAwesomeIcon icon={icon} className="mr-2" /> : null}
             {children}
