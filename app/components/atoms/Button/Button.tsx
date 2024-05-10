@@ -2,6 +2,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import type React from 'react'
 import { type ButtonProps } from './ButtonProps'
+import { useState } from 'react';
 
 const buttonVariants = {
 	primary:
@@ -21,30 +22,48 @@ const buttonVariants = {
  * @param {React.ReactNode} [props.children] - The content of the button.
  * @param {Function} [props.onClick] - The click event handler for the button.
  * @param {string} [props.className] - Additional CSS classes for the button.
+ * @param {boolean} [props.disabled] - For disabled button
  * @returns {JSX.Element} The rendered Button component.
  */
+
 const Button: React.FC<ButtonProps> = ({
-	variant = 'primary',
-	type = 'button',
-	icon,
-	children,
-	onClick,
-	className,
+    variant = 'primary',
+    type = 'button',
+    icon,
+    children,
+    onClick,
+    className,
+    disabled = false
 }) => {
-	const baseStyles = `
-    button text-white py-2 px-5 rounded-md font-bold tracking-wide shadow-custom transition-all duration-300 ease-in-out relative overflow-hidden cursor-pointer
-  `
+	
+    const [shake, setShake] = useState(false);
 
-	const variantClasses = buttonVariants[variant] || buttonVariants.primary
+    const handleClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        if (disabled) {
+            // Trigger the shake animation if the button is functionally "disabled"
+            setShake(true);
+            setTimeout(() => setShake(false), 820);  // Reset shake after animation duration
+            e.preventDefault(); // Prevent any further actions intended by the button click
+        } else {
+            // Proceed with the normal onClick function if not disabled
+            onClick
+        }
+    };
 
-	const combinedClasses = `${baseStyles} ${variantClasses} ${className}`
+    const baseStyles = "button text-white py-2 px-5 tracking-wide";
+    const variantClasses = buttonVariants[variant] || buttonVariants.primary;
+    const disabledClasses = disabled ? 'opacity-50 cursor-not-allowed shadow-none' : '';
 
-	return (
-		<button type={type} className={combinedClasses} onClick={onClick}>
-			{icon ? <FontAwesomeIcon icon={icon} className="mr-2" /> : null}
-			<span>{children}</span>
-		</button>
-	)
-}
+    return (
+        <button
+            type={type}
+            className={`${baseStyles} ${variantClasses} ${disabledClasses} ${className} ${shake ? 'shake cursor-wait' : ''}`}
+			onClick={!disabled ? onClick : e => (handleClick(e))}
+        >
+            {icon ? <FontAwesomeIcon icon={icon} className="mr-2" /> : null}
+            {children}
+        </button>
+    );
+};
 
-export default Button
+export default Button;

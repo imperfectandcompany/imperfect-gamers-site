@@ -235,6 +235,9 @@ body {
   border-color: red;
 }
 
+.input-background {
+}
+
 .input-valid {
   border-color: green;
 }
@@ -278,7 +281,7 @@ body {
 .error-message {
   max-height: 0;
   overflow: hidden;
-  color: red;
+  color: #FF5555;
   font-size: 0.875rem; /* 14px */
   margin-top: 0.25rem; /* 4px */
   transition: max-height 0.5s ease-in-out, opacity 0.5s ease-in-out;
@@ -297,6 +300,36 @@ body {
 .confirm-password-transition.show {
   max-height: 5rem; /* Allow enough space for the input */
   opacity: 1;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+  20%, 40%, 60%, 80% { transform: translateX(10px); }
+}
+
+.shake {
+  animation: shake 0.82s cubic-bezier(.36,.07,.19,.97) both;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+
+.form-title{
+  color: #E0E0E0;
+}
+
+.form-primary-link {
+  color: #D1D7DC;
+}
+
+.form-secondary-links {
+  color: #BBBBBB;
+}
+
+.form-secondary-text {
+  color: #9EA8A2;
 }
 
 /* FAQ Section Styles */
