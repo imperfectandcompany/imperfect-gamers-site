@@ -40,9 +40,11 @@ export default function StoreHeader() {
 				</p>
 				<MembershipCard />
 				<div className="mt-8 flex justify-center">
+				<ProcessProvider>
 					<ModalWrapper title={title} content={<AuthForms />}>
 						<Button>Join Now</Button>
 					</ModalWrapper>
+				</ProcessProvider>
 				</div>
 
 				{!isAuthenticated ? (

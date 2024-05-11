@@ -3,12 +3,13 @@ import { useFetcher } from '@remix-run/react'
 import { withZod } from '@remix-validated-form/with-zod'
 import type React from 'react'
 import { useCallback, useEffect, useState } from 'react'
-import { ValidatedForm } from 'remix-validated-form'
+import { ValidatedForm, useFormContext } from 'remix-validated-form'
 import { z } from 'zod'
 import Button from '~/components/atoms/Button/Button'
 import Input from '~/components/atoms/Input/Input'
 import { CloseInterceptReason } from '../organism/ModalWrapper/ModalWrapper'
 import LottieAnimation from '../atoms/LottieAnimation'
+import SubmitButton from './SubmitButton'
 
 /**
  * Sign up form component.
@@ -24,6 +25,9 @@ import LottieAnimation from '../atoms/LottieAnimation'
  */
 const SignUpForm: React.FC<SignUpFormProps> = ({ setCloseInterceptReason }) => {
 	const fetcher = useFetcher()
+	const {
+        isValid,
+    } = useFormContext();
 
 	const [formValues, setFormValues] = useState<FormValues>({
 		email: '',
@@ -90,9 +94,9 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ setCloseInterceptReason }) => {
 		)
 	}
 
-	if (fetcher.state === 'submitting' || fetcher.state === 'loading') {
-		return <div>Registering...</div>
-	}
+	// if (fetcher.state === 'submitting' || fetcher.state === 'loading') {
+	// 	return <div>Registering...</div>
+	// }
 
 	return (
 		<ValidatedForm
@@ -139,7 +143,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ setCloseInterceptReason }) => {
 				</div>
 			) : null}
 			<div className="ml-auto">
-				<Button type="submit">Sign Up</Button>
+				<SubmitButton formIsValid={isValid} />
 			</div>
 		</ValidatedForm>
 	)

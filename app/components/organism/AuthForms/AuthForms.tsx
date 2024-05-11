@@ -5,12 +5,12 @@ import type React from 'react'
 import { useEffect, useRef, useState, useCallback } from 'react'
 import AuthorizeForm from '~/components/molecules/AuthorizeForm'
 import LoginForm from '~/components/molecules/LoginForm'
-import SignUpForm from '~/components/molecules/SignUpForm'
 import UsernameForm from '~/components/molecules/UsernameForm'
 import type { LoaderData } from '~/routes/store'
 import { useFetcherWithPromise } from '~/utils/general'
 import type { TebexCheckoutConfig } from '~/utils/tebex.interface'
 import { CloseInterceptReason } from '../ModalWrapper/ModalWrapper'
+import SignUpForm from '../SignUpForm/SignUpForm'
 
 interface AuthFormProps {
 	isOpen?: boolean
