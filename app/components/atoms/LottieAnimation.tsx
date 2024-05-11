@@ -1,17 +1,13 @@
-// components/atoms/LottieAnimation.tsx
-
-import { Controls, Player } from '@lottiefiles/react-lottie-player'
-import React from 'react'
+import { Player } from '@lottiefiles/react-lottie-player';
+import React from 'react';
 
 interface LottieAnimationProps {
-    src: string
-    style?: React.CSSProperties
+  src: string;
+  style?: React.CSSProperties;
 }
 
 const LottieAnimation: React.FC<LottieAnimationProps> = ({ src, style }) => (
-    <Player autoplay loop={false} src={src} style={style} keepLastFrame={true}>
-        <Controls visible={false} buttons={['play', 'repeat', 'frame', 'debug']} />
-    </Player>
-)
+  <Player autoplay loop src={src} style={style} background="transparent" keepLastFrame={true} />
+);
 
-export default LottieAnimation
+export default LottieAnimation;

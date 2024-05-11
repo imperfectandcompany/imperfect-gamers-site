@@ -11,6 +11,8 @@ import { useFetcherWithPromise } from '~/utils/general'
 import type { TebexCheckoutConfig } from '~/utils/tebex.interface'
 import { CloseInterceptReason } from '../ModalWrapper/ModalWrapper'
 import SignUpForm from '../SignUpForm/SignUpForm'
+import UserCard from '~/components/molecules/UserCard/UserCard'
+import WelcomeScreen from '../WelcomeScreen'
 
 interface AuthFormProps {
 	isOpen?: boolean
@@ -239,6 +241,16 @@ const AuthForms: React.FC<AuthFormProps> = ({
 			/>
 		)
 	}
+	const [isInitial, setIsInitial] = useState(true)
+
+	const handleNewUser = () => {
+		setIsInitial(false);
+		setIsLoginForm(!isLoginForm)
+	};
+		const handleExistingUser = () => {
+			setIsInitial(false);
+		setIsLoginForm(isLoginForm)
+		};
 
 	return (
 		<>
@@ -255,6 +267,8 @@ const AuthForms: React.FC<AuthFormProps> = ({
 					) : (
 						<UserStatus />
 					)
+				) : isInitial ? (
+							<WelcomeScreen onNewUser={handleNewUser} onExistingUser={handleExistingUser}/>
 				) : isLoginForm ? (
 					<LoginForm setCloseInterceptReason={setCloseInterceptReason} />
 				) : (
@@ -275,7 +289,7 @@ const AuthForms: React.FC<AuthFormProps> = ({
 							Don&apos;t have an account?{' '}
 							<button
 								onClick={() => {
-									switchForm()
+									handleNewUser()
 								}}
 								className="ml-2 underline"
 							>
@@ -287,7 +301,7 @@ const AuthForms: React.FC<AuthFormProps> = ({
 							Already have an account?
 							<button
 								onClick={() => {
-									switchForm()
+									handleExistingUser()
 								}}
 								className="ml-2 underline"
 							>
@@ -297,7 +311,9 @@ const AuthForms: React.FC<AuthFormProps> = ({
 					)}
 				</div>
 				{!isAuthenticated ? (
-					<div className="underline">Forgot password</div>
+					// developed at a later date
+					// <div className="underline">Forgot password</div>
+					<></>
 				) : null}
 			</div>
 		</>

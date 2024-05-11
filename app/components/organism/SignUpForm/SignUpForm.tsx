@@ -97,7 +97,7 @@ function useInput(
         ariaDescribedBy
 	}
 }
-interface RegisterProps {
+interface SignUpForm {
 	setCloseInterceptReason?: (reason: CloseInterceptReason) => void
 }
 interface FormValues {
@@ -118,7 +118,8 @@ const signUpSchema = z
 		path: ['confirmPassword'],
 	})
 const validate = withZod(signUpSchema)
-const Register: React.FC<RegisterProps> = ({ setCloseInterceptReason }) => {
+
+const SignUpForm: React.FC<SignUpFormProps> = ({ setCloseInterceptReason }) => {
 	const { submit } = useFetcherWithPromiseAndReset({ key: 'registration' })
 	const fetcher = useFetcher({ key: 'registration' })
 	const [formValues, setFormValues] = useState<FormValues>({
@@ -216,8 +217,9 @@ const Register: React.FC<RegisterProps> = ({ setCloseInterceptReason }) => {
 	}, [fetcher.data])
 
 	return (
-		<div className="flex min-h-screen items-center justify-center">
-			<div className="w-96 rounded-lg border border-stone-800 bg-black p-8">
+		<div className="">
+			
+			<div className="  bg-black p-8">
 				<h1 className="form-title mb-6 select-none text-2xl text-white">
 					Sign Up
 				</h1>
@@ -319,4 +321,4 @@ const Register: React.FC<RegisterProps> = ({ setCloseInterceptReason }) => {
 	)
 }
 
-export default Register
+export default SignUpForm

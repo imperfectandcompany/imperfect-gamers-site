@@ -1,6 +1,6 @@
 // components/templates/store/StoreHeader.tsx
 import { useLoaderData } from '@remix-run/react'
-import { useMemo} from 'react'
+import { useMemo } from 'react'
 import Button from '~/components/atoms/Button/Button'
 import AuthForms from '~/components/organism/AuthForms/AuthForms'
 import { MembershipCard } from '~/components/organism/MembershipCard/MembershipCard'
@@ -40,11 +40,11 @@ export default function StoreHeader() {
 				</p>
 				<MembershipCard />
 				<div className="mt-8 flex justify-center">
-				<ProcessProvider>
-					<ModalWrapper title={title} content={<AuthForms />}>
-						<Button>Join Now</Button>
-					</ModalWrapper>
-				</ProcessProvider>
+					<ProcessProvider>
+						<ModalWrapper title={title} content={<AuthForms />}>
+							<Button>Join Now</Button>
+						</ModalWrapper>
+					</ProcessProvider>
 				</div>
 
 				{!isAuthenticated ? (
@@ -53,7 +53,7 @@ export default function StoreHeader() {
 					</p>
 				) : null}
 				<ProcessProvider>
-				<Register />
+					<Register />
 				</ProcessProvider>
 
 				{/* <div className="flex min-h-screen items-center justify-center">

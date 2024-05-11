@@ -72,7 +72,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
 			{/* Use the ref here */}
 			<div
 				ref={modalRef}
-				className="mx-4 w-full max-w-md rounded-lg border border-gray-900 bg-black p-5 shadow-xl md:mx-0"
+				className="mx-4 w-full max-w-md rounded-lg border border-stone-800 bg-black p-5 shadow-xl md:mx-0"
 			>
 				{children}
 			</div>
