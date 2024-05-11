@@ -330,6 +330,34 @@ body {
   color: white;
 }
 
+
+
+
+.form-header {
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  padding: 1rem;
+  color: white;
+  font-size: 17px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.form-header svg {
+  fill: currentColor;
+}
+
+.form-header div {
+  text-align: center;
+  width: 100%;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
 .progress-container {
   width: 16px; 
   height: 16px;

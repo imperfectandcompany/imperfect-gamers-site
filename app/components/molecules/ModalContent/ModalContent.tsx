@@ -4,65 +4,56 @@ import { type ReactNode } from 'react'
 import Heading from '~/components/atoms/Heading/Heading'
 import Paragraph from '~/components/atoms/Paragraph/Paragraph'
 import type { CloseInterceptReason } from '~/components/organism/ModalWrapper/ModalWrapper'
+import ModalHeader from '../ModalHeader/ModalHeader'
 
 type ModalContentProps = {
-	title: string
-	header?: ReactNode
-	content: ReactNode
-	footer?: ReactNode
-	isOpen?: boolean
-	setCloseInterceptReason?: (reason: CloseInterceptReason) => void
-	setPopupWindow?: (window: Window | null) => void
+    title: string
+    header?: ReactNode
+    content: ReactNode
+    footer?: ReactNode
+    isOpen?: boolean
+    setCloseInterceptReason?: (reason: CloseInterceptReason) => void
+    setPopupWindow?: (window: Window | null) => void
+    onBack?: () => void // new prop for back button
+    align?: 'left' | 'center' | 'right' // new prop for title alignment
 }
 
-/**
- * Renders the content of a modal.
- *
- * TODO ENTIRE REFACTOR OF ARCHITECTURE FOR THIS COMPONENT
- * STATUS: IN PROGRESS
- *
- * @component
- * @param {Object} props - The component props.
- * @param {string} props.title - The title of the modal.
- * @param {string | React.ReactNode} props.content - The content of the modal.
- * @returns {React.ReactNode} The rendered modal content.
- */
 const ModalContent: React.FC<ModalContentProps> = ({
-	title,
-	header,
-	content,
-	footer,
-	isOpen,
-	setCloseInterceptReason,
-	setPopupWindow,
+    title,
+    header,
+    content,
+    footer,
+    isOpen,
+    setCloseInterceptReason,
+    setPopupWindow,
+    onBack, // new prop for back button
+    align, // new prop for title alignment
 }) => {
-	return (
-		<div>
-			{/** TODO setup standard header for modals with fall backs */}
-			{header ? (
-				<div className="mb-4">{header}</div>
-			) : (
-				<Heading>{title}</Heading>
-			)}
-			{typeof content === 'string' ? (
-				<Paragraph>{content}</Paragraph>
-			) : React.isValidElement(content) ? (
-				React.cloneElement(content as React.ReactElement<ContentElementProps>, {
-					...(setCloseInterceptReason ? { setCloseInterceptReason } : {}),
-					...(setPopupWindow ? { setPopupWindow } : {}),
-					isOpen,
-				})
-			) : null}
-			{/** TODO setup standard footer for modals with fall backs */}
-			{footer ? footer : null}
-		</div>
-	)
+    return (
+        <div>
+            {header ? (
+                <div className="mb-4">{header}</div>
+            ) : (
+                <ModalHeader title={title} onBack={onBack} align={align} /> // use ModalHeader when no custom header is provided
+            )}
+            {typeof content === 'string' ? (
+                <Paragraph>{content}</Paragraph>
+            ) : React.isValidElement(content) ? (
+                React.cloneElement(content as React.ReactElement<ContentElementProps>, {
+                    ...(setCloseInterceptReason ? { setCloseInterceptReason } : {}),
+                    ...(setPopupWindow ? { setPopupWindow } : {}),
+                    isOpen,
+                })
+            ) : null}
+            {footer ? footer : null}
+        </div>
+    )
 }
 
 interface ContentElementProps {
-	isOpen: boolean
-	setCloseInterceptReason?: (reason: CloseInterceptReason) => void
-	setPopupWindow?: (popup: Window | null) => void
+    isOpen: boolean
+    setCloseInterceptReason?: (reason: CloseInterceptReason) => void
+    setPopupWindow?: (popup: Window | null) => void
 }
 
 export default ModalContent

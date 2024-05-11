@@ -18,11 +18,13 @@ interface AuthFormProps {
 	isOpen?: boolean
 	setCloseInterceptReason?: (reason: CloseInterceptReason) => void
 	setPopupWindow?: (window: Window | null) => void
+	setTitle: (title: string) => void
 }
 
 const AuthForms: React.FC<AuthFormProps> = ({
 	isOpen,
 	setCloseInterceptReason,
+	setTitle,
 	setPopupWindow,
 }) => {
 	const {
@@ -52,10 +54,6 @@ const AuthForms: React.FC<AuthFormProps> = ({
 		fetcher.submit({}, { method: 'post', action: '/logout' })
 	}
 
-	const switchForm = () => {
-		setIsLoginForm(!isLoginForm)
-	}
-
 	const UseTebexCheckout = useCallback(
 		(checkoutId: string, theme: 'light' | 'dark') => {
 			const { Tebex } = window
@@ -72,6 +70,7 @@ const AuthForms: React.FC<AuthFormProps> = ({
 			// Listen for Tebex checkout events and set modal close intercept reasons accordingly
 			Tebex.checkout.on(Tebex.events.OPEN, () => {
 				console.log('Tebex Checkout Opened')
+				setTitle('Checkout Opened')
 				if (setCloseInterceptReason) {
 					setCloseInterceptReason(CloseInterceptReason.ActivePopup)
 				}
@@ -79,6 +78,7 @@ const AuthForms: React.FC<AuthFormProps> = ({
 
 			Tebex.checkout.on(Tebex.events.CLOSE, () => {
 				console.log('Tebex Checkout Closed')
+				setTitle('Checkout Closed')
 				if (setCloseInterceptReason) {
 					setCloseInterceptReason(CloseInterceptReason.None)
 				}
@@ -86,6 +86,7 @@ const AuthForms: React.FC<AuthFormProps> = ({
 
 			Tebex.checkout.on(Tebex.events.PAYMENT_COMPLETE, () => {
 				console.log('Payment Complete')
+				setTitle('Payment Complete')
 				if (setCloseInterceptReason) {
 					setCloseInterceptReason(CloseInterceptReason.None)
 				}
@@ -93,6 +94,7 @@ const AuthForms: React.FC<AuthFormProps> = ({
 
 			Tebex.checkout.on(Tebex.events.PAYMENT_ERROR, () => {
 				console.log('Payment Error')
+				setTitle('Payment Error')
 				if (setCloseInterceptReason) {
 					setCloseInterceptReason(CloseInterceptReason.None)
 				}
@@ -105,6 +107,7 @@ const AuthForms: React.FC<AuthFormProps> = ({
 
 	const createBasket = async () => {
 		console.log('Creating basket...')
+		setTitle('Creating Basket')
 		try {
 			const response = await submit(null, {
 				method: 'post',
@@ -119,6 +122,7 @@ const AuthForms: React.FC<AuthFormProps> = ({
 
 	const addPackageToBasket = async (basketId: string) => {
 		console.log('Adding package to basket...')
+		setTitle('Adding Package to Basket')
 		try {
 			const response = await submit(
 				{ basketId },
@@ -241,16 +245,20 @@ const AuthForms: React.FC<AuthFormProps> = ({
 			/>
 		)
 	}
+
 	const [isInitial, setIsInitial] = useState(true)
 
 	const handleNewUser = () => {
-		setIsInitial(false);
+		setIsInitial(false)
 		setIsLoginForm(!isLoginForm)
-	};
-		const handleExistingUser = () => {
-			setIsInitial(false);
+		setTitle('Sign Up')
+
+	}
+	const handleExistingUser = () => {
+		setIsInitial(false)
 		setIsLoginForm(isLoginForm)
-		};
+		setTitle('Log In')
+	}
 
 	return (
 		<>
@@ -268,14 +276,17 @@ const AuthForms: React.FC<AuthFormProps> = ({
 						<UserStatus />
 					)
 				) : isInitial ? (
-							<WelcomeScreen onNewUser={handleNewUser} onExistingUser={handleExistingUser}/>
+					<WelcomeScreen
+						onNewUser={handleNewUser}
+						onExistingUser={handleExistingUser}
+					/>
 				) : isLoginForm ? (
 					<LoginForm setCloseInterceptReason={setCloseInterceptReason} />
 				) : (
 					<SignUpForm setCloseInterceptReason={setCloseInterceptReason} />
 				)}
 			</div>
-			<div className="mx-auto mt-4 flex flex-col text-center text-sm text-white">
+			<div className="mx-auto mt-4 flex flex-col text-sm text-white">
 				<div>
 					{isAuthenticated ? (
 						<>
@@ -298,22 +309,73 @@ const AuthForms: React.FC<AuthFormProps> = ({
 						</>
 					) : (
 						<>
-							Already have an account?
-							<button
-								onClick={() => {
-									handleExistingUser()
-								}}
-								className="ml-2 underline"
-							>
-								Sign in
-							</button>
+					<p className="mt-4 text-xs text-gray-500">
+					By signing up, you agree to the{' '}
+					<a href="#" className="text-red-500">
+						Privacy Policy
+					</a>
+					,{' '}
+					<a href="#" className="text-red-500">
+						Terms of Service
+					</a>
+					, and{' '}
+					<a href="#" className="text-red-500">
+						Imprint
+					</a>
+					.
+				</p>
+
+							<div className=" ju w-full  max-w-md text-sm">
+								{/* <div>
+									<p className="text-stone-400">
+										Have an account?{' '}
+										<a href="#" className="form-primary-link underline">
+											Log in
+										</a>
+									</p>
+								</div>
+								<div className="mt-8 text-xs text-stone-400">
+									By signing up, you agree to our{' '}
+									<a
+										href="https://imperfectgamers.org/terms-of-service"
+										target="_blank"
+										className="form-secondary-links underline"
+									>
+										Terms of Service
+									</a>{' '}
+									and{' '}
+									<a
+										href="https://imperfectgamers.org/privacy-policy"
+										target="_blank"
+										className="form-secondary-links underline"
+									>
+										Privacy policy
+									</a>
+								</div> */}
+								{/* <div className="mt-4 flex items-center justify-between text-sm">
+									<p className="text-gray-500">
+										Already have an account?{' '}
+										<a
+											onClick={() => {
+												handleExistingUser()
+											}}
+											className="text-red-500"
+										>
+											Sign in
+										</a>
+									</p>
+									<p className="text-gray-500">
+										<a href="#" className="text-red-500">
+											Forgot password
+										</a>
+									</p>
+								</div> */}
+							</div>
 						</>
 					)}
 				</div>
 				{!isAuthenticated ? (
-					// developed at a later date
-					// <div className="underline">Forgot password</div>
-					<></>
+<></>
 				) : null}
 			</div>
 		</>

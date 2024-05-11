@@ -1,6 +1,6 @@
 // components/templates/store/StoreHeader.tsx
 import { useLoaderData } from '@remix-run/react'
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import Button from '~/components/atoms/Button/Button'
 import AuthForms from '~/components/organism/AuthForms/AuthForms'
 import { MembershipCard } from '~/components/organism/MembershipCard/MembershipCard'
@@ -24,13 +24,18 @@ import type { LoaderData } from '~/routes/store'
 export default function StoreHeader() {
 	const { isAuthenticated, isSteamLinked, username } =
 		useLoaderData<LoaderData>()
-	const title = useMemo(
-		() =>
-			isAuthenticated && username && isSteamLinked
-				? `Join The Club, ${username}`
-				: 'Unauthorized Action',
-		[isAuthenticated, username, isSteamLinked],
-	)
+		const [title, setTitle] = useState<string>('Imperfect Gamers');
+		const defaultTitle = useMemo(
+			() => isAuthenticated && username && isSteamLinked
+			  ? `Join The Club, ${username}`
+			  : 'Imperfect Gamers',
+			[isAuthenticated, username, isSteamLinked],
+		  );
+		
+		  // Update the title when the defaultTitle changes
+		  useEffect(() => {
+			setTitle(defaultTitle);
+		  }, [defaultTitle]);
 	return (
 		<div>
 			<div className="">
@@ -41,7 +46,7 @@ export default function StoreHeader() {
 				<MembershipCard />
 				<div className="mt-8 flex justify-center">
 					<ProcessProvider>
-						<ModalWrapper title={title} content={<AuthForms />}>
+						<ModalWrapper title={title} content={<AuthForms setTitle={setTitle} />}>
 							<Button>Join Now</Button>
 						</ModalWrapper>
 					</ProcessProvider>
