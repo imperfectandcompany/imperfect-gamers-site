@@ -15,7 +15,6 @@ import ProcessProvider from '~/components/pending/ProcessProvider'
 import Button from '~/components/atoms/Button/Button'
 import CheckoutProcess from '~/components/molecules/CheckoutProcess/CheckoutProcess'
 import ImperfectAndCompanyLogo from '~/components/atoms/ImperfectAndCompanyLogo'
-import CheckoutProcessTemp from '~/components/molecules/CheckoutProcess/CheckoutProcessTemp'
 
 interface AuthFormProps {
 	setPopupWindow?: (window: Window | null) => void
@@ -155,7 +154,7 @@ enum PageTitle {
 								setPopupWindow={setPopupWindow}
 							/>
 						) : (
-							<CheckoutProcessTemp />
+							<CheckoutProcess />
 						)
 					}
 					footer={

@@ -230,10 +230,12 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ setCloseInterceptReason }) => {
 								method: 'post',
 								action: '/register',
 							})
+							// This will mark the form as not dirty after submission.
+							setInitialFormValues({ ...formValues })
 						} catch (error) {
 							console.error('Failed to submit form', error)
 						} finally {
-							console.log('lmao')
+							console.log('Final response of try / catch sequence')
 						}
 					}
 				}}
