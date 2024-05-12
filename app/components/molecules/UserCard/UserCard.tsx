@@ -23,7 +23,7 @@ const UserCard: React.FC<UserCardProps> = ({
         src={animationUrl}
         style={{ width: '100%', height: 'auto' }}
       />
-      <div className="absolute inset-0 p-4 bg-gradient-to-t from-black to-transparent">
+      <div className="absolute inset-0 p-4 bg-gradient-to-t select-none from-black to-transparent">
         <h2 className="text-xl md:text-4xl font-bold text-white">{title}</h2>
         <p className="text-lg md:text-xl font-semibold text-red-500">{subtitle}</p>
         {/* <p className="text-white">{description}</p>

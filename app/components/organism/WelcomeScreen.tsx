@@ -12,9 +12,9 @@ const WelcomeScreen: React.FC<WelcomeScreenProps & { isAuthenticated: boolean }>
 	isAuthenticated,
 }) => {
 	return (
-		<div className="flex flex-col items-center justify-center bg-black px-4 pb-8">
+		<div className="flex flex-col items-center justify-center bg-black px-4">
 			<div className="w-full max-w-4xl">
-				<h1 className="mb-8 text-center text-4xl font-bold text-white">
+				<h1 className="mb-8 text-center text-4xl font-bold text-white select-none">
 					Who's joining?
 				</h1>
 				<div className="flex flex-col items-center justify-center space-y-4 md:flex-row md:space-x-4 md:space-y-0">
@@ -28,16 +28,18 @@ const WelcomeScreen: React.FC<WelcomeScreenProps & { isAuthenticated: boolean }>
 					<UserCard
 						onClick={onExistingUser}
 						title="Old Timer"
-						subtitle="Been here before"
+						subtitle="Been here"
 						description="Veteran"
 						animationUrl="https://lottie.host/879e211e-1f3a-4015-8815-79d5cd1af0d2/RaWWjJVbB4.json"
 					/>
 				</div>
 			</div>
-			{!isAuthenticated ? (
-				<p className="mt-4 text-center text-sm text-white">
+			{!isAuthenticated ? (<>
+				<p className="mt-4 text-center text-sm text-white select-none">
 					Please log in or sign up to join the club.
 				</p>
+				<img className="h-16 w-16 mt-8" src="https://cdn.imperfectgamers.org/inc/assets/img/logo.svg" alt="Imperfect Gamers Logo" />
+			</>
 			) : null}
 		</div>
 	)

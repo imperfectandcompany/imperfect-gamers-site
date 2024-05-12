@@ -333,30 +333,26 @@ body {
 
 
 
-.form-header {
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 20;
-  padding: 1rem;
-  color: white;
+    .form-header {
+      z-index: 20; /* This needs to be higher than the title's z-index */
+        padding: 1rem;
+  color: #E0E0E0 !important;
   font-size: 17px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
+    }
 
-.form-header svg {
-  fill: currentColor;
-}
+    .form-header button {
+        fill: currentColor;
+        z-index: 20; /* This needs to be higher than the title's z-index */
 
-.form-header div {
-  text-align: center;
-  width: 100%;
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-}
+    }
+
+    .form-title-modal {
+      text-align: center;
+      width: 100%;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
 
 .progress-container {
   width: 16px; 
