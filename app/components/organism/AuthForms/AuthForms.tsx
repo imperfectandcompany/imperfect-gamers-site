@@ -2,15 +2,12 @@
 
 import { useFetcher, useLoaderData } from '@remix-run/react'
 import type React from 'react'
-import { useEffect, useRef, useState, useCallback, useMemo } from 'react'
+import { useEffect, useState, useCallback, useMemo } from 'react'
 import AuthorizeForm from '~/components/molecules/AuthorizeForm'
 import LoginForm from '~/components/molecules/LoginForm'
 import UsernameForm from '~/components/molecules/UsernameForm'
 import type { LoaderData } from '~/routes/store'
-import { useFetcherWithPromise } from '~/utils/general'
-import type { TebexCheckoutConfig } from '~/utils/tebex.interface'
 import ModalWrapper, {
-	CloseInterceptReason,
 } from '../ModalWrapper/ModalWrapper'
 import SignUpForm from '../SignUpForm/SignUpForm'
 import WelcomeScreen from '../WelcomeScreen'
@@ -18,6 +15,7 @@ import ProcessProvider from '~/components/pending/ProcessProvider'
 import Button from '~/components/atoms/Button/Button'
 import CheckoutProcess from '~/components/molecules/CheckoutProcess/CheckoutProcess'
 import ImperfectAndCompanyLogo from '~/components/atoms/ImperfectAndCompanyLogo'
+import CheckoutProcessTemp from '~/components/molecules/CheckoutProcess/CheckoutProcessTemp'
 
 interface AuthFormProps {
 	setPopupWindow?: (window: Window | null) => void
@@ -47,8 +45,6 @@ const AuthForms: React.FC<AuthFormProps> = ({ setPopupWindow }) => {
 
 	const [isAuthorized, setIsAuthorized] = useState(false)
 
-
-
 // Define an enum for the page titles
 enum PageTitle {
 	Welcome = 'Imperfect Gamers',
@@ -69,6 +65,10 @@ enum PageTitle {
   );
   
   const stringToPageTitle = (title: string): PageTitle => {
+	if (title.startsWith('Join The Club')) {
+	  return PageTitle.Username;
+	}
+  
 	switch (title) {
 	  case 'Imperfect Gamers':
 		return PageTitle.Welcome;
@@ -76,8 +76,6 @@ enum PageTitle {
 		return PageTitle.Login;
 	  case 'Sign Up':
 		return PageTitle.Signup;
-	  case 'Join The Club':
-		return PageTitle.Username;
 	  default:
 		throw new Error(`Invalid title: ${title}`);
 	}
@@ -157,7 +155,7 @@ enum PageTitle {
 								setPopupWindow={setPopupWindow}
 							/>
 						) : (
-							<CheckoutProcess />
+							<CheckoutProcessTemp />
 						)
 					}
 					footer={
@@ -170,6 +168,7 @@ enum PageTitle {
 							handleNewUser={handleNewUser}
 						/>
 					}
+					isResponsive={!isAuthenticated && isInitial}  // Set true only if showing WelcomeScreen
 				>
 					<Button>Join Now</Button>
 				</ModalWrapper>
@@ -244,7 +243,7 @@ const Footer: React.FC<FooterProps> = ({
 					</p>{' '}
 				</>
 			) : isInitial && !isAuthenticated ? (
-				<p className="mt-4 flex select-none items-center text-xs text-gray-500">
+				<p className="flex select-none items-center text-xs text-gray-500">
 					Powered by&nbsp;
 					<a
 						href="https://imperfectandcompany.com/"

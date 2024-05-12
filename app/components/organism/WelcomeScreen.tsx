@@ -1,5 +1,6 @@
 import React from 'react'
 import UserCard from '../molecules/UserCard/UserCard'
+import ImperfectGamersLogo from '../atoms/ImperfectGamersLogo'
 
 interface WelcomeScreenProps {
 	onNewUser: () => void
@@ -12,7 +13,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps & { isAuthenticated: boolean }>
 	isAuthenticated,
 }) => {
 	return (
-		<div className="flex flex-col items-center justify-center bg-black px-4">
+		<div className="flex flex-col items-center justify-center bg-black px-4 pb-8">
 			<div className="w-full max-w-4xl">
 				<h1 className="mb-8 text-center text-4xl font-bold text-white select-none">
 					Who's joining?
@@ -20,7 +21,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps & { isAuthenticated: boolean }>
 				<div className="flex flex-col items-center justify-center space-y-4 md:flex-row md:space-x-4 md:space-y-0">
 					<UserCard
 						onClick={onNewUser}
-						title="New User"
+						title="First Timer"
 						subtitle="New here"
 						description="Unranked"
 						animationUrl="https://lottie.host/f4cdfc7c-f9a3-40ae-ab75-f7b3dd57f678/N0XLmIQErG.json"
@@ -35,10 +36,10 @@ const WelcomeScreen: React.FC<WelcomeScreenProps & { isAuthenticated: boolean }>
 				</div>
 			</div>
 			{!isAuthenticated ? (<>
-				<p className="mt-4 text-center text-sm text-white select-none">
+				<p className="mt-4 text-center flex flex-col items-center animate animate-pulse text-sm text-white select-none">
 					Please log in or sign up to join the club.
+					<ImperfectGamersLogo/>
 				</p>
-				<img className="h-16 w-16 mt-8" src="https://cdn.imperfectgamers.org/inc/assets/img/logo.svg" alt="Imperfect Gamers Logo" />
 			</>
 			) : null}
 		</div>

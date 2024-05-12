@@ -63,7 +63,7 @@ const handleClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     return (
         <button
             type={type}
-            className={`${baseStyles} ${variantClasses} ${disabledClasses} ${className} ${shake ? 'shake cursor-grab' : ''}`}
+            className={`${baseStyles} ${variantClasses} ${disabledClasses} ${className} select-none ${shake ? 'shake cursor-grab' : ''}`}
             onClick={handleClick}
         >
             {icon ? <FontAwesomeIcon icon={icon} className="mr-2" /> : null}
