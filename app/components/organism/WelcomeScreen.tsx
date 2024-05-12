@@ -6,12 +6,13 @@ interface WelcomeScreenProps {
 	onExistingUser: () => void
 }
 
-const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
+const WelcomeScreen: React.FC<WelcomeScreenProps & { isAuthenticated: boolean }> = ({
 	onNewUser,
 	onExistingUser,
+	isAuthenticated,
 }) => {
 	return (
-		<div className="flex flex-col items-center justify-center bg-black px-4 py-8">
+		<div className="flex flex-col items-center justify-center bg-black px-4 pb-8">
 			<div className="w-full max-w-4xl">
 				<h1 className="mb-8 text-center text-4xl font-bold text-white">
 					Who's joining?
@@ -33,6 +34,11 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({
 					/>
 				</div>
 			</div>
+			{!isAuthenticated ? (
+				<p className="mt-4 text-center text-sm text-white">
+					Please log in or sign up to join the club.
+				</p>
+			) : null}
 		</div>
 	)
 }

@@ -22,52 +22,15 @@ import type { LoaderData } from '~/routes/store'
  */
 
 export default function StoreHeader() {
-	const { isAuthenticated, isSteamLinked, username } =
-		useLoaderData<LoaderData>()
-		const [title, setTitle] = useState<string>('Imperfect Gamers');
-		const defaultTitle = useMemo(
-			() => isAuthenticated && username && isSteamLinked
-			  ? `Join The Club, ${username}`
-			  : 'Imperfect Gamers',
-			[isAuthenticated, username, isSteamLinked],
-		  );
-		
-		  // Update the title when the defaultTitle changes
-		  useEffect(() => {
-			setTitle(defaultTitle);
-		  }, [defaultTitle]);
 	return (
 		<div>
-			<div className="">
-				<h1 className="title">Imperfect Gamers Club</h1>
-				<p className="subtitle">
-					Join now through the exclusive access member pass
-				</p>
-				<MembershipCard />
-				<div className="mt-8 flex justify-center">
-					<ProcessProvider>
-						<ModalWrapper title={title} content={<AuthForms setTitle={setTitle} />}>
-							<Button>Join Now</Button>
-						</ModalWrapper>
-					</ProcessProvider>
-				</div>
-
-				{!isAuthenticated ? (
-					<p className="mt-4 text-center text-sm text-white">
-						Please log in or sign up to join the club.
-					</p>
-				) : null}
-				<ProcessProvider>
-					<Register />
-				</ProcessProvider>
-
-				{/* <div className="flex min-h-screen items-center justify-center">
-					<div className="w-96 rounded-lg border border-stone-800 bg-black p-8">
-						<h1 className="mb-6 text-2xl text-white">Sign Up</h1>
-						<div className="mb-4"></div>
-						<SignUpForm />
-					</div>
-				</div> */}
+			<h1 className="title">Imperfect Gamers Club</h1>
+			<p className="subtitle">
+				Join now through the exclusive access member pass
+			</p>
+			<MembershipCard />
+			<div className="mt-8 flex justify-center">
+					<AuthForms />
 			</div>
 		</div>
 	)

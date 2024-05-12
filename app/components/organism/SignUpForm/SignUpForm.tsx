@@ -97,9 +97,10 @@ function useInput(
 		ariaDescribedBy,
 	}
 }
-interface SignUpForm {
+interface SignUpFormProps {
 	setCloseInterceptReason?: (reason: CloseInterceptReason) => void
 }
+
 interface FormValues {
 	email: string
 	password: string
@@ -197,10 +198,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ setCloseInterceptReason }) => {
 			</Button>
 		)
 	}
-	const [submissionState, setSubmissionState] = useState({
-		submitting: false,
-		showError: false,
-	})
+
 	useEffect(() => {
 		confirmPasswordInput.setError(
 			confirmPasswordInput.value !== passwordInput.value,

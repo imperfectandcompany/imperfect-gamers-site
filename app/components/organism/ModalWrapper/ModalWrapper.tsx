@@ -11,6 +11,8 @@ interface ModalWrapperProps {
 	content: ReactElement
 	footer?: ReactElement
 	children: ReactElement
+	onBack?: () => void // new prop for back button
+	align?: 'left' | 'center' | 'right' 
 }
 
 export enum CloseInterceptReason {
@@ -27,12 +29,22 @@ export enum CloseInterceptReason {
  * It manages the state of the modal and provides functions to open and close it.
  */
 const ModalWrapper: React.FC<ModalWrapperProps> = ({
-	title,
+	children,
 	header,
+	title,
 	content,
 	footer,
-	children,
-}) => {
+	onBack,
+	align,
+  }: {
+	children: React.ReactElement
+	header?: React.ReactNode
+	title: string
+	content: React.ReactNode
+	footer?: React.ReactNode
+	onBack?: () => void
+	align?: 'left' | 'center' | 'right'
+  }) => {
 	const [isOpen, setIsOpen] = useState(false)
 	const [popupWindow, setPopupWindow] = useState<Window | null>(null)
 
@@ -71,15 +83,17 @@ const ModalWrapper: React.FC<ModalWrapperProps> = ({
 		<>
 			{React.cloneElement(children, { onClick: openModal })}
 			<Modal isOpen={isOpen} onClose={closeModal}>
-				<ModalContent
-					header={header}
-					title={title}
-					content={content}
-					footer={footer}
-					isOpen={isOpen}
-					setCloseInterceptReason={setCloseInterceptReason}
-					setPopupWindow={setPopupWindow}
-				/>
+			<ModalContent
+          header={header}
+          title={title}
+          content={content}
+          footer={footer}
+          isOpen={isOpen}
+          setCloseInterceptReason={setCloseInterceptReason}
+          setPopupWindow={setPopupWindow}
+          onBack={onBack}
+          align={align}
+        />
 				{/** Escape modal button **/}
 				<div
 					className={modal.close__button}
