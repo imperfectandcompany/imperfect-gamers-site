@@ -25,9 +25,6 @@ import SubmitButton from './SubmitButton'
  */
 const SignUpForm: React.FC<SignUpFormProps> = ({ setCloseInterceptReason }) => {
 	const fetcher = useFetcher()
-	const {
-        isValid,
-    } = useFormContext();
 
 	const [formValues, setFormValues] = useState<FormValues>({
 		email: '',
@@ -143,7 +140,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ setCloseInterceptReason }) => {
 				</div>
 			) : null}
 			<div className="ml-auto">
-				<SubmitButton formIsValid={isValid} />
+				<SubmitButton formIsValid={true} />
 			</div>
 		</ValidatedForm>
 	)

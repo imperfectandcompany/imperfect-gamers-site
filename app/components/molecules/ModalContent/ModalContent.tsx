@@ -15,6 +15,7 @@ type ModalContentProps = {
     setCloseInterceptReason?: (reason: CloseInterceptReason) => void
     setPopupWindow?: (window: Window | null) => void
     onBack?: () => void // new prop for back button
+    backButtonTitle?: string;
     align?: 'left' | 'center' | 'right' // new prop for title alignment
 }
 
@@ -27,6 +28,7 @@ const ModalContent: React.FC<ModalContentProps> = ({
     setCloseInterceptReason,
     setPopupWindow,
     onBack, // new prop for back button
+    backButtonTitle,
     align, // new prop for title alignment
 }) => {
     return (
@@ -34,7 +36,7 @@ const ModalContent: React.FC<ModalContentProps> = ({
             {header ? (
                 <div className="mb-4">{header}</div>
             ) : (
-                <ModalHeader title={title} onBack={onBack} align={align} /> // use ModalHeader when no custom header is provided
+                <ModalHeader title={title} onBack={onBack} backButtonTitle={backButtonTitle} align={align} /> // use ModalHeader when no custom header is provided
             )}
             {typeof content === 'string' ? (
                 <Paragraph>{content}</Paragraph>

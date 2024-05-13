@@ -17,20 +17,20 @@ import {
 } from '~/components/pending/ProcessProvider'
 import { CloseInterceptReason } from '../ModalWrapper/ModalWrapper'
 interface UseInputReturn {
-	value: string
-	setValue: React.Dispatch<React.SetStateAction<string>>
-	error: boolean
-	setError: React.Dispatch<React.SetStateAction<boolean>>
-	isFocused: boolean
-	isTyping: boolean // Add this line
-	isValid: boolean
-	handleValueChange: (e: React.ChangeEvent<HTMLInputElement>) => void
-	handleFocus: () => void
-	handleBlur: () => void
-	inputClassName: string
-	showError: boolean
-	ariaDescribedBy: string
-}
+    value: string;
+    setValue: React.Dispatch<React.SetStateAction<string>>;
+    error: boolean;
+    setError: React.Dispatch<React.SetStateAction<boolean>>;
+    isFocused: boolean;
+    isTyping: boolean; // Add this line
+    isValid: boolean;
+    handleValueChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    handleFocus: () => void;
+    handleBlur: () => void;
+    inputClassName: string;
+    showError: boolean;
+    ariaDescribedBy: string;
+  }
 function useInput(
 	initialValue: string,
 	validate: (value: string) => boolean,
@@ -82,25 +82,24 @@ function useInput(
 		setIsValid(!error && value.trim() !== '') // Update validity based on error and value
 	}, [error, value])
 	return {
-		value,
-		setValue,
-		error,
-		setError,
-		isFocused,
-		isTyping, // Add this line
-		isValid,
-		handleValueChange,
-		handleFocus,
-		handleBlur,
-		inputClassName,
-		showError,
-		ariaDescribedBy,
+        value,
+        setValue,
+        error,
+        setError,
+        isFocused,
+        isTyping, // Add this line
+        isValid,
+        handleValueChange,
+        handleFocus,
+        handleBlur,
+        inputClassName,
+        showError,
+        ariaDescribedBy
 	}
 }
-interface SignUpFormProps {
+interface RegisterProps {
 	setCloseInterceptReason?: (reason: CloseInterceptReason) => void
 }
-
 interface FormValues {
 	email: string
 	password: string
@@ -119,8 +118,7 @@ const signUpSchema = z
 		path: ['confirmPassword'],
 	})
 const validate = withZod(signUpSchema)
-
-const SignUpForm: React.FC<SignUpFormProps> = ({ setCloseInterceptReason }) => {
+const SignUpForm: React.FC<RegisterProps> = ({ setCloseInterceptReason }) => {
 	const { submit } = useFetcherWithPromiseAndReset({ key: 'registration' })
 	const fetcher = useFetcher({ key: 'registration' })
 	const [formValues, setFormValues] = useState<FormValues>({
@@ -194,11 +192,14 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ setCloseInterceptReason }) => {
 				onClick={handleClick}
 				className={`justify-center border-transparent text-sm font-medium text-white transition-opacity duration-300 focus:outline-none ${shake ? animationStyles.shake : ''}`}
 			>
-				{isSubmitting ? 'Signing up...' : 'Sign Up'}
+				{isSubmitting ? 'Submitting...' : 'Submit'}
 			</Button>
 		)
 	}
-
+	const [submissionState, setSubmissionState] = useState({
+		submitting: false,
+		showError: false,
+	})
 	useEffect(() => {
 		confirmPasswordInput.setError(
 			confirmPasswordInput.value !== passwordInput.value,
@@ -215,73 +216,105 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ setCloseInterceptReason }) => {
 	}, [fetcher.data])
 
 	return (
-		<div className="px-8">
-			{(fetcher.data as { error: boolean })?.error && inProgress && (
-				<MessageContainer message={message} />
-			)}
-			<ValidatedForm
-				key="SignUpForm"
-				validator={validate}
-				fetcher={fetcher}
-				onSubmit={async data => {
-					if (formIsValid && fetcher.state !== 'submitting') {
-						try {
-							const response = await submit(data, {
-								method: 'post',
-								action: '/register',
-							})
-							// This will mark the form as not dirty after submission.
-							setInitialFormValues({ ...formValues })
-						} catch (error) {
-							console.error('Failed to submit form', error)
-						} finally {
-							console.log('Final response of try / catch sequence')
-						}
-					}
-				}}
-				className="flex flex-col space-y-4"
-			>
-				<div>
-					<InputField
-						name="email"
-						type="email"
-						placeholder="Email"
-						{...emailInput}
-						isTyping={emailInput.isTyping} // Pass the isTyping prop
-					/>
-					<ErrorMessage
-						showError={emailInput.showError}
-						message="Invalid email address"
-						id="email-error"
-					/>
-				</div>
-				<div>
-					<InputField
-						name="password"
-						type="password"
-						placeholder="Password"
-						{...passwordInput}
-						isTyping={passwordInput.isTyping} // Pass the isTyping prop
-					/>
-					<ErrorMessage
-						showError={passwordInput.showError}
-						message="Password must be at least 6 characters"
-						id="password-error"
-					/>
-				</div>
-				{passwordInput.value && !passwordInput.error && (
-					<ConfirmPasswordField
-						showField
-						name="confirmPassword"
-						type="password"
-						placeholder="Confirm Password"
-						{...confirmPasswordInput}
-					/>
+		<div className="flex min-h-screen items-center justify-center">
+			<div className="w-96 rounded-lg border border-stone-800 bg-black p-8">
+				<h1 className="form-title mb-6 select-none text-2xl text-white">
+					Sign Up
+				</h1>
+				{(fetcher.data as { error: boolean })?.error && inProgress && (
+					<MessageContainer message={message} />
 				)}
-				<div className="flex justify-end">
-					<SubmitButton />
+				<ValidatedForm
+					key="SignUpForm"
+					validator={validate}
+					fetcher={fetcher}
+					onSubmit={async data => {
+						if (formIsValid && fetcher.state !== 'submitting') {
+							try {
+								const response = await submit(data, {
+									method: 'post',
+									action: '/register',
+								})
+							} catch (error) {
+								console.error('Failed to submit form', error)
+							} finally {
+								console.log('lmao')
+							}
+						}
+					}}
+					className="flex flex-col space-y-4"
+				>
+					<div>
+						<InputField
+							name="email"
+							type="email"
+							placeholder="Email"
+							{...emailInput}
+							isTyping={emailInput.isTyping} // Pass the isTyping prop
+						/>
+						<ErrorMessage
+							showError={emailInput.showError}
+							message="Invalid email address"
+							id="email-error"
+						/>
+					</div>
+					<div>
+						<InputField
+							name="password"
+							type="password"
+							placeholder="Password"
+							{...passwordInput}
+							isTyping={passwordInput.isTyping} // Pass the isTyping prop
+						/>
+						<ErrorMessage
+							showError={passwordInput.showError}
+							message="Password must be at least 6 characters"
+							id="password-error"
+						/>
+					</div>
+					{passwordInput.value && !passwordInput.error && (
+						<ConfirmPasswordField
+							showField
+							name="confirmPassword"
+							type="password"
+							placeholder="Confirm Password"
+							{...confirmPasswordInput}
+						/>
+					)}
+					<div className="flex justify-end">
+						<SubmitButton />
+					</div>
+				</ValidatedForm>
+
+				<div className="mt-6 flex flex-col items-center justify-between text-center text-sm">
+					<div>
+						<p className="text-stone-400">
+							Have an account?{' '}
+							<a href="#" className="form-primary-link underline">
+								Log in
+							</a>
+						</p>
+					</div>
+					<div className="mt-8 text-xs text-stone-400">
+						By signing up, you agree to our{' '}
+						<a
+							href="https://imperfectgamers.org/terms-of-service"
+							target="_blank"
+							className="form-secondary-links underline"
+						>
+							Terms of Service
+						</a>{' '}
+						and{' '}
+						<a
+							href="https://imperfectgamers.org/privacy-policy"
+							target="_blank"
+							className="form-secondary-links underline"
+						>
+							Privacy policy
+						</a>
+					</div>
 				</div>
-			</ValidatedForm>
+			</div>
 		</div>
 	)
 }

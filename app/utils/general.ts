@@ -134,7 +134,6 @@ export type ExtendedCustomFetcher<T> = FetcherWithComponents<T> & {
 export function useFetcherWithPromiseAndReset<T = AppData>(
     opts?: Parameters<typeof useFetcher>[0]
 ): ExtendedCustomFetcher<SerializeFrom<T>> {
-
     const fetcher = useFetcher<T>(opts);
     const promiseResolverRef = useRef<(value: SerializeFrom<T>) => void>();
     const fetcherPromiseRef = useRef<Promise<SerializeFrom<T>>>();
@@ -157,9 +156,12 @@ export function useFetcherWithPromiseAndReset<T = AppData>(
         return fetcherPromiseRef.current; // Return the current promise which resolves when the fetcher is idle and has data.
     }, [fetcher]);
 
-    useEffect(() => {
-        initializePromise();
-    }, [initializePromise]);
+	useEffect(() => {
+		if (fetcher.state === 'idle' && fetcher.data && promiseResolverRef.current) {
+			promiseResolverRef.current(fetcher.data);
+			initializePromise(); // Reset the promise after handling to prepare for next operation
+		}
+	}, [fetcher.data, fetcher.state, initializePromise]);
 
     return {
         ...fetcher,

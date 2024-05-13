@@ -12,6 +12,7 @@ interface ModalWrapperProps {
 	footer?: ReactElement
 	children: ReactElement
 	onBack?: () => void
+    backButtonTitle?: string;
 	align?: 'left' | 'center' | 'right'
 	isResponsive?: boolean;
 }
@@ -37,6 +38,7 @@ const ModalWrapper: React.FC<ModalWrapperProps> = ({
 	content,
 	footer,
 	onBack,
+	backButtonTitle,
 	align,
 	isResponsive = false
 }: {
@@ -46,6 +48,7 @@ const ModalWrapper: React.FC<ModalWrapperProps> = ({
 	content: React.ReactNode
 	footer?: React.ReactNode
 	onBack?: () => void
+    backButtonTitle?: string
 	align?: 'left' | 'center' | 'right'
 	isResponsive?: boolean
 }) => {
@@ -112,6 +115,7 @@ const ModalWrapper: React.FC<ModalWrapperProps> = ({
 					setCloseInterceptReason={setCloseInterceptReason}
 					setPopupWindow={setPopupWindow}
 					onBack={onBack}
+					backButtonTitle={backButtonTitle}
 					align={align}
 				/>
 				{/** Escape modal button **/}

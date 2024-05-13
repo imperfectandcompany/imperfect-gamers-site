@@ -1,138 +1,170 @@
 // components/organism/AuthForms/AuthForms.tsx
 
-import { useFetcher, useLoaderData } from '@remix-run/react'
+import { useFetcher, useFetchers, useLoaderData } from '@remix-run/react'
 import type React from 'react'
 import { useEffect, useState, useCallback, useMemo } from 'react'
 import AuthorizeForm from '~/components/molecules/AuthorizeForm'
 import LoginForm from '~/components/molecules/LoginForm'
 import UsernameForm from '~/components/molecules/UsernameForm'
 import type { LoaderData } from '~/routes/store'
-import ModalWrapper, {
-} from '../ModalWrapper/ModalWrapper'
-import SignUpForm from '../SignUpForm/SignUpForm'
+import ModalWrapper from '../ModalWrapper/ModalWrapper'
 import WelcomeScreen from '../WelcomeScreen'
 import ProcessProvider from '~/components/pending/ProcessProvider'
 import Button from '~/components/atoms/Button/Button'
 import CheckoutProcess from '~/components/molecules/CheckoutProcess/CheckoutProcess'
 import ImperfectAndCompanyLogo from '~/components/atoms/ImperfectAndCompanyLogo'
+import SignUpForm from '~/components/molecules/SignUpForm'
+import CheckoutProcessTemp from '~/components/molecules/CheckoutProcess/CheckoutProcessTemp'
+import { useFetcherWithPromiseAndReset } from '~/utils/general'
 
-interface AuthFormProps {
-	setPopupWindow?: (window: Window | null) => void
-}
-
-const AuthForms: React.FC<AuthFormProps> = ({ setPopupWindow }) => {
+const AuthForms: React.FC = () => {
 	const { isAuthenticated, isSteamLinked, username } =
 		useLoaderData<LoaderData>()
 	const [isLoginForm, setIsLoginForm] = useState(true)
-	const fetcher = useFetcher()
+	const { submit } = useFetcherWithPromiseAndReset()
+	const fetcher = useFetcher({ key: 'logout-submission' })
+	const fetchers = useFetchers()
 
-	const handleLogout = useCallback(() => {
-		fetcher.submit({}, { method: 'post', action: '/logout' })
+	const relevantFetchers = fetchers.filter((fetcher) => {
+		return [
+		  `/auth/check/username`,
+		  `/auth/finalize/username`,
+		  `/auth/check/steam`,
+		  `/auth/steam`,
+		  `/login`,
+		  `/logout`,
+		  `/store/add`,
+		  `/store/create`,
+		].some((path) => fetcher.formAction?.startsWith(path));
+	  });
+	
+	  // Get an array of all in-flight fetchers and their states
+	  const inFlightFetchers = relevantFetchers.map((fetcher) => ({
+		formData: fetcher.formData,
+		state: fetcher.state,
+	  }));
+	
+	  // Check if any fetcher is loading or submitting
+	  const isInProgress = useMemo(() => {
+		return inFlightFetchers.some((fetcher) => ['loading', 'submitting'].includes(fetcher.state));
+	  }, [inFlightFetchers]);
+	
+
+	const handleLogout = useCallback(async () => {
+		// Logout logic
+		try {
+			await submit({}, { method: 'post', action: '/logout' })
+			setIsInitial(false)
+			setIsLoginForm(true)
+			setTitle(PageTitle.Login)
+			setPageHistory([PageTitle.Welcome])
+		} catch (error) {
+			// Handle the error
+			console.error('An error occurred:', error)
+		}
 	}, [])
 
 	const [isInitial, setIsInitial] = useState(true)
-
-	//   useBackAction(() => {
-	//     console.log('Back action triggered');
-	//     // Define what should happen when back is clicked
-	//     // For example, navigate to a previous page, close the modal, etc.
-	//   });
 
 	const handleSteamLinkSuccess = useCallback(() => {
 		setIsAuthorized(true)
 	}, [])
 
+	const updateAuthorization = useCallback((newState: boolean) => {
+		setIsAuthorized(newState)
+	}, [])
+
 	const [isAuthorized, setIsAuthorized] = useState(false)
 
-// Define an enum for the page titles
-enum PageTitle {
-	Welcome = 'Imperfect Gamers',
-	Login = 'Log In',
-	Signup = 'Sign Up',
-	Username = 'Join The Club',
-  }
-  
-  const [title, setTitle] = useState(PageTitle.Welcome);
-  const [pageHistory, setPageHistory] = useState<PageTitle[]>([PageTitle.Welcome]);
-  
-  const defaultTitle = useMemo(
-	() =>
-	  isAuthenticated && username && isSteamLinked
-		? `${PageTitle.Username}, ${username}`
-		: PageTitle.Welcome,
-	[isAuthenticated, username, isSteamLinked],
-  );
-  
-  const stringToPageTitle = (title: string): PageTitle => {
-	if (title.startsWith('Join The Club')) {
-	  return PageTitle.Username;
+	// Define an enum for the page titles
+	enum PageTitle {
+		Welcome = 'Imperfect Gamers',
+		Login = 'Log In',
+		Signup = 'Sign Up',
+		LoggedIn = 'Join The Club',
 	}
-  
-	switch (title) {
-	  case 'Imperfect Gamers':
-		return PageTitle.Welcome;
-	  case 'Log In':
-		return PageTitle.Login;
-	  case 'Sign Up':
-		return PageTitle.Signup;
-	  default:
-		throw new Error(`Invalid title: ${title}`);
+
+	const [title, setTitle] = useState(PageTitle.Welcome)
+	const [pageHistory, setPageHistory] = useState<PageTitle[]>([
+		PageTitle.Welcome,
+	])
+
+	const initialLoggedInPageTitle = useMemo(() => {
+		if (isAuthenticated && username && isSteamLinked) {
+			return PageTitle.LoggedIn
+		} else {
+			return title
+		}
+	}, [isAuthenticated, username, isSteamLinked])
+
+	useEffect(() => {
+		setTitle(initialLoggedInPageTitle)
+	}, [initialLoggedInPageTitle])
+
+	const handleNewUser = useCallback(() => {
+		setIsInitial(isInitial => (isInitial ? false : isInitial))
+		setIsLoginForm(false)
+		setTitle(PageTitle.Signup)
+	}, [])
+
+	const handleExistingUser = useCallback(() => {
+		setIsInitial(isInitial => (isInitial ? false : isInitial))
+		setIsLoginForm(true)
+		setTitle(PageTitle.Login)
+		setPageHistory(prevHistory => [...prevHistory, PageTitle.Login])
+	}, [])
+
+	const handleBack = () => {
+		if (pageHistory.length > 1) {
+			const newPageHistory = pageHistory.slice(0, -1)
+			setPageHistory(newPageHistory)
+			const prevPage = newPageHistory[newPageHistory.length - 1]
+			setTitle(prevPage)
+
+			switch (prevPage) {
+				case PageTitle.Welcome:
+					setIsLoginForm(true)
+					setIsInitial(true)
+					break
+				case PageTitle.Login:
+					setIsLoginForm(true)
+					setIsInitial(false)
+					break
+				case PageTitle.Signup:
+					setIsLoginForm(false)
+					setIsInitial(false)
+					break
+			}
+		}
 	}
-  };
-  
-  useEffect(() => {
-	setTitle(stringToPageTitle(defaultTitle));
-  }, [defaultTitle]);
-  
-  const handleNewUser = useCallback(() => {
-	setIsInitial(isInitial => (isInitial ? false : isInitial));
-	setIsLoginForm(false);
-	setTitle(PageTitle.Signup);
-  }, []);
-  
-  const handleExistingUser = useCallback(() => {
-	setIsInitial(isInitial => (isInitial ? false : isInitial));
-	setIsLoginForm(true);
-	setTitle(PageTitle.Login);
-	setPageHistory(prevHistory => [...prevHistory, PageTitle.Login]);
-  }, []);
-  
-  const handleBack = () => {
-	if (pageHistory.length > 1) {
-	  const newPageHistory = pageHistory.slice(0, -1);
-	  setPageHistory(newPageHistory);
-	  const prevPage = newPageHistory[newPageHistory.length - 1];
-	  setTitle(stringToPageTitle(prevPage));
-  
-	  switch (prevPage) {
-		case PageTitle.Welcome:
-		  setIsLoginForm(true);
-		  setIsInitial(true);
-		  break;
-		case PageTitle.Login:
-		  setIsLoginForm(true);
-		  setIsInitial(false);
-		  break;
-		case PageTitle.Signup:
-		  setIsLoginForm(false);
-		  setIsInitial(false);
-		  break;
-	  }
-	}
-  };
-  
-  useEffect(() => {
-	if (pageHistory[pageHistory.length - 1] !== title) {
-	  setPageHistory(prevHistory => [...prevHistory, title]);
-	}
-  }, [title]);
+
+	useEffect(() => {
+		if (pageHistory[pageHistory.length - 1] !== title) {
+			setPageHistory(prevHistory => [...prevHistory, title])
+		}
+	}, [title])
 
 	return (
 		<>
 			<ProcessProvider>
 				<ModalWrapper
 					title={title}
-					onBack={isAuthenticated || isInitial ? undefined : handleBack}
+					onBack={
+						!isInProgress
+							? !isAuthenticated && !isInitial
+								? handleBack
+								: isAuthenticated
+									? handleLogout
+									: undefined
+							: undefined
+					}
+					backButtonTitle={
+						!isAuthenticated && !isInitial
+							? 'Back'
+							: isAuthenticated
+								? 'Log Out'
+								: undefined
+					}
 					content={
 						!isAuthenticated ? (
 							isInitial ? (
@@ -149,12 +181,12 @@ enum PageTitle {
 						) : !username ? (
 							<UsernameForm />
 						) : !isSteamLinked ? (
-							<AuthorizeForm
-								onSuccess={() => handleSteamLinkSuccess()}
-								setPopupWindow={setPopupWindow}
-							/>
+							<AuthorizeForm onSuccess={() => handleSteamLinkSuccess()} />
 						) : (
-							<CheckoutProcess />
+							<CheckoutProcessTemp
+								isAuthorized={isAuthorized}
+								setIsAuthorized={updateAuthorization}
+							/>
 						)
 					}
 					footer={
@@ -164,10 +196,9 @@ enum PageTitle {
 							isInitial={isInitial}
 							isLoginForm={isLoginForm}
 							handleLogout={handleLogout}
-							handleNewUser={handleNewUser}
 						/>
 					}
-					isResponsive={!isAuthenticated && isInitial}  // Set true only if showing WelcomeScreen
+					isResponsive={!isAuthenticated && isInitial} // Set true only if showing WelcomeScreen
 				>
 					<Button>Join Now</Button>
 				</ModalWrapper>
@@ -183,7 +214,6 @@ interface FooterProps {
 	isLoginForm: boolean
 	isInitial: boolean
 	handleLogout: () => void
-	handleNewUser: () => void
 }
 
 const Footer: React.FC<FooterProps> = ({
@@ -192,17 +222,11 @@ const Footer: React.FC<FooterProps> = ({
 	isLoginForm,
 	isInitial,
 	handleLogout,
-	handleNewUser,
 }) => (
 	<div className="mx-auto mt-4 flex flex-col text-sm text-white">
 		<div>
 			{isAuthenticated && username ? (
-				<>
-					You are currently signed in{username ? ' as ' + username : ''}.
-					<button onClick={handleLogout} className="ml-1 underline">
-						Log out
-					</button>
-				</>
+				<>You are currently signed in{username ? ' as ' + username : ''}.</>
 			) : !isInitial && !isAuthenticated && isLoginForm ? (
 				<>
 					{/* commented out until design decision is finalized */}
