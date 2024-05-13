@@ -13,16 +13,16 @@ import ProcessProvider from '~/components/pending/ProcessProvider'
 import Button from '~/components/atoms/Button/Button'
 import CheckoutProcess from '~/components/molecules/CheckoutProcess/CheckoutProcess'
 import ImperfectAndCompanyLogo from '~/components/atoms/ImperfectAndCompanyLogo'
-import SignUpForm from '~/components/molecules/SignUpForm'
 import CheckoutProcessTemp from '~/components/molecules/CheckoutProcess/CheckoutProcessTemp'
 import { useFetcherWithPromiseAndReset } from '~/utils/general'
+import Register from '~/components/pending/Register'
+import SignUpForm from '../SignUpForm/SignUpForm'
 
 const AuthForms: React.FC = () => {
 	const { isAuthenticated, isSteamLinked, username } =
 		useLoaderData<LoaderData>()
 	const [isLoginForm, setIsLoginForm] = useState(true)
-	const { submit } = useFetcherWithPromiseAndReset()
-	const fetcher = useFetcher({ key: 'logout-submission' })
+	const { submit } = useFetcherWithPromiseAndReset({ key: 'logout-submission' })
 	const fetchers = useFetchers()
 
 	const relevantFetchers = fetchers.filter((fetcher) => {

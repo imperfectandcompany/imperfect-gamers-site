@@ -1,19 +1,21 @@
-import { inputBorderStyles } from "~/components/atoms/styles/InputBorderStyles"
-import { inputHoverStyles } from "~/components/atoms/styles/InputHoverStyles"
-import { transitionStyles } from "~/components/atoms/styles/TransitionStyles"
+import React from 'react';
+import { useField } from 'remix-validated-form';
+import { inputBorderStyles } from "~/components/atoms/styles/InputBorderStyles";
+import { inputHoverStyles } from "~/components/atoms/styles/InputHoverStyles";
+import { transitionStyles } from "~/components/atoms/styles/TransitionStyles";
 
 interface InputProps {
-  name: string
-  type: string
-  placeholder: string
-  value: string
-  error: boolean
-  isFocused: boolean
-  isTyping: boolean
-  handleValueChange: (event: React.ChangeEvent<HTMLInputElement>) => void
-  handleFocus: () => void
-  handleBlur: () => void
-  ariaDescribedBy?: string
+  name: string;
+  type: string;
+  placeholder: string;
+  value: string;
+  error: boolean;
+  isFocused: boolean;
+  isTyping: boolean;
+  handleValueChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  handleFocus: () => void;
+  handleBlur: () => void;
+  ariaDescribedBy?: string;
 }
 
 const InputField: React.FC<InputProps> = ({
@@ -29,6 +31,8 @@ const InputField: React.FC<InputProps> = ({
   handleBlur,
   ariaDescribedBy,
 }) => {
+  const { getInputProps } = useField(name);
+
   const inputClassName = `w-full rounded ${transitionStyles.transition} ${
     isTyping
       ? inputBorderStyles.typing
@@ -39,7 +43,7 @@ const InputField: React.FC<InputProps> = ({
       : !error && isFocused
       ? inputBorderStyles.valid
       : inputBorderStyles.neutral
-  } input-background border border-white/5 bg-white/5 p-2 text-white transition-all duration-300 ease-in-out placeholder:text-white/35 focus:border-white/30 focus:outline-none`
+  } input-background border border-white/5 bg-white/5 p-2 text-white transition-all duration-300 ease-in-out placeholder:text-white/35 focus:border-white/30 focus:outline-none`;
 
   const hoverClassName = `${
     error
@@ -47,24 +51,24 @@ const InputField: React.FC<InputProps> = ({
       : !error && isFocused
       ? inputHoverStyles.hoverValid
       : inputHoverStyles.hoverNeutral
-  }`
+  }`;
 
   return (
     <input
       id={name}
-      type={type}
-      className={`${inputClassName} ${
-        isTyping ? inputBorderStyles.typing : ''
-      } ${hoverClassName}`}
-      placeholder={placeholder}
-      value={value}
-      onChange={handleValueChange}
-      onFocus={handleFocus}
-      onBlur={handleBlur}
-      aria-invalid={error}
-      aria-describedby={ariaDescribedBy}
+      {...getInputProps({
+        type,
+        placeholder,
+        className: `${inputClassName} ${isTyping ? inputBorderStyles.typing : ''} ${hoverClassName}`,
+        value,
+        onChange: handleValueChange,
+        onFocus: handleFocus,
+        onBlur: handleBlur,
+        'aria-invalid': error,
+        'aria-describedby': ariaDescribedBy,
+      })}
     />
-  )
-}
+  );
+};
 
-export default InputField
+export default InputField;

@@ -118,7 +118,7 @@ const signUpSchema = z
 		path: ['confirmPassword'],
 	})
 const validate = withZod(signUpSchema)
-const SignUpForm: React.FC<RegisterProps> = ({ setCloseInterceptReason }) => {
+const Register: React.FC<RegisterProps> = ({ setCloseInterceptReason }) => {
 	const { submit } = useFetcherWithPromiseAndReset({ key: 'registration' })
 	const fetcher = useFetcher({ key: 'registration' })
 	const [formValues, setFormValues] = useState<FormValues>({
@@ -151,6 +151,7 @@ const SignUpForm: React.FC<RegisterProps> = ({ setCloseInterceptReason }) => {
 			setCloseInterceptReason(reason)
 		}
 	}, [fetcher.state, isFormDirty, setCloseInterceptReason])
+	
 	useEffect(updateCloseInterceptReason, [updateCloseInterceptReason])
 	const emailInput = useInput(
 		'',
@@ -216,8 +217,8 @@ const SignUpForm: React.FC<RegisterProps> = ({ setCloseInterceptReason }) => {
 	}, [fetcher.data])
 
 	return (
-		<div className="flex min-h-screen items-center justify-center">
-			<div className="w-96 rounded-lg border border-stone-800 bg-black p-8">
+		<div className="flex items-center justify-center">
+			<div className=" p-8">
 				<h1 className="form-title mb-6 select-none text-2xl text-white">
 					Sign Up
 				</h1>
@@ -228,20 +229,21 @@ const SignUpForm: React.FC<RegisterProps> = ({ setCloseInterceptReason }) => {
 					key="SignUpForm"
 					validator={validate}
 					fetcher={fetcher}
-					onSubmit={async data => {
+					onSubmit={useCallback(async (data: { email: string; password: string; confirmPassword: string; }) => {
 						if (formIsValid && fetcher.state !== 'submitting') {
 							try {
-								const response = await submit(data, {
-									method: 'post',
-									action: '/register',
-								})
+							  const response = await submit(data, { method: 'post', action: '/register' });
+							  // Handle the successful response
+							  console.log('Registration successful:', response);
+							  			// Mark the form as clean when it's submitted
+								 setInitialFormValues({ ...formValues })
 							} catch (error) {
-								console.error('Failed to submit form', error)
-							} finally {
-								console.log('lmao')
+							  // Handle the error
+							  console.error('An error occurred:', error);
 							}
-						}
-					}}
+						  }
+						},
+					 [formIsValid, fetcher.state, submit])}
 					className="flex flex-col space-y-4"
 				>
 					<div>
@@ -319,4 +321,4 @@ const SignUpForm: React.FC<RegisterProps> = ({ setCloseInterceptReason }) => {
 	)
 }
 
-export default SignUpForm
+export default Register

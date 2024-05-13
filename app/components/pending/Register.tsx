@@ -254,12 +254,6 @@ const Register: React.FC<RegisterProps> = ({ setCloseInterceptReason }) => {
 		)
 	}
 
-	const [submissionState, setSubmissionState] = useState({
-		submitting: false,
-		showError: false,
-	})
-
-
 	useEffect(() => {
 		confirmPasswordInput.setError(
 			confirmPasswordInput.value !== passwordInput.value,
@@ -290,22 +284,19 @@ const Register: React.FC<RegisterProps> = ({ setCloseInterceptReason }) => {
 					key="SignUpForm"
 					validator={validate}
 					fetcher={fetcher}
-					onSubmit={async data => {
+					onSubmit={useCallback(async (data: { email: string; password: string; confirmPassword: string; }) => {
 						if (formIsValid && fetcher.state !== 'submitting') {
 							try {
-								const response = await submit(data, {
-									method: 'post',
-									action: '/register',
-								});
+							  const response = await submit(data, { method: 'post', action: '/register' });
+							  // Handle the successful response
+							  console.log('Registration successful:', response);
 							} catch (error) {
-								console.error('Failed to submit form', error);
+							  // Handle the error
+							  console.error('An error occurred:', error);
 							}
-							finally{
-								console.log('lmao')
-							}
-						}
-					}}
-					// Set visibility to true every time message changes
+						  }
+						},
+					 [formIsValid, fetcher.state, submit])}
 					className="flex flex-col space-y-4"
 				>
 					<div>
