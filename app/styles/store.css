@@ -330,7 +330,6 @@ body {
   color: white;
 }
 
-
 input::placeholder {
   user-select:none !important;
 }

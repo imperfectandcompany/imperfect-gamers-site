@@ -21,7 +21,7 @@ const ModalHeader: React.FC<ModalHeaderProps> = ({ title, onBack, align = 'cente
 
   const backButton = (
     <button
-      className="form-title animate flex animate-pulse cursor-pointer items-center transition-all hover:-translate-y-0.5  focus:text-white"
+      className="form-title animate flex animate-pulse cursor-pointer !text-stone-500 items-center transition-all hover:opacity-85 focus:opacity-50 focus:text-white"
       onClick={(e) => handleBackClick(e)}
     >
       <svg
@@ -30,6 +30,7 @@ const ModalHeader: React.FC<ModalHeaderProps> = ({ title, onBack, align = 'cente
         height="20"
         viewBox="0 0 12 20"
         fill="none"
+        className="text-stone-600"
         style={{
           marginRight: '8px',
           transform: align === 'right' ? 'rotate(180deg)' : 'none',

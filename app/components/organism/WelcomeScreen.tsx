@@ -17,19 +17,23 @@ const WelcomeScreen: React.FC<
 					Who's joining?
 				</h1>
 				<div className="flex flex-col items-center justify-center space-y-4 md:flex-row md:space-x-4 md:space-y-0">
+					<div>
 					<UserCard
 						onClick={onNewUser}
 						title="First Timer"
 						subtitle="New here"
 						description="Unranked"
-						animationUrl="https://lottie.host/f4cdfc7c-f9a3-40ae-ab75-f7b3dd57f678/N0XLmIQErG.json"
+						animationUrl='https://lottie.host/4898bcfb-15df-46de-9094-f336449ec70e/m7GxLqmHUR.json'
+						hoverAnimationUrl="https://lottie.host/f4cdfc7c-f9a3-40ae-ab75-f7b3dd57f678/N0XLmIQErG.json"
 					/>
+					</div>
 					<UserCard
 						onClick={onExistingUser}
 						title="Old Timer"
 						subtitle="Been here"
 						description="Veteran"
-						animationUrl="https://lottie.host/879e211e-1f3a-4015-8815-79d5cd1af0d2/RaWWjJVbB4.json"
+						hoverAnimationUrl="https://lottie.host/879e211e-1f3a-4015-8815-79d5cd1af0d2/RaWWjJVbB4.json"
+						animationUrl='https://lottie.host/fd083183-9af6-4295-a9f1-acdd2d321ee7/lJD5sQ893r.json'
 					/>
 				</div>
 			</div>

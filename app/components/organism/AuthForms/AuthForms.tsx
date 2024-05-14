@@ -267,7 +267,7 @@ const Footer: React.FC<FooterProps> = ({
 					</p>{' '}
 				</>
 			) : isInitial && !isAuthenticated ? (
-				<p className="flex select-none items-center text-xs text-gray-500">
+				<p className="flex select-none justify-center text-xs text-gray-500">
 					Powered by&nbsp;
 					<a
 						href="https://imperfectandcompany.com/"

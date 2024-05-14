@@ -1,13 +1,28 @@
-import { Player } from '@lottiefiles/react-lottie-player';
-import type React from 'react';
+import { Player } from '@lottiefiles/react-lottie-player'
+import type React from 'react'
 
 interface LottieAnimationProps {
-  src: string;
-  style?: React.CSSProperties;
+	animationUrl: string
+	style?: React.CSSProperties
+	loop: boolean // new prop
 }
 
-const LottieAnimation: React.FC<LottieAnimationProps> = ({ src, style }) => (
-  <Player autoplay loop src={src} style={style} background="transparent" keepLastFrame={true} />
-);
+const LottieAnimation: React.FC<LottieAnimationProps> = ({
+	animationUrl,
+	style,
+	loop,
+}) => (
+	<Player
+		autoplay
+		loop={loop}
+		src={animationUrl}
+    rendererSettings={{ preserveAspectRatio: 'xMidYMid slice',
+		}}
 
-export default LottieAnimation;
+		style={{ ...style}} // Use the provided style and set width and height to 100%
+		background="transparent"
+		keepLastFrame={true}
+	/>
+)
+
+export default LottieAnimation

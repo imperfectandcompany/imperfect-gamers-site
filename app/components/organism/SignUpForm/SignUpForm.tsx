@@ -1,6 +1,6 @@
 import { useFetcher } from '@remix-run/react'
 import { withZod } from '@remix-validated-form/with-zod'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { ValidatedForm } from 'remix-validated-form'
 import { z } from 'zod'
 import Button from '~/components/atoms/Button/Button'
@@ -13,11 +13,32 @@ import MessageContainer from '~/components/pending/MessageContainer'
 import {
 	useDispatch,
 	useDispatchState,
-	useProcessDispatch,
-	useProcessState,
 } from '~/components/pending/ProcessProvider'
-import { useFetcherWithPromise, useFetcherWithPromiseAndManualReset, useFetcherWithPromiseAndReset } from '~/utils/general'
+import { useFetcherWithPromiseAndReset } from '~/utils/general'
 import { CloseInterceptReason } from '../ModalWrapper/ModalWrapper'
+
+interface SubmitButtonProps {
+	isDisabled: boolean
+	onClick: () => void
+	classes: string
+	buttonText: string
+}
+
+const SubmitButton = memo(
+	({ isDisabled, onClick, classes, buttonText }: SubmitButtonProps) => {
+		return (
+			<Button
+				type="submit"
+				disabled={isDisabled}
+				onClick={onClick}
+				className={classes}
+			>
+				{buttonText}
+			</Button>
+		)
+	},
+)
+
 interface UseInputReturn {
 	value: string
 	setValue: React.Dispatch<React.SetStateAction<string>>
@@ -46,11 +67,14 @@ function useInput(
 	const [isValid, setIsValid] = useState(false)
 	const typingTimeoutRef = useRef<null | NodeJS.Timeout>(null)
 
-    const reset = useCallback((newValue: string = initialValue) => {
-        setValue(newValue); // Reset the value
-        setError(false); // Reset any errors
-        setIsValid(false); // Reset validity state
-    }, [initialValue]);
+	const reset = useCallback(
+		(newValue: string = initialValue) => {
+			setValue(newValue) // Reset the value
+			setError(false) // Reset any errors
+			setIsValid(false) // Reset validity state
+		},
+		[initialValue],
+	)
 
 	const handleValueChange = useCallback(
 		(e: React.ChangeEvent<HTMLInputElement>) => {
@@ -105,7 +129,7 @@ function useInput(
 		inputClassName,
 		showError,
 		ariaDescribedBy,
-		reset
+		reset,
 	}
 }
 interface RegisterProps {
@@ -130,11 +154,12 @@ const signUpSchema = z
 	})
 const validate = withZod(signUpSchema)
 
-
 const Register: React.FC<RegisterProps> = ({ setCloseInterceptReason }) => {
-	const { submit, data } = useFetcherWithPromiseAndReset({ key: 'registration' })
+	const { submit, data } = useFetcherWithPromiseAndReset({
+		key: 'registration',
+	})
 	const fetcher = useFetcher({ key: 'registration' })
-	const prevFetcherState = useRef(fetcher.state);
+	const prevFetcherState = useRef(fetcher.state)
 
 	const emailInput = useInput(
 		'',
@@ -152,15 +177,11 @@ const Register: React.FC<RegisterProps> = ({ setCloseInterceptReason }) => {
 		'confirm-password-error',
 	)
 
-
 	const formIsDirty = useMemo(
-		() =>
-			emailInput.value ||
-			passwordInput.value ||
-			confirmPasswordInput.value,
+		() => emailInput.value || passwordInput.value || confirmPasswordInput.value,
 		[emailInput.value, passwordInput.value, confirmPasswordInput.value],
 	)
-	
+
 	const isFormDirty =
 		JSON.stringify(formIsDirty) !== JSON.stringify(formIsDirty)
 	const updateCloseInterceptReason = useCallback(() => {
@@ -183,10 +204,8 @@ const Register: React.FC<RegisterProps> = ({ setCloseInterceptReason }) => {
 			setCloseInterceptReason(reason)
 		}
 	}, [fetcher.state, isFormDirty, setCloseInterceptReason])
-	
 
 	useEffect(updateCloseInterceptReason, [updateCloseInterceptReason])
-
 
 	const formIsValid = useMemo(
 		() =>
@@ -195,62 +214,53 @@ const Register: React.FC<RegisterProps> = ({ setCloseInterceptReason }) => {
 			confirmPasswordInput.isValid,
 		[emailInput.isValid, passwordInput.isValid, confirmPasswordInput.isValid],
 	)
-	const SubmitButton: React.FC = () => {
-		const isSubmitting =
-			fetcher.state === 'submitting' || fetcher.state === 'loading'
-		const [shake, setShake] = useState(false)
-		const handleClick = () => {
-			if (isSubmitting || !formIsValid) {
-				setShake(true)
-				setTimeout(() => setShake(false), 820)
-			}
-		}
 
-		return (
-			<Button
-				type="submit"
-				disabled={isSubmitting || !formIsValid}
-				onClick={handleClick}
-				className={`justify-center border-transparent text-sm font-medium text-white transition-opacity duration-300 focus:outline-none ${shake ? animationStyles.shake : ''}`}
-			>
-				{isSubmitting ? 'Submitting...' : 'Submit'}
-			</Button>
-		)
-	}
 	const [submissionState, setSubmissionState] = useState({
 		submitting: false,
 		showError: false,
 	})
-	
+
 	useEffect(() => {
 		confirmPasswordInput.setError(
 			confirmPasswordInput.value !== passwordInput.value,
 		)
 	}, [passwordInput.value, confirmPasswordInput.value])
 
-	const dispatch = useDispatch();
-	const state = useDispatchState();
+	const dispatch = useDispatch()
+	const state = useDispatchState()
 
-	const currentDispatch = state.find((dispatch) => dispatch.inProgress);
+	const currentDispatch = state.find(dispatch => dispatch.inProgress)
 
 	useEffect(() => {
 		if (fetcher.state !== prevFetcherState.current) {
-		  if (fetcher.data && typeof fetcher.data === 'object') {
-			if ((fetcher.data as { success: boolean })?.success) {
-			  console.log('Registration successful:', fetcher.data);
-			  emailInput?.reset();
-			  passwordInput?.reset();
-			  confirmPasswordInput?.reset();
-			  dispatch.send('Registration successful');
-			} else if ((fetcher.data as { error: string })?.error) {
-			  passwordInput?.reset();
-			  confirmPasswordInput?.reset();
-			  dispatch.send((fetcher.data as { error: string })?.error);
+			if (fetcher.data && typeof fetcher.data === 'object') {
+				if ((fetcher.data as { success: boolean })?.success) {
+					console.log('Registration successful:', fetcher.data)
+					emailInput?.reset()
+					passwordInput?.reset()
+					confirmPasswordInput?.reset()
+					dispatch.send('Registration successful')
+				} else if ((fetcher.data as { error: string })?.error) {
+					passwordInput?.reset()
+					confirmPasswordInput?.reset()
+					dispatch.send((fetcher.data as { error: string })?.error)
+				}
 			}
-		  }
-		  prevFetcherState.current = fetcher.state;
+			prevFetcherState.current = fetcher.state
 		}
-	  }, [fetcher.state, fetcher.data, dispatch]);
+	}, [fetcher.state, fetcher.data, dispatch])
+
+	const [shake, setShake] = useState(false)
+
+	const handleClick = useCallback(() => {
+		const isSubmitting =
+			fetcher.state === 'submitting' || fetcher.state === 'loading'
+		const isDisabled = isSubmitting || !formIsValid
+		if (isDisabled) {
+			setShake(true)
+			setTimeout(() => setShake(false), 820)
+		}
+	}, [fetcher.state, formIsValid]) // include necessary dependencies
 
 	return (
 		<div className="flex items-center justify-center">
@@ -260,9 +270,7 @@ const Register: React.FC<RegisterProps> = ({ setCloseInterceptReason }) => {
 				</h1>
 				{(fetcher.data as { error: boolean })?.error && currentDispatch ? (
 					<MessageContainer message={currentDispatch.message} />
-      ) : (
-		null
-      )}
+				) : null}
 				<ValidatedForm
 					key="SignUpForm"
 					validator={validate}
@@ -316,15 +324,30 @@ const Register: React.FC<RegisterProps> = ({ setCloseInterceptReason }) => {
 							id="password-error"
 						/>
 					</div>
-					{passwordInput.value && !passwordInput.error ? <ConfirmPasswordField
+					{passwordInput.value && !passwordInput.error ? (
+						<ConfirmPasswordField
 							showField
 							name="confirmPassword"
 							type="password"
 							placeholder="Confirm Password"
 							{...confirmPasswordInput}
-						/> : null}
+						/>
+					) : null}
 					<div className="flex justify-end">
-						<SubmitButton />
+						<SubmitButton
+							onClick={handleClick}
+							isDisabled={
+								fetcher.state === 'submitting' ||
+								fetcher.state === 'loading' ||
+								!formIsValid
+							}
+							classes={`justify-center border-transparent text-sm font-medium text-white transition-opacity duration-300 focus:outline-none ${shake ? animationStyles.shake : ''}`}
+							buttonText={
+								fetcher.state === 'submitting' || fetcher.state === 'loading'
+									? 'Submitting...'
+									: 'Submit'
+							}
+						/>
 					</div>
 				</ValidatedForm>
 
@@ -346,7 +369,8 @@ const Register: React.FC<RegisterProps> = ({ setCloseInterceptReason }) => {
 						<a
 							href="https://imperfectgamers.org/discord"
 							target="_blank"
-							className="form-secondary-links underline" rel="noreferrer"
+							className="form-secondary-links underline"
+							rel="noreferrer"
 						>
 							Discord
 						</a>
