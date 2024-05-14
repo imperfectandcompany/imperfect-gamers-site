@@ -331,6 +331,9 @@ body {
 }
 
 
+input::placeholder {
+  user-select:none !important;
+}
 
 
     .form-header {

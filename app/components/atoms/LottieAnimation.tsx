@@ -1,5 +1,5 @@
 import { Player } from '@lottiefiles/react-lottie-player';
-import React from 'react';
+import type React from 'react';
 
 interface LottieAnimationProps {
   src: string;

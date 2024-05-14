@@ -1,4 +1,4 @@
-import React from 'react'
+import type React from 'react'
 import { useField } from 'remix-validated-form'
 
 type InputProps = {
@@ -45,7 +45,7 @@ const Input: React.FC<InputProps> = ({ name, type, onBlur, onChange, variant = '
         onChange={handleChange}
         className={inputClasses}
       />
-      {error && <div className="text-red-600">{error}</div>}
+      {error ? <div className="text-red-600">{error}</div> : null}
     </>
   )
 }

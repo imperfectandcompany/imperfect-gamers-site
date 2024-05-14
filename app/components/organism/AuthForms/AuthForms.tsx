@@ -3,20 +3,20 @@
 import { useFetcher, useFetchers, useLoaderData } from '@remix-run/react'
 import type React from 'react'
 import { useEffect, useState, useCallback, useMemo } from 'react'
+import Button from '~/components/atoms/Button/Button'
+import ImperfectAndCompanyLogo from '~/components/atoms/ImperfectAndCompanyLogo'
 import AuthorizeForm from '~/components/molecules/AuthorizeForm'
+import CheckoutProcess from '~/components/molecules/CheckoutProcess/CheckoutProcess'
+import CheckoutProcessTemp from '~/components/molecules/CheckoutProcess/CheckoutProcessTemp'
 import LoginForm from '~/components/molecules/LoginForm'
 import UsernameForm from '~/components/molecules/UsernameForm'
-import type { LoaderData } from '~/routes/store'
-import ModalWrapper from '../ModalWrapper/ModalWrapper'
-import WelcomeScreen from '../WelcomeScreen'
 import ProcessProvider from '~/components/pending/ProcessProvider'
-import Button from '~/components/atoms/Button/Button'
-import CheckoutProcess from '~/components/molecules/CheckoutProcess/CheckoutProcess'
-import ImperfectAndCompanyLogo from '~/components/atoms/ImperfectAndCompanyLogo'
-import CheckoutProcessTemp from '~/components/molecules/CheckoutProcess/CheckoutProcessTemp'
-import { useFetcherWithPromiseAndReset } from '~/utils/general'
 import Register from '~/components/pending/Register'
+import type { LoaderData } from '~/routes/store'
+import { useFetcherWithPromiseAndReset } from '~/utils/general'
+import ModalWrapper from '../ModalWrapper/ModalWrapper'
 import SignUpForm from '../SignUpForm/SignUpForm'
+import WelcomeScreen from '../WelcomeScreen'
 
 const AuthForms: React.FC = () => {
 	const { isAuthenticated, isSteamLinked, username } =
@@ -31,6 +31,7 @@ const AuthForms: React.FC = () => {
 		  `/auth/finalize/username`,
 		  `/auth/check/steam`,
 		  `/auth/steam`,
+		  `/register`,
 		  `/login`,
 		  `/logout`,
 		  `/store/add`,
@@ -198,7 +199,7 @@ const AuthForms: React.FC = () => {
 							handleLogout={handleLogout}
 						/>
 					}
-					isResponsive={!isAuthenticated && isInitial} // Set true only if showing WelcomeScreen
+					isResponsive={!isAuthenticated ? isInitial : null} // Set true only if showing WelcomeScreen
 				>
 					<Button>Join Now</Button>
 				</ModalWrapper>
@@ -242,7 +243,7 @@ const Footer: React.FC<FooterProps> = ({
 						<a
 							href="https://imperfectgamers.org/privacy-policy"
 							target="_blank"
-							className="select-none text-red-500"
+							className="select-none text-red-500" rel="noreferrer"
 						>
 							Privacy Policy
 						</a>
@@ -250,7 +251,7 @@ const Footer: React.FC<FooterProps> = ({
 						<a
 							href="https://imperfectgamers.org/terms-of-service"
 							target="_blank"
-							className="select-none text-red-500"
+							className="select-none text-red-500" rel="noreferrer"
 						>
 							Terms of Service
 						</a>
@@ -258,7 +259,7 @@ const Footer: React.FC<FooterProps> = ({
 						<a
 							href="https://imperfectgamers.org/imprint"
 							target="_blank"
-							className="select-none text-red-500"
+							className="select-none text-red-500" rel="noreferrer"
 						>
 							Imprint
 						</a>
@@ -272,7 +273,7 @@ const Footer: React.FC<FooterProps> = ({
 						href="https://imperfectandcompany.com/"
 						target="_blank"
 						className="flex select-none items-center text-red-500"
-						style={{ alignItems: 'center' }}
+						style={{ alignItems: 'center' }} rel="noreferrer"
 					>
 						Imperfect and Company LLC
 						<ImperfectAndCompanyLogo />

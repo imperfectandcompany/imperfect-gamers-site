@@ -1,21 +1,19 @@
-import React from 'react'
-import UserCard from '../molecules/UserCard/UserCard'
+import type React from 'react'
 import ImperfectGamersLogo from '../atoms/ImperfectGamersLogo'
+import UserCard from '../molecules/UserCard/UserCard'
 
 interface WelcomeScreenProps {
 	onNewUser: () => void
 	onExistingUser: () => void
 }
 
-const WelcomeScreen: React.FC<WelcomeScreenProps & { isAuthenticated: boolean }> = ({
-	onNewUser,
-	onExistingUser,
-	isAuthenticated,
-}) => {
+const WelcomeScreen: React.FC<
+	WelcomeScreenProps & { isAuthenticated: boolean }
+> = ({ onNewUser, onExistingUser, isAuthenticated }) => {
 	return (
 		<div className="flex flex-col items-center justify-center bg-black px-4 pb-8">
 			<div className="w-full max-w-4xl">
-				<h1 className="mb-8 text-center text-4xl font-bold text-white select-none">
+				<h1 className="mb-8 select-none text-center text-4xl font-bold text-white">
 					Who's joining?
 				</h1>
 				<div className="flex flex-col items-center justify-center space-y-4 md:flex-row md:space-x-4 md:space-y-0">
@@ -35,12 +33,13 @@ const WelcomeScreen: React.FC<WelcomeScreenProps & { isAuthenticated: boolean }>
 					/>
 				</div>
 			</div>
-			{!isAuthenticated ? (<>
-				<p className="mt-4 text-center flex flex-col items-center animate animate-pulse text-sm text-white select-none">
-					Please log in or sign up to join the club.
-					<ImperfectGamersLogo/>
-				</p>
-			</>
+			{!isAuthenticated ? (
+				<>
+					<p className="animate mt-4 flex select-none flex-col items-center text-center text-sm text-stone-400">
+						Please log in or sign up to join the club.
+						<ImperfectGamersLogo />
+					</p>
+				</>
 			) : null}
 		</div>
 	)

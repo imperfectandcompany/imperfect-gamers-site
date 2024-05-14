@@ -1,11 +1,12 @@
 // components/molecules/CheckoutProcess/CheckoutProcessTemp.tsx
 
 import { useFetcher, useLoaderData } from '@remix-run/react'
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import type React from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { CloseInterceptReason } from '~/components/organism/ModalWrapper/ModalWrapper'
-import { LoaderData } from '~/routes/store'
+import type { LoaderData } from '~/routes/store'
 import { useFetcherWithPromise } from '~/utils/general'
-import { TebexCheckoutConfig } from '~/utils/tebex.interface'
+import type { TebexCheckoutConfig } from '~/utils/tebex.interface'
 
 interface CheckoutProcessTempProps {
 	isOpen?: boolean

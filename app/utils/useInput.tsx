@@ -1,4 +1,5 @@
-import React, { memo } from 'react';
+import type React from 'react';
+import { memo } from 'react';
 import { useField } from 'remix-validated-form';
 
 interface InputProps {
@@ -41,7 +42,7 @@ const Input: React.FC<InputProps> = memo(({
                 aria-invalid={error ? 'true' : 'false'}
                 aria-describedby={ariaDescribedBy}
             />
-            {fieldError && <span className="error-message show">{fieldError}</span>}
+            {fieldError ? <span className="error-message show">{fieldError}</span> : null}
         </>
     );
 });

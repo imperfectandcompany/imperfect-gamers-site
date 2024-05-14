@@ -16,7 +16,7 @@ const MessageContainer: React.FC<MessageContainerProps> = ({ message }) => {
             cx="8"
             cy="8"
             r="7"
-            stroke-width="2"
+            strokeWidth="2"
             fill="none"
           />
           <circle
@@ -24,10 +24,10 @@ const MessageContainer: React.FC<MessageContainerProps> = ({ message }) => {
             cx="8"
             cy="8"
             r="7"
-            stroke-width="2"
+            strokeWidth="2"
             fill="none"
-            stroke-dasharray="44"
-            stroke-dashoffset="44"
+            strokeDasharray="44"
+            strokeDashoffset="44"
           />
         </svg>
       </div>

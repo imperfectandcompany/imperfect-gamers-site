@@ -1,8 +1,8 @@
 // components/atoms/Button/Button.tsx
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import type React from 'react'
-import { type ButtonProps } from './ButtonProps'
 import { useEffect, useState } from 'react';
+import { type ButtonProps } from './ButtonProps'
 
 const buttonVariants = {
 	primary:

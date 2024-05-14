@@ -21,7 +21,7 @@ const ModalHeader: React.FC<ModalHeaderProps> = ({ title, onBack, align = 'cente
 
   const backButton = (
     <button
-      className="cursor-pointer flex items-center"
+      className="form-title animate flex animate-pulse cursor-pointer items-center transition-all hover:-translate-y-0.5  focus:text-white"
       onClick={(e) => handleBackClick(e)}
     >
       <svg
@@ -46,8 +46,8 @@ const ModalHeader: React.FC<ModalHeaderProps> = ({ title, onBack, align = 'cente
 
   return (
     <div className="" style={{ width: '100%' }}>
-      <div className="flex items-center form-header mb-4">
-        {onBack && align !== 'center' && backButton}
+      <div className="form-header mb-4 flex items-center">
+        {onBack && align !== 'center' ? backButton : null}
         <div
           className="form-title-modal select-none"
           style={{
@@ -57,7 +57,7 @@ const ModalHeader: React.FC<ModalHeaderProps> = ({ title, onBack, align = 'cente
         >
           {title}
         </div>
-        {onBack && align === 'center' && backButton}
+        {onBack && align === 'center' ? backButton : null}
       </div>
     </div>
   );

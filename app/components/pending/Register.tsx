@@ -1,21 +1,21 @@
 // components/pending/SignUpForm.tsx
 import { useFetcher } from '@remix-run/react'
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import Button from '~/components/atoms/Button/Button'
-import { useField, ValidatedForm } from 'remix-validated-form'
 import { withZod } from '@remix-validated-form/with-zod'
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useField, ValidatedForm } from 'remix-validated-form'
 import { z } from 'zod'
-import { CloseInterceptReason } from '../organism/ModalWrapper/ModalWrapper'
+import Button from '~/components/atoms/Button/Button'
 import {
 	useFetcherWithPromiseAndReset,
 	useFetcherWithReset,
 } from '~/utils/general'
+import { CloseInterceptReason } from '../organism/ModalWrapper/ModalWrapper'
+import MessageContainer from './MessageContainer'
 import {
 	ProcessProvider,
 	useProcessDispatch,
 	useProcessState,
 } from './ProcessProvider'
-import MessageContainer from './MessageContainer'
 
 interface UseInputReturn {
 	value: string
@@ -138,7 +138,7 @@ const Input = memo<InputProps>(({ name, type, placeholder, inputProps }) => {
 				aria-invalid={inputProps.error}
 				aria-describedby={inputProps.ariaDescribedBy}
 			/>
-			{error && <span className="error-message show">{error}</span>}
+			{error ? <span className="error-message show">{error}</span> : null}
 		</>
 	)
 })
@@ -275,11 +275,9 @@ const Register: React.FC<RegisterProps> = ({ setCloseInterceptReason }) => {
 				<h1 className="form-title mb-6 select-none text-2xl text-white">
 					Sign Up
 				</h1>
-				{(fetcher.data as { error: boolean })?.error && inProgress && (
-					<MessageContainer
+				{(fetcher.data as { error: boolean })?.error && inProgress ? <MessageContainer
 						message={message}
-					/>
-				)}
+					/> : null}
 				<ValidatedForm
 					key="SignUpForm"
 					validator={validate}
@@ -325,8 +323,7 @@ const Register: React.FC<RegisterProps> = ({ setCloseInterceptReason }) => {
 							id="password-error"
 						/>
 					</div>
-					{passwordInput.value && !passwordInput.error && (
-						<div
+					{passwordInput.value && !passwordInput.error ? <div
 							className={`confirm-password-transition ${passwordInput.value && !passwordInput.error ? 'show' : ''}`}
 						>
 							<Input
@@ -340,8 +337,7 @@ const Register: React.FC<RegisterProps> = ({ setCloseInterceptReason }) => {
 								message="Passwords do not match"
 								id="confirm-password-error"
 							/>
-						</div>
-					)}
+						</div> : null}
 					<div className="flex justify-end">
 						<SubmitButton />
 					</div>
@@ -361,7 +357,7 @@ const Register: React.FC<RegisterProps> = ({ setCloseInterceptReason }) => {
 						<a
 							href="https://imperfectgamers.org/terms-of-service"
 							target="_blank"
-							className="form-secondary-links underline"
+							className="form-secondary-links underline" rel="noreferrer"
 						>
 							Terms of Service
 						</a>{' '}
@@ -369,7 +365,7 @@ const Register: React.FC<RegisterProps> = ({ setCloseInterceptReason }) => {
 						<a
 							href="https://imperfectgamers.org/privacy-policy"
 							target="_blank"
-							className="form-secondary-links underline"
+							className="form-secondary-links underline" rel="noreferrer"
 						>
 							Privacy policy
 						</a>

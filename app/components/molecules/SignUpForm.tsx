@@ -7,8 +7,8 @@ import { ValidatedForm, useFormContext } from 'remix-validated-form'
 import { z } from 'zod'
 import Button from '~/components/atoms/Button/Button'
 import Input from '~/components/atoms/Input/Input'
-import { CloseInterceptReason } from '../organism/ModalWrapper/ModalWrapper'
 import LottieAnimation from '../atoms/LottieAnimation'
+import { CloseInterceptReason } from '../organism/ModalWrapper/ModalWrapper'
 import SubmitButton from './SubmitButton'
 
 /**

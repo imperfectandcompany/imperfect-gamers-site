@@ -5,7 +5,7 @@
 
 import { useCallback } from 'react';
 import { CloseInterceptReason } from '~/components/organism/ModalWrapper/ModalWrapper';
-import { TebexCheckoutConfig } from '~/utils/tebex.interface';
+import type { TebexCheckoutConfig } from '~/utils/tebex.interface';
 
 interface TebexCheckoutProps {
   setCloseInterceptReason?: (reason: CloseInterceptReason) => void;

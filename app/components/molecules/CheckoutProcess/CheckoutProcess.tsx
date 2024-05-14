@@ -11,9 +11,10 @@
 // The setCloseInterceptReason prop is passed down to the TebexCheckout component to handle the modal close intercept reason based on the Tebex checkout events.
 
 import { useFetcher, useLoaderData } from '@remix-run/react'
-import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { CloseInterceptReason } from '~/components/organism/ModalWrapper/ModalWrapper'
-import { LoaderData } from '~/routes/store'
+import type React from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react'
+import type { CloseInterceptReason } from '~/components/organism/ModalWrapper/ModalWrapper'
+import type { LoaderData } from '~/routes/store'
 import { addPackageToBasket, createBasket } from './BasketManager'
 import { hasSpecificPackage } from './PackageManager'
 import TebexCheckout from './TebexCheckout'
@@ -121,35 +122,29 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 	return (
 		<>
 			{/* Process 8.1: Does user have a basket (required) */}
-			{!basketId && <div>Loading or creating your basket...</div>}
+			{!basketId ? <div>Loading or creating your basket...</div> : null}
 
 			{
 				/* Process 8.2: Check if fetching data or processing a request */
-				fetcher.state === 'loading' && <div>Processing...</div>
+				fetcher.state === 'loading' ? <div>Processing...</div> : null
 			}
 
 			{
 				/* Process 8.3: Check if fetching data or processing a request */
-				(fetcher.data as { error: string })?.error && (
-					<div>Error: {(fetcher.data as { error: string }).error}</div>
-				)
+				(fetcher.data as { error: string })?.error ? <div>Error: {(fetcher.data as { error: string }).error}</div> : null
 			}
 
 			{
 				/* Process 8.4: Does user have premium package in basket (final process) */
-				!hasSpecificPackage(packages, PREMIUM_PACKAGE_ID) && (
-					<div>Loading or adding premium package to basket...</div>
-				)
+				!hasSpecificPackage(packages, PREMIUM_PACKAGE_ID) ? <div>Loading or adding premium package to basket...</div> : null
 			}
 
 			{
 				/* Process 8.5: Show final screen (ready) */
-				isSteamLinked && (
-					<>
+				isSteamLinked ? <>
 						<div>Steam Linked with ID: {steamId}</div>
 						<div>Onboarded as: {username}</div>
-					</>
-				)
+					</> : null
 			}
 		</>
 	)

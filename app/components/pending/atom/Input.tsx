@@ -1,5 +1,6 @@
 // components/atoms/Input.tsx
-import React, { memo } from 'react';
+import type React from 'react';
+import { memo } from 'react';
 import { useField } from 'remix-validated-form';
 
 interface InputProps {
@@ -33,7 +34,7 @@ const Input: React.FC<InputProps> = memo(({ name, type, placeholder, inputProps 
             aria-invalid={inputProps.error ? 'true' : 'false'}
             aria-describedby={inputProps.ariaDescribedBy}
         />
-            {error && <span className="error-message show">{error}</span>}
+            {error ? <span className="error-message show">{error}</span> : null}
         </>
     );
 });

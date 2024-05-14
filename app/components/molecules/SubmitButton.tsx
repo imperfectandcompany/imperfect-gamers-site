@@ -1,5 +1,6 @@
-import React, { useState, useCallback, useEffect } from 'react';
 import { useFetcher } from '@remix-run/react';
+import type React from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import Button from '~/components/atoms/Button/Button'; // Ensure this is the correct import
 
 const SubmitButton: React.FC<{ formIsValid: boolean }> = ({ formIsValid }) => {

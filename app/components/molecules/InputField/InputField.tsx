@@ -1,4 +1,4 @@
-import React from 'react';
+import type React from 'react';
 import { useField } from 'remix-validated-form';
 import { inputBorderStyles } from "~/components/atoms/styles/InputBorderStyles";
 import { inputHoverStyles } from "~/components/atoms/styles/InputHoverStyles";

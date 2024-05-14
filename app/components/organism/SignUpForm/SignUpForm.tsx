@@ -1,9 +1,8 @@
 import { useFetcher } from '@remix-run/react'
+import { withZod } from '@remix-validated-form/with-zod'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { ValidatedForm } from 'remix-validated-form'
-import { withZod } from '@remix-validated-form/with-zod'
 import { z } from 'zod'
-import { useFetcherWithPromiseAndReset } from '~/utils/general'
 import Button from '~/components/atoms/Button/Button'
 import { animationStyles } from '~/components/atoms/styles/AnimationStyles'
 import { inputBorderStyles } from '~/components/atoms/styles/InputBorderStyles'
@@ -12,25 +11,29 @@ import ErrorMessage from '~/components/molecules/ErrorMessage/ErrorMessage'
 import InputField from '~/components/molecules/InputField/InputField'
 import MessageContainer from '~/components/pending/MessageContainer'
 import {
+	useDispatch,
+	useDispatchState,
 	useProcessDispatch,
 	useProcessState,
 } from '~/components/pending/ProcessProvider'
+import { useFetcherWithPromise, useFetcherWithPromiseAndManualReset, useFetcherWithPromiseAndReset } from '~/utils/general'
 import { CloseInterceptReason } from '../ModalWrapper/ModalWrapper'
 interface UseInputReturn {
-    value: string;
-    setValue: React.Dispatch<React.SetStateAction<string>>;
-    error: boolean;
-    setError: React.Dispatch<React.SetStateAction<boolean>>;
-    isFocused: boolean;
-    isTyping: boolean; // Add this line
-    isValid: boolean;
-    handleValueChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    handleFocus: () => void;
-    handleBlur: () => void;
-    inputClassName: string;
-    showError: boolean;
-    ariaDescribedBy: string;
-  }
+	value: string
+	setValue: React.Dispatch<React.SetStateAction<string>>
+	error: boolean
+	setError: React.Dispatch<React.SetStateAction<boolean>>
+	isFocused: boolean
+	isTyping: boolean // Add this line
+	isValid: boolean
+	handleValueChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+	handleFocus: () => void
+	handleBlur: () => void
+	inputClassName: string
+	showError: boolean
+	ariaDescribedBy: string
+	reset: () => void
+}
 function useInput(
 	initialValue: string,
 	validate: (value: string) => boolean,
@@ -42,6 +45,13 @@ function useInput(
 	const [isTyping, setIsTyping] = useState(false)
 	const [isValid, setIsValid] = useState(false)
 	const typingTimeoutRef = useRef<null | NodeJS.Timeout>(null)
+
+    const reset = useCallback((newValue: string = initialValue) => {
+        setValue(newValue); // Reset the value
+        setError(false); // Reset any errors
+        setIsValid(false); // Reset validity state
+    }, [initialValue]);
+
 	const handleValueChange = useCallback(
 		(e: React.ChangeEvent<HTMLInputElement>) => {
 			const newValue = e.target.value
@@ -82,19 +92,20 @@ function useInput(
 		setIsValid(!error && value.trim() !== '') // Update validity based on error and value
 	}, [error, value])
 	return {
-        value,
-        setValue,
-        error,
-        setError,
-        isFocused,
-        isTyping, // Add this line
-        isValid,
-        handleValueChange,
-        handleFocus,
-        handleBlur,
-        inputClassName,
-        showError,
-        ariaDescribedBy
+		value,
+		setValue,
+		error,
+		setError,
+		isFocused,
+		isTyping,
+		isValid,
+		handleValueChange,
+		handleFocus,
+		handleBlur,
+		inputClassName,
+		showError,
+		ariaDescribedBy,
+		reset
 	}
 }
 interface RegisterProps {
@@ -118,19 +129,40 @@ const signUpSchema = z
 		path: ['confirmPassword'],
 	})
 const validate = withZod(signUpSchema)
+
+
 const Register: React.FC<RegisterProps> = ({ setCloseInterceptReason }) => {
-	const { submit } = useFetcherWithPromiseAndReset({ key: 'registration' })
+	const { submit, data } = useFetcherWithPromiseAndReset({ key: 'registration' })
 	const fetcher = useFetcher({ key: 'registration' })
-	const [formValues, setFormValues] = useState<FormValues>({
-		email: '',
-		password: '',
-		confirmPassword: '',
-	})
-	const [initialFormValues, setInitialFormValues] = useState<FormValues>({
-		...formValues,
-	})
+	const prevFetcherState = useRef(fetcher.state);
+
+	const emailInput = useInput(
+		'',
+		email => /^[^\s@]+@[^\s@]+.[^\s@]{2,}$/.test(String(email).toLowerCase()),
+		'email-error',
+	)
+	const passwordInput = useInput(
+		'',
+		password => password.length >= 6,
+		'password-error',
+	)
+	const confirmPasswordInput = useInput(
+		'',
+		value => value === passwordInput.value,
+		'confirm-password-error',
+	)
+
+
+	const formIsDirty = useMemo(
+		() =>
+			emailInput.value ||
+			passwordInput.value ||
+			confirmPasswordInput.value,
+		[emailInput.value, passwordInput.value, confirmPasswordInput.value],
+	)
+	
 	const isFormDirty =
-		JSON.stringify(formValues) !== JSON.stringify(initialFormValues)
+		JSON.stringify(formIsDirty) !== JSON.stringify(formIsDirty)
 	const updateCloseInterceptReason = useCallback(() => {
 		let reason = CloseInterceptReason.None
 		if (fetcher.state === 'submitting' || fetcher.state === 'loading') {
@@ -152,22 +184,10 @@ const Register: React.FC<RegisterProps> = ({ setCloseInterceptReason }) => {
 		}
 	}, [fetcher.state, isFormDirty, setCloseInterceptReason])
 	
+
 	useEffect(updateCloseInterceptReason, [updateCloseInterceptReason])
-	const emailInput = useInput(
-		'',
-		email => /^[^\s@]+@[^\s@]+.[^\s@]{2,}$/.test(String(email).toLowerCase()),
-		'email-error',
-	)
-	const passwordInput = useInput(
-		'',
-		password => password.length >= 6,
-		'password-error',
-	)
-	const confirmPasswordInput = useInput(
-		'',
-		value => value === passwordInput.value,
-		'confirm-password-error',
-	)
+
+
 	const formIsValid = useMemo(
 		() =>
 			emailInput.isValid &&
@@ -201,49 +221,71 @@ const Register: React.FC<RegisterProps> = ({ setCloseInterceptReason }) => {
 		submitting: false,
 		showError: false,
 	})
+	
 	useEffect(() => {
 		confirmPasswordInput.setError(
 			confirmPasswordInput.value !== passwordInput.value,
 		)
 	}, [passwordInput.value, confirmPasswordInput.value])
-	const dispatchAction = useProcessDispatch()
-	const { inProgress } = useProcessState()
-	const { message } = useProcessState() // This hook would return the current state including messages.
+
+	const dispatch = useDispatch();
+	const state = useDispatchState();
+
+	const currentDispatch = state.find((dispatch) => dispatch.inProgress);
 
 	useEffect(() => {
-		if (fetcher.data && typeof fetcher.data === 'object') {
-			dispatchAction((fetcher.data as { error: string })?.error)
+		if (fetcher.state !== prevFetcherState.current) {
+		  if (fetcher.data && typeof fetcher.data === 'object') {
+			if ((fetcher.data as { success: boolean })?.success) {
+			  console.log('Registration successful:', fetcher.data);
+			  emailInput?.reset();
+			  passwordInput?.reset();
+			  confirmPasswordInput?.reset();
+			  dispatch.send('Registration successful');
+			} else if ((fetcher.data as { error: string })?.error) {
+			  passwordInput?.reset();
+			  confirmPasswordInput?.reset();
+			  dispatch.send((fetcher.data as { error: string })?.error);
+			}
+		  }
+		  prevFetcherState.current = fetcher.state;
 		}
-	}, [fetcher.data])
+	  }, [fetcher.state, fetcher.data, dispatch]);
 
 	return (
 		<div className="flex items-center justify-center">
 			<div className=" p-8">
 				<h1 className="form-title mb-6 select-none text-2xl text-white">
-					Sign Up
+					Get Started
 				</h1>
-				{(fetcher.data as { error: boolean })?.error && inProgress && (
-					<MessageContainer message={message} />
-				)}
+				{(fetcher.data as { error: boolean })?.error && currentDispatch ? (
+					<MessageContainer message={currentDispatch.message} />
+      ) : (
+		null
+      )}
 				<ValidatedForm
 					key="SignUpForm"
 					validator={validate}
 					fetcher={fetcher}
-					onSubmit={useCallback(async (data: { email: string; password: string; confirmPassword: string; }) => {
-						if (formIsValid && fetcher.state !== 'submitting') {
-							try {
-							  const response = await submit(data, { method: 'post', action: '/register' });
-							  // Handle the successful response
-							  console.log('Registration successful:', response);
-							  			// Mark the form as clean when it's submitted
-								 setInitialFormValues({ ...formValues })
-							} catch (error) {
-							  // Handle the error
-							  console.error('An error occurred:', error);
+					onSubmit={useCallback(
+						async (data: {
+							email: string
+							password: string
+							confirmPassword: string
+						}) => {
+							if (formIsValid && fetcher.state !== 'submitting') {
+								try {
+									const response = await submit(data, {
+										method: 'post',
+										action: '/register',
+									})
+								} catch (error) {
+									console.error('An error occurred:', error)
+								}
 							}
-						  }
 						},
-					 [formIsValid, fetcher.state, submit])}
+						[formIsValid, fetcher.state, submit],
+					)}
 					className="flex flex-col space-y-4"
 				>
 					<div>
@@ -274,15 +316,13 @@ const Register: React.FC<RegisterProps> = ({ setCloseInterceptReason }) => {
 							id="password-error"
 						/>
 					</div>
-					{passwordInput.value && !passwordInput.error && (
-						<ConfirmPasswordField
+					{passwordInput.value && !passwordInput.error ? <ConfirmPasswordField
 							showField
 							name="confirmPassword"
 							type="password"
 							placeholder="Confirm Password"
 							{...confirmPasswordInput}
-						/>
-					)}
+						/> : null}
 					<div className="flex justify-end">
 						<SubmitButton />
 					</div>
@@ -298,22 +338,19 @@ const Register: React.FC<RegisterProps> = ({ setCloseInterceptReason }) => {
 						</p>
 					</div>
 					<div className="mt-8 text-xs text-stone-400">
-						By signing up, you agree to our{' '}
+						Please note that you are accessing a beta version of the platform,
+						which is still undergoing final testing before its official release.
+						<br />
+						If you encounter any issues or require assistance, feel free to
+						reach out to our staff on{' '}
 						<a
-							href="https://imperfectgamers.org/terms-of-service"
+							href="https://imperfectgamers.org/discord"
 							target="_blank"
-							className="form-secondary-links underline"
+							className="form-secondary-links underline" rel="noreferrer"
 						>
-							Terms of Service
-						</a>{' '}
-						and{' '}
-						<a
-							href="https://imperfectgamers.org/privacy-policy"
-							target="_blank"
-							className="form-secondary-links underline"
-						>
-							Privacy policy
+							Discord
 						</a>
+						.
 					</div>
 				</div>
 			</div>
