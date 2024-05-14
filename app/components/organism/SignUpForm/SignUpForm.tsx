@@ -16,6 +16,9 @@ import {
 } from '~/components/pending/ProcessProvider'
 import { useFetcherWithPromiseAndReset } from '~/utils/general'
 import { CloseInterceptReason } from '../ModalWrapper/ModalWrapper'
+import { Honeypot } from "remix-utils/honeypot/server";
+import { HoneypotProvider } from "remix-utils/honeypot/react";
+import { HoneypotInputs } from "remix-utils/honeypot/react";
 
 interface SubmitButtonProps {
 	isDisabled: boolean
@@ -153,7 +156,12 @@ const signUpSchema = z
 	})
 const validate = withZod(signUpSchema)
 
+
+const honeypot = new Honeypot();
+
 const Register: React.FC<RegisterProps> = ({ setCloseInterceptReason }) => {
+	const honeypotProps = honeypot.getInputProps();
+
 	const { submit, data } = useFetcherWithPromiseAndReset({
 		key: 'registration',
 	})
@@ -268,6 +276,7 @@ const Register: React.FC<RegisterProps> = ({ setCloseInterceptReason }) => {
 				{(fetcher.data as { error: boolean })?.error && currentDispatch ? (
 					<MessageContainer message={currentDispatch.message} />
 				) : null}
+						<HoneypotProvider {...honeypotProps}>
 				<ValidatedForm
 					key="SignUpForm"
 					validator={validate}
@@ -293,6 +302,7 @@ const Register: React.FC<RegisterProps> = ({ setCloseInterceptReason }) => {
 					)}
 					className="flex flex-col space-y-4"
 				>
+									<HoneypotInputs />
 					<div>
 						<InputField
 							name="email"
@@ -350,16 +360,17 @@ const Register: React.FC<RegisterProps> = ({ setCloseInterceptReason }) => {
 						/>
 					</div>
 				</ValidatedForm>
-
+				</HoneypotProvider>
 				<div className="mt-6 flex flex-col items-center justify-between text-center text-sm">
-					<div>
+					{/** Temporarily hide this block until ready **/}
+					{/* <div>
 						<p className="text-stone-400">
 							Have an account?{' '}
 							<a href="#" className="form-primary-link underline">
 								Log in
 							</a>
 						</p>
-					</div>
+					</div> */}
 					<div className="mt-8 text-xs text-stone-400">
 						Please note that you are accessing a beta version of the platform,
 						which is still undergoing final testing before its official release.

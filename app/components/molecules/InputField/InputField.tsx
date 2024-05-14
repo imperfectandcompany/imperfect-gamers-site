@@ -43,6 +43,8 @@ const InputField: React.FC<InputProps> = ({
 	const [redoEnabled, setRedoEnabled] = useState(false)
 	const [isEscapeMode, setIsEscapeMode] = useState(false)
 
+	const inputRef = useRef<HTMLInputElement>(null)
+
 	useEffect(() => {
 		if (type !== 'password') {
 			setShowClearIcon(value.length > 0 && !redoEnabled)
@@ -57,23 +59,19 @@ const InputField: React.FC<InputProps> = ({
 		[handleValueChange],
 	)
 
-  const inputRef = useRef<HTMLInputElement>(null)
-
 	const clearInput = useCallback(() => {
 		setPreviousValue(value)
-		handleValueChange({
-			target: { value: '' },
-		} as React.ChangeEvent<HTMLInputElement>)
+		handleValueChange({ target: { value: '' } } as React.ChangeEvent<HTMLInputElement>)
 		handleFocus()
 		setShowClearIcon(false)
 		setRedoEnabled(true)
-    const length = inputRef.current?.value.length
-    if (length !== undefined) {
-      setTimeout(() => {
-        inputRef.current?.focus()
-        inputRef.current?.setSelectionRange(length, length)
-      }, 0)
-    }
+		if (inputRef.current) {
+			const length = inputRef.current.value.length
+			setTimeout(() => {
+				inputRef.current?.focus()
+				inputRef.current?.setSelectionRange(length, length)
+			}, 0)
+		}
 	}, [value, handleValueChange, handleFocus])
 
 	const handleKeyDown = useCallback(
@@ -89,17 +87,16 @@ const InputField: React.FC<InputProps> = ({
 		[isEscapeMode, clearInput],
 	)
 
-  const handleFocusEnhanced = useCallback(() => {
-    handleFocus()
-    // Move cursor to the end of the input
-    const length = inputRef.current?.value.length
-    if (length !== undefined) {
-      setTimeout(() => {
-        inputRef.current?.focus()
-        inputRef.current?.setSelectionRange(length, length)
-      }, 0)
-    }
-  }, [handleFocus])
+	const handleFocusEnhanced = useCallback(() => {
+		handleFocus()
+		if (inputRef.current) {
+			const length = inputRef.current.value.length
+			setTimeout(() => {
+				inputRef.current?.focus()
+				inputRef.current?.setSelectionRange(length, length)
+			}, 0)
+		}
+	}, [handleFocus])
 
 	const cancelEscapeMode = useCallback(() => {
 		setIsEscapeMode(false)
@@ -113,32 +110,30 @@ const InputField: React.FC<InputProps> = ({
 
 	const redoInput = useCallback(() => {
 		if (previousValue !== null) {
-			handleValueChange({
-				target: { value: previousValue },
-			} as React.ChangeEvent<HTMLInputElement>)
+			handleValueChange({ target: { value: previousValue } } as React.ChangeEvent<HTMLInputElement>)
 			handleFocus()
 			setPreviousValue(null)
 			setRedoEnabled(false)
-      const length = inputRef.current?.value.length
-      if (length !== undefined) {
-        setTimeout(() => {
-          inputRef.current?.focus()
-          inputRef.current?.setSelectionRange(length, length)
-        }, 0)
-      }
+			if (inputRef.current) {
+				const length = inputRef.current.value.length
+				setTimeout(() => {
+					inputRef.current?.focus()
+					inputRef.current?.setSelectionRange(length, length)
+				}, 0)
+			}
 		}
 	}, [previousValue, handleValueChange, handleFocus])
 
-  const togglePasswordVisibility = useCallback(() => {
-    setIsPasswordVisible(prev => !prev)
-    const length = inputRef.current?.value.length
-    if (length !== undefined) {
-      setTimeout(() => {
-        inputRef.current?.focus()
-        inputRef.current?.setSelectionRange(length, length)
-      }, 0)
-    }
-  }, [])
+	const togglePasswordVisibility = useCallback(() => {
+		setIsPasswordVisible(prev => !prev)
+		if (inputRef.current) {
+			const length = inputRef.current.value.length
+			setTimeout(() => {
+				inputRef.current?.focus()
+				inputRef.current?.setSelectionRange(length, length)
+			}, 0)
+		}
+	}, [])
 
 	const handleMouseEnter = useCallback(() => {
 		setShowTooltip(true)
@@ -161,20 +156,20 @@ const InputField: React.FC<InputProps> = ({
 		isTyping
 			? inputBorderStyles.typing
 			: value.length === 0
-				? 'border-white/10'
-				: error
-					? inputBorderStyles.error
-					: !error && value.length > 0 && isFocused
-						? inputBorderStyles.valid
-						: inputBorderStyles.neutral
+			? 'border-white/10'
+			: error
+			? inputBorderStyles.error
+			: !error && value.length > 0 && isFocused
+			? inputBorderStyles.valid
+			: inputBorderStyles.neutral
 	} border border-white/5 bg-white/5 p-2 text-white transition-all duration-300 ease-in-out placeholder:text-white/35 focus:border-white/30 focus:outline-none ${className || ''}`
 
 	const hoverClassName = `${
 		error
 			? inputHoverStyles.hoverError
 			: !error && isFocused && value.length > 0
-				? inputHoverStyles.hoverValid
-				: inputHoverStyles.hoverNeutral
+			? inputHoverStyles.hoverValid
+			: inputHoverStyles.hoverNeutral
 	}`
 
 	return (
@@ -183,60 +178,55 @@ const InputField: React.FC<InputProps> = ({
 				id={name}
 				maxLength={36}
 				onKeyDown={handleKeyDown}
-        ref={inputRef}
+				ref={inputRef}
 				{...getInputProps({
 					type: type === 'password' && isPasswordVisible ? 'text' : type,
 					placeholder,
 					className: `${inputClassName} ${hoverClassName}`,
 					value,
 					onChange: handleValueChangeEnhanced,
-          onFocus: handleFocusEnhanced, // use enhanced focus handler
+					onFocus: handleFocusEnhanced,
 					onBlur: handleBlur,
 					'aria-invalid': error,
 					'aria-describedby': ariaDescribedBy,
 				})}
 			/>
-			{showClearIcon &&
-				!redoEnabled &&
-				type !== 'password' &&
-				value.length > 0 && (
-					<div
-						className="clear-icon-container absolute right-2 top-1/2 -translate-y-1/2 transform cursor-default"
-						onMouseEnter={handleMouseEnter}
-						onMouseLeave={handleMouseLeave}
-					>
-						<i
-							className="fas fa-times-circle clear-icon cursor-pointer text-stone-700"
-							style={{ visibility: showClearIcon ? 'visible' : 'hidden' }}
-							onClick={clearInput}
-						/>
-						{tooltipMessage && showTooltip && (
-							<div className="input-tooltip cursor-default select-none">
-								{getTooltipMessage()}
-							</div>
-						)}
-					</div>
-				)}
-			{redoEnabled &&
-				previousValue &&
-				(type !== 'password' || value.length === 0) && (
-					<div
-						className="redo-icon-container absolute right-2 top-1/2 -translate-y-1/2 transform cursor-default "
-						onMouseEnter={handleMouseEnter}
-						onMouseLeave={handleMouseLeave}
-					>
-						<i
-							className="fas fa-undo redo-icon cursor-pointer text-stone-700"
-							style={{ visibility: redoEnabled ? 'visible' : 'hidden' }}
-							onClick={redoInput}
-						/>
-						{showTooltip && (
-							<div className="input-tooltip cursor-default select-none">
-								{getTooltipMessage()}
-							</div>
-						)}
-					</div>
-				)}
+			{showClearIcon && !redoEnabled && type !== 'password' && value.length > 0 && (
+				<div
+					className="clear-icon-container absolute right-2 top-1/2 -translate-y-1/2 transform cursor-default"
+					onMouseEnter={handleMouseEnter}
+					onMouseLeave={handleMouseLeave}
+				>
+					<i
+						className="fas fa-times-circle clear-icon cursor-pointer text-stone-700"
+						style={{ visibility: showClearIcon ? 'visible' : 'hidden' }}
+						onClick={clearInput}
+					/>
+					{tooltipMessage && showTooltip && (
+						<div className="input-tooltip cursor-default select-none">
+							{getTooltipMessage()}
+						</div>
+					)}
+				</div>
+			)}
+			{redoEnabled && previousValue && (type !== 'password' || value.length === 0) && (
+				<div
+					className="redo-icon-container absolute right-2 top-1/2 -translate-y-1/2 transform cursor-default "
+					onMouseEnter={handleMouseEnter}
+					onMouseLeave={handleMouseLeave}
+				>
+					<i
+						className="fas fa-undo redo-icon cursor-pointer text-stone-700"
+						style={{ visibility: redoEnabled ? 'visible' : 'hidden' }}
+						onClick={redoInput}
+					/>
+					{showTooltip && (
+						<div className="input-tooltip cursor-default select-none">
+							{getTooltipMessage()}
+						</div>
+					)}
+				</div>
+			)}
 			{type === 'password' && value.length > 0 && (
 				<div
 					className="toggle-password-container absolute right-2 top-1/2 -translate-y-1/2 transform cursor-default"
