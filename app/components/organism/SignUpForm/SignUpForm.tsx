@@ -298,6 +298,7 @@ const Register: React.FC<RegisterProps> = ({ setCloseInterceptReason }) => {
 							name="email"
 							type="email"
 							placeholder="Email"
+							tooltipMessage="Clear Email Field"
 							{...emailInput}
 							isTyping={emailInput.isTyping} // Pass the isTyping prop
 						/>
@@ -313,7 +314,8 @@ const Register: React.FC<RegisterProps> = ({ setCloseInterceptReason }) => {
 							type="password"
 							placeholder="Password"
 							{...passwordInput}
-							isTyping={passwordInput.isTyping} // Pass the isTyping prop
+							isTyping={passwordInput.isTyping}	
+							tooltipMessage="Show Password"
 						/>
 						<ErrorMessage
 							showError={passwordInput.showError}
@@ -322,13 +324,14 @@ const Register: React.FC<RegisterProps> = ({ setCloseInterceptReason }) => {
 						/>
 					</div>
 					{passwordInput.value && !passwordInput.error ? (
-						<ConfirmPasswordField
-							showField
-							name="confirmPassword"
-							type="password"
-							placeholder="Confirm Password"
-							{...confirmPasswordInput}
-						/>
+							<ConfirmPasswordField
+								showField
+								name="confirmPassword"
+								type="password"
+								placeholder="Confirms Password"
+								{...confirmPasswordInput}
+								tooltipMessage="Show Confirm Password"
+							/>
 					) : null}
 					<div className="flex justify-end">
 						<SubmitButton

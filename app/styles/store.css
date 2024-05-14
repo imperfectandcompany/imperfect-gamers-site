@@ -43,7 +43,6 @@ html {
   font-variation-settings: 'wght' 900;
 }
 
-
 body {
   font-family: "Roboto", sans-serif;
   color: #fff;
@@ -336,10 +335,8 @@ body {
 }
 
 input::placeholder {
-  user-select:none !important;
+  user-select: none !important;
 }
-
-
 .toggle-password {
   transition: transform 0.3s;
 }
@@ -352,8 +349,8 @@ input::placeholder {
 .input-tooltip {
   position: absolute;
   top: -35px; /* Adjusted to position above the icon */
-  right: 50%;
-  transform: translateX(50%);
+  left: 50%;
+  transform: translateX(-50%); /* Center the tooltip */
   background-color: rgba(0, 0, 0, 0.85); /* Same background color */
   color: #fff; /* Same text color */
   padding: 8px 12px;
@@ -367,11 +364,21 @@ input::placeholder {
   transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
-.toggle-password-container:hover .input-tooltip {
+.toggle-password-container:hover .input-tooltip,
+.clear-icon-container:hover .input-tooltip,
+.redo-icon-container:hover .input-tooltip {
   opacity: 1;
   visibility: visible;
 }
 
+.redo-icon {
+  transition: transform 0.3s;
+}
+
+.redo-icon:hover {
+  transform: scale(1.1);
+  color: #ff5555; /* Example hover color */
+}
 
     .form-header {
       z-index: 20; /* This needs to be higher than the title's z-index */
