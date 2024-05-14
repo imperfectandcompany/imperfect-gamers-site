@@ -85,7 +85,7 @@ function useInput(
 			typingTimeoutRef.current = setTimeout(() => {
 				setIsTyping(false)
 				setError(!validate(newValue)) // Validate after user has stopped typing
-			}, 500) // Consider reducing the timeout to improve responsiveness
+			}, 300) // Consider reducing the timeout to improve responsiveness
 		},
 		[validate],
 	)
