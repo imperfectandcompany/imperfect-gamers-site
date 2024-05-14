@@ -79,7 +79,7 @@ const AuthForms: React.FC = () => {
 
 	// Define an enum for the page titles
 	enum PageTitle {
-		Welcome = 'Imperfect Gamers',
+		Welcome = 'Imperfect Gamers Club',
 		Login = 'Log In',
 		Signup = 'Sign Up',
 		LoggedIn = 'Join The Club',

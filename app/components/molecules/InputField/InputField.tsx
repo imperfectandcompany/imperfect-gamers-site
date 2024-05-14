@@ -36,19 +36,19 @@ const InputField: React.FC<InputProps> = ({
   const inputClassName = `w-full rounded ${transitionStyles.transition} ${
     isTyping
       ? inputBorderStyles.typing
-      : value.length === 0 || (!error && !isFocused)
+      : value.length === 0
       ? 'border-white/10'
       : error
       ? inputBorderStyles.error
-      : !error && isFocused
+      : (!error && value.length > 0 && isFocused)
       ? inputBorderStyles.valid
       : inputBorderStyles.neutral
-  } input-background border border-white/5 bg-white/5 p-2 text-white transition-all duration-300 ease-in-out placeholder:text-white/35 focus:border-white/30 focus:outline-none`;
+  } border border-white/5 bg-white/5 p-2 text-white transition-all duration-300 ease-in-out placeholder:text-white/35 focus:border-white/30 focus:outline-none`;
 
   const hoverClassName = `${
     error
       ? inputHoverStyles.hoverError
-      : !error && isFocused
+      : (!error && isFocused && value.length > 0)
       ? inputHoverStyles.hoverValid
       : inputHoverStyles.hoverNeutral
   }`;
@@ -59,7 +59,7 @@ const InputField: React.FC<InputProps> = ({
       {...getInputProps({
         type,
         placeholder,
-        className: `${inputClassName} ${isTyping ? inputBorderStyles.typing : ''} ${hoverClassName}`,
+        className: `${inputClassName} ${hoverClassName}`,
         value,
         onChange: handleValueChange,
         onFocus: handleFocus,

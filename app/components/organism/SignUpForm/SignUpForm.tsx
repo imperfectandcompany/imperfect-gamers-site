@@ -109,7 +109,7 @@ function useInput(
 	useEffect(() => {
 		const timeoutId = setTimeout(() => {
 			setIsTyping(false)
-		}, 500)
+		}, 0)
 		return () => clearTimeout(timeoutId)
 	}, [value])
 	useEffect(() => {
@@ -163,7 +163,7 @@ const Register: React.FC<RegisterProps> = ({ setCloseInterceptReason }) => {
 
 	const emailInput = useInput(
 		'',
-		email => /^[^\s@]+@[^\s@]+.[^\s@]{2,}$/.test(String(email).toLowerCase()),
+		(email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(String(email).toLowerCase()),
 		'email-error',
 	)
 	const passwordInput = useInput(
@@ -182,13 +182,11 @@ const Register: React.FC<RegisterProps> = ({ setCloseInterceptReason }) => {
 		[emailInput.value, passwordInput.value, confirmPasswordInput.value],
 	)
 
-	const isFormDirty =
-		JSON.stringify(formIsDirty) !== JSON.stringify(formIsDirty)
 	const updateCloseInterceptReason = useCallback(() => {
 		let reason = CloseInterceptReason.None
 		if (fetcher.state === 'submitting' || fetcher.state === 'loading') {
 			reason = CloseInterceptReason.RequestInProgress
-		} else if (isFormDirty) {
+		} else if (formIsDirty) {
 			reason = CloseInterceptReason.UnsavedChanges
 		} else if (
 			(fetcher.data &&
@@ -203,7 +201,7 @@ const Register: React.FC<RegisterProps> = ({ setCloseInterceptReason }) => {
 		if (setCloseInterceptReason) {
 			setCloseInterceptReason(reason)
 		}
-	}, [fetcher.state, isFormDirty, setCloseInterceptReason])
+	}, [fetcher.state, formIsDirty, setCloseInterceptReason])
 
 	useEffect(updateCloseInterceptReason, [updateCloseInterceptReason])
 
@@ -363,18 +361,6 @@ const Register: React.FC<RegisterProps> = ({ setCloseInterceptReason }) => {
 					<div className="mt-8 text-xs text-stone-400">
 						Please note that you are accessing a beta version of the platform,
 						which is still undergoing final testing before its official release.
-						<br />
-						If you encounter any issues or require assistance, feel free to
-						reach out to our staff on{' '}
-						<a
-							href="https://imperfectgamers.org/discord"
-							target="_blank"
-							className="form-secondary-links underline"
-							rel="noreferrer"
-						>
-							Discord
-						</a>
-						.
 					</div>
 				</div>
 			</div>

@@ -39,10 +39,10 @@ const WelcomeScreen: React.FC<
 			</div>
 			{!isAuthenticated ? (
 				<>
-					<p className="animate mt-4 flex select-none flex-col items-center text-center text-sm text-stone-400">
-						Please log in or sign up to join the club.
+					<p className="animate mt-8 flex select-none flex-col items-center text-center text-sm text-stone-400">
 						<ImperfectGamersLogo />
 					</p>
+					
 				</>
 			) : null}
 		</div>
