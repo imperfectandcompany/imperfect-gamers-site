@@ -53,6 +53,10 @@ const InputField: React.FC<InputProps> = ({
     setRedoEnabled(false); // Disable redo as soon as user types new input
   }, [handleValueChange]);
 
+    // Add a new state variable for escape mode
+    const [isEscapeMode, setIsEscapeMode] = useState(false);
+
+
   const clearInput = useCallback(() => {
     setPreviousValue(value); // Store the current value before clearing
     handleValueChange({ target: { value: '' } } as React.ChangeEvent<HTMLInputElement>);
@@ -61,6 +65,22 @@ const InputField: React.FC<InputProps> = ({
     setRedoEnabled(true); // Enable redo functionality
   }, [value, handleValueChange, handleFocus]);
 
+  // Add a keydown event listener
+  const handleKeyDown = useCallback((event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Escape') {
+      if (isEscapeMode) {
+        clearInput();
+      } else {
+        setIsEscapeMode(true);
+      }
+    }
+  }, [isEscapeMode, clearInput]);
+
+    // Add a method to cancel escape mode
+    const cancelEscapeMode = useCallback(() => {
+      setIsEscapeMode(false);
+    }, []);
+  
   const redoInput = useCallback(() => {
     if (previousValue !== null) {
       handleValueChange({ target: { value: previousValue } } as React.ChangeEvent<HTMLInputElement>);
@@ -104,6 +124,7 @@ const InputField: React.FC<InputProps> = ({
       <input
         id={name}
         maxLength={36}
+        onKeyDown={handleKeyDown} // Add this line
         {...getInputProps({
           type: type === 'password' && isPasswordVisible ? 'text' : type,
           placeholder,
@@ -116,42 +137,42 @@ const InputField: React.FC<InputProps> = ({
           'aria-describedby': ariaDescribedBy,
         })}
       />
-      {showClearIcon && type !== 'password' && (
-        <div
-          className="clear-icon-container absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer"
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
-          onClick={clearInput}
-        >
-          <i
-            className="fas fa-times-circle clear-icon"
-            style={{ visibility: showClearIcon ? 'visible' : 'hidden' }}
-          />
-          {tooltipMessage && showTooltip && (
-            <div className="input-tooltip select-none cursor-default">
-              {getTooltipMessage()}
-            </div>
-          )}
-        </div>
-      )}
-      {redoEnabled && previousValue && type !== 'password' && (
-        <div
-          className="redo-icon-container absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer"
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
-          onClick={redoInput}
-        >
-          <i
-            className="fas fa-undo redo-icon"
-            style={{ visibility: redoEnabled ? 'visible' : 'hidden' }}
-          />
-          {showTooltip && (
-            <div className="input-tooltip select-none cursor-default">
-              {getTooltipMessage()}
-            </div>
-          )}
-        </div>
-      )}
+{showClearIcon && !redoEnabled && type !== 'password' && value.length > 0 && (
+  <div
+    className="clear-icon-container absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer"
+    onMouseEnter={handleMouseEnter}
+    onMouseLeave={handleMouseLeave}
+    onClick={clearInput}
+  >
+    <i
+      className="fas fa-times-circle clear-icon"
+      style={{ visibility: showClearIcon ? 'visible' : 'hidden' }}
+    />
+    {tooltipMessage && showTooltip && (
+      <div className="input-tooltip select-none cursor-default">
+        {getTooltipMessage()}
+      </div>
+    )}
+  </div>
+)}
+{redoEnabled && previousValue && (type !== 'password' || value.length === 0) && (
+  <div
+    className="redo-icon-container absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer"
+    onMouseEnter={handleMouseEnter}
+    onMouseLeave={handleMouseLeave}
+    onClick={redoInput}
+  >
+    <i
+      className="fas fa-undo redo-icon"
+      style={{ visibility: redoEnabled ? 'visible' : 'hidden' }}
+    />
+    {showTooltip && (
+      <div className="input-tooltip select-none cursor-default">
+        {getTooltipMessage()}
+      </div>
+    )}
+  </div>
+)}
       {type === 'password' && value.length > 0 && (
         <div
           className="toggle-password-container absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer"
