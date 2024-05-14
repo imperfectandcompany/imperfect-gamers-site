@@ -67,14 +67,13 @@ function useInput(
 	const [isValid, setIsValid] = useState(false)
 	const typingTimeoutRef = useRef<null | NodeJS.Timeout>(null)
 
-	const reset = useCallback(
-		(newValue: string = initialValue) => {
-			setValue(newValue) // Reset the value
-			setError(false) // Reset any errors
-			setIsValid(false) // Reset validity state
-		},
-		[initialValue],
-	)
+
+
+    const reset = useCallback((newValue: string = initialValue) => {
+        setValue(newValue); // Reset the value
+        setError(false); // Reset any errors
+        setIsValid(false); // Reset validity state
+    }, [initialValue]);
 
 	const handleValueChange = useCallback(
 		(e: React.ChangeEvent<HTMLInputElement>) => {
@@ -86,7 +85,7 @@ function useInput(
 			typingTimeoutRef.current = setTimeout(() => {
 				setIsTyping(false)
 				setError(!validate(newValue)) // Validate after user has stopped typing
-			}, 0) // Consider reducing the timeout to improve responsiveness
+			}, 500) // Consider reducing the timeout to improve responsiveness
 		},
 		[validate],
 	)
@@ -109,7 +108,7 @@ function useInput(
 	useEffect(() => {
 		const timeoutId = setTimeout(() => {
 			setIsTyping(false)
-		}, 0)
+		}, 300)
 		return () => clearTimeout(timeoutId)
 	}, [value])
 	useEffect(() => {
@@ -129,7 +128,7 @@ function useInput(
 		inputClassName,
 		showError,
 		ariaDescribedBy,
-		reset,
+		reset
 	}
 }
 interface RegisterProps {

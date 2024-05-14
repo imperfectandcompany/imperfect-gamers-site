@@ -1,8 +1,9 @@
 import type React from 'react';
+import { useEffect, useState } from 'react';
 import { useField } from 'remix-validated-form';
-import { inputBorderStyles } from "~/components/atoms/styles/InputBorderStyles";
-import { inputHoverStyles } from "~/components/atoms/styles/InputHoverStyles";
-import { transitionStyles } from "~/components/atoms/styles/TransitionStyles";
+import { inputBorderStyles } from '~/components/atoms/styles/InputBorderStyles';
+import { inputHoverStyles } from '~/components/atoms/styles/InputHoverStyles';
+import { transitionStyles } from '~/components/atoms/styles/TransitionStyles';
 
 interface InputProps {
   name: string;
@@ -33,6 +34,39 @@ const InputField: React.FC<InputProps> = ({
 }) => {
   const { getInputProps } = useField(name);
 
+  // State to manage the visibility of the clear icon
+  const [showClearIcon, setShowClearIcon] = useState(false);
+  // State to manage the password visibility
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  // State to manage tooltip visibility
+  const [showTooltip, setShowTooltip] = useState(false);
+
+  useEffect(() => {
+    if (type !== 'password') {
+      setShowClearIcon(value.length > 0);
+    }
+  }, [value, type]);
+
+  const clearInput = () => {
+    handleValueChange({
+      target: { value: '' },
+    } as React.ChangeEvent<HTMLInputElement>);
+    handleFocus();
+    setShowClearIcon(false);
+  };
+
+  const togglePasswordVisibility = () => {
+    setIsPasswordVisible(!isPasswordVisible);
+  };
+
+  const handleMouseEnter = () => {
+    setShowTooltip(true);
+  };
+
+  const handleMouseLeave = () => {
+    setShowTooltip(false);
+  };
+
   const inputClassName = `w-full rounded ${transitionStyles.transition} ${
     isTyping
       ? inputBorderStyles.typing
@@ -54,20 +88,49 @@ const InputField: React.FC<InputProps> = ({
   }`;
 
   return (
-    <input
-      id={name}
-      {...getInputProps({
-        type,
-        placeholder,
-        className: `${inputClassName} ${hoverClassName}`,
-        value,
-        onChange: handleValueChange,
-        onFocus: handleFocus,
-        onBlur: handleBlur,
-        'aria-invalid': error,
-        'aria-describedby': ariaDescribedBy,
-      })}
-    />
+    <div className="relative">
+      <input
+        id={name}
+        {...getInputProps({
+          type: type === 'password' && isPasswordVisible ? 'text' : type,
+          placeholder,
+          className: `${inputClassName} ${hoverClassName}`,
+          value,
+          onChange: handleValueChange,
+          onFocus: handleFocus,
+          onBlur: handleBlur,
+          'aria-invalid': error,
+          'aria-describedby': ariaDescribedBy,
+        })}
+      />
+      {/* Clear icon element, only shown if the input type is not password */}
+      {showClearIcon && type !== 'password' && (
+        <i
+          className="fas fa-times-circle clear-icon absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer"
+          onClick={clearInput}
+          style={{ visibility: showClearIcon ? 'visible' : 'hidden' }}
+        />
+      )}
+      {/* Password visibility toggle icon, only shown if the input type is password and there's value */}
+      {type === 'password' && value.length > 0 && (
+        <div
+          className="toggle-password-container absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer"
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+        >
+          <i
+            className={`fas ${isPasswordVisible ? 'fa-eye-slash' : 'fa-eye'} toggle-password`}
+            onClick={togglePasswordVisibility}
+          />
+          {/* Tooltip */}
+          {showTooltip && (
+            <div className="input-tooltip select-none cursor-default">
+              {isPasswordVisible ? 'Hide Password' : 'Show Password'}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
   );
 };
 

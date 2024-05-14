@@ -36,6 +36,14 @@ html {
   border: 3px solid #111;
 }
 
+::selection {
+  background: #ffc107; /* amber */
+  color: black;
+  text-shadow: 2px 2px 2px #000;
+  font-variation-settings: 'wght' 900;
+}
+
+
 body {
   font-family: "Roboto", sans-serif;
   color: #fff;
@@ -329,6 +337,39 @@ body {
 
 input::placeholder {
   user-select:none !important;
+}
+
+
+.toggle-password {
+  transition: transform 0.3s;
+}
+
+.toggle-password:hover {
+  transform: scale(1.1);
+  color: #ff5555; /* Example hover color */
+}
+
+.input-tooltip {
+  position: absolute;
+  top: -35px; /* Adjusted to position above the icon */
+  right: 50%;
+  transform: translateX(50%);
+  background-color: rgba(0, 0, 0, 0.85); /* Same background color */
+  color: #fff; /* Same text color */
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.toggle-password-container:hover .input-tooltip {
+  opacity: 1;
+  visibility: visible;
 }
 
 
