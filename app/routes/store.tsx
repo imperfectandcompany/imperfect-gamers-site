@@ -51,10 +51,13 @@ export const links: LinksFunction = () => {
 export let handle: ExternalScriptsHandle = {
 	scripts: [
 		{
-			src: '/1.0.0.js', // Updated to point to your local file
+			src: '/1.0.0.js', // Updated to point to Tebex
 			crossOrigin: 'anonymous',
 			preload: true,
 		},
+		{
+			src: "https://www.clarity.ms/tag/mcqzfowzo2",
+		  }
 	],
 }
 
