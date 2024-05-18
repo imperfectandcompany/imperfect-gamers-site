@@ -18,6 +18,7 @@ export interface InputProps {
 	ariaDescribedBy?: string
 	tooltipMessage?: string
 	className?: string
+    disabled?: boolean
 }
 
 const InputField: React.FC<InputProps> = ({
@@ -34,6 +35,7 @@ const InputField: React.FC<InputProps> = ({
 	ariaDescribedBy,
 	tooltipMessage,
 	className,
+	disabled = false,
 }) => {
 	const { getInputProps } = useField(name)
 	const [showClearIcon, setShowClearIcon] = useState(false)
@@ -189,6 +191,7 @@ const InputField: React.FC<InputProps> = ({
 					onBlur: handleBlur,
 					'aria-invalid': error,
 					'aria-describedby': ariaDescribedBy,
+					disabled
 				})}
 			/>
 			{showClearIcon && !redoEnabled && type !== 'password' && value.length > 0 && (

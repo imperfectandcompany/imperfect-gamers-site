@@ -14,11 +14,11 @@ import {
 	useDispatch,
 	useDispatchState,
 } from '~/components/pending/ProcessProvider'
-import { useFetcherWithPromiseAndReset } from '~/utils/general'
 import { CloseInterceptReason } from '../ModalWrapper/ModalWrapper'
-import { Honeypot } from "remix-utils/honeypot/server";
-import { HoneypotProvider } from "remix-utils/honeypot/react";
-import { HoneypotInputs } from "remix-utils/honeypot/react";
+import { Honeypot } from 'remix-utils/honeypot/server'
+import { HoneypotProvider } from 'remix-utils/honeypot/react'
+import { HoneypotInputs } from 'remix-utils/honeypot/react'
+import LottieAnimation from '~/components/atoms/LottieAnimation'
 
 interface SubmitButtonProps {
 	isDisabled: boolean
@@ -71,12 +71,14 @@ function useInput(
 	const typingTimeoutRef = useRef<null | NodeJS.Timeout>(null)
 
 
-
-    const reset = useCallback((newValue: string = initialValue) => {
-        setValue(newValue); // Reset the value
-        setError(false); // Reset any errors
-        setIsValid(false); // Reset validity state
-    }, [initialValue]);
+	const reset = useCallback(
+		(newValue: string = initialValue) => {
+			setValue(newValue) // Reset the value
+			setError(false) // Reset any errors
+			setIsValid(false) // Reset validity state
+		},
+		[initialValue],
+	)
 
 	const handleValueChange = useCallback(
 		(e: React.ChangeEvent<HTMLInputElement>) => {
@@ -131,7 +133,7 @@ function useInput(
 		inputClassName,
 		showError,
 		ariaDescribedBy,
-		reset
+		reset,
 	}
 }
 interface RegisterProps {
@@ -156,21 +158,26 @@ const signUpSchema = z
 	})
 const validate = withZod(signUpSchema)
 
+const honeypot = new Honeypot()
 
-const honeypot = new Honeypot();
+const SignUpForm: React.FC<RegisterProps> = ({ setCloseInterceptReason }) => {
+	const honeypotProps = honeypot.getInputProps()
 
-const Register: React.FC<RegisterProps> = ({ setCloseInterceptReason }) => {
-	const honeypotProps = honeypot.getInputProps();
+	const [registrationSuccess, setRegistrationSuccess] = useState(false)
 
-	const { submit, data } = useFetcherWithPromiseAndReset({
-		key: 'registration',
-	})
 	const fetcher = useFetcher({ key: 'registration' })
+
+	const isSubmitting =
+		fetcher.state === 'submitting' || fetcher.state === 'loading'
+
+	const [shake, setShake] = useState(false)
+
 	const prevFetcherState = useRef(fetcher.state)
 
 	const emailInput = useInput(
 		'',
-		(email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(String(email).toLowerCase()),
+		(email: string) =>
+			/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(String(email).toLowerCase()),
 		'email-error',
 	)
 	const passwordInput = useInput(
@@ -184,6 +191,15 @@ const Register: React.FC<RegisterProps> = ({ setCloseInterceptReason }) => {
 		'confirm-password-error',
 	)
 
+	const formIsValid = useMemo(
+		() =>
+			emailInput.isValid &&
+			passwordInput.isValid &&
+			confirmPasswordInput.isValid,
+		[emailInput.isValid, passwordInput.isValid, confirmPasswordInput.isValid],
+	)
+	const isDisabled = isSubmitting || !formIsValid
+
 	const formIsDirty = useMemo(
 		() => emailInput.value || passwordInput.value || confirmPasswordInput.value,
 		[emailInput.value, passwordInput.value, confirmPasswordInput.value],
@@ -191,7 +207,7 @@ const Register: React.FC<RegisterProps> = ({ setCloseInterceptReason }) => {
 
 	const updateCloseInterceptReason = useCallback(() => {
 		let reason = CloseInterceptReason.None
-		if (fetcher.state === 'submitting' || fetcher.state === 'loading') {
+		if (isSubmitting) {
 			reason = CloseInterceptReason.RequestInProgress
 		} else if (formIsDirty) {
 			reason = CloseInterceptReason.UnsavedChanges
@@ -208,22 +224,12 @@ const Register: React.FC<RegisterProps> = ({ setCloseInterceptReason }) => {
 		if (setCloseInterceptReason) {
 			setCloseInterceptReason(reason)
 		}
-	}, [fetcher.state, formIsDirty, setCloseInterceptReason])
+	}, [fetcher.state, formIsDirty, isSubmitting, setCloseInterceptReason])
 
-	useEffect(updateCloseInterceptReason, [updateCloseInterceptReason])
-
-	const formIsValid = useMemo(
-		() =>
-			emailInput.isValid &&
-			passwordInput.isValid &&
-			confirmPasswordInput.isValid,
-		[emailInput.isValid, passwordInput.isValid, confirmPasswordInput.isValid],
-	)
-
-	const [submissionState, setSubmissionState] = useState({
-		submitting: false,
-		showError: false,
-	})
+	useEffect(() => {
+		updateCloseInterceptReason()
+		// No return value from this useEffect
+	}, [updateCloseInterceptReason])
 
 	useEffect(() => {
 		confirmPasswordInput.setError(
@@ -237,35 +243,70 @@ const Register: React.FC<RegisterProps> = ({ setCloseInterceptReason }) => {
 	const currentDispatch = state.find(dispatch => dispatch.inProgress)
 
 	useEffect(() => {
+		const handleSuccess = () => {
+			console.log('Registration successful:', fetcher.data)
+			passwordInput?.reset()
+			confirmPasswordInput?.reset()
+			emailInput?.reset()
+			setRegistrationSuccess(true)
+		}
+
+		const handleError = () => {
+			console.log('Registration was not successful:', fetcher.data)
+			setRegistrationSuccess(false) // Ensure success is not incorrectly flagged
+			const errorMessage = (fetcher.data as { error: string })?.error
+			if (errorMessage) {
+				dispatch.send(errorMessage)
+			}
+		}
+
 		if (fetcher.state !== prevFetcherState.current) {
 			if (fetcher.data && typeof fetcher.data === 'object') {
-				if ((fetcher.data as { success: boolean })?.success) {
-					console.log('Registration successful:', fetcher.data)
-					emailInput?.reset()
-					passwordInput?.reset()
-					confirmPasswordInput?.reset()
-					dispatch.send('Registration successful')
-				} else if ((fetcher.data as { error: string })?.error) {
-					passwordInput?.reset()
-					confirmPasswordInput?.reset()
-					dispatch.send((fetcher.data as { error: string })?.error)
+				if ((fetcher.data as { success?: boolean }).success) {
+					handleSuccess()
+				} else {
+					handleError()
 				}
 			}
 			prevFetcherState.current = fetcher.state
 		}
-	}, [fetcher.state, fetcher.data, dispatch])
+	}, [
+		fetcher.state,
+		fetcher.data,
+		dispatch,
+		emailInput,
+		passwordInput,
+		confirmPasswordInput,
+	])
 
-	const [shake, setShake] = useState(false)
-
+	// Move the handleClick function inside the component
 	const handleClick = useCallback(() => {
-		const isSubmitting =
-			fetcher.state === 'submitting' || fetcher.state === 'loading'
-		const isDisabled = isSubmitting || !formIsValid
 		if (isDisabled) {
 			setShake(true)
 			setTimeout(() => setShake(false), 820)
 		}
-	}, [fetcher.state, formIsValid]) // include necessary dependencies
+	}, [isDisabled, setShake])
+
+	// Modify the main return logic to conditionally render based on registrationSuccess
+	if (registrationSuccess) {
+		// Render a success view
+		return (
+			<div className="flex flex-col items-center justify-center">
+				<LottieAnimation
+					animationUrl="https://lottie.host/e5605e5a-c7de-4af0-827e-9be64091bc7f/V2SQO19y5v.json"
+					style={{ width: '250px', height: '250px' }}
+					loop={false}
+				/>
+				<h1 className="mt-6 text-3xl text-white">Registration Complete!</h1>
+				<p className="mt-4 text-gray-400">
+					Nice job! Your account has been successfully created.
+				</p>
+				<Button className="mt-6 rounded bg-gradient-to-r from-red-700 to-red-800 px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
+					Go to Login
+				</Button>
+			</div>
+		)
+	}
 
 	return (
 		<div className="flex items-center justify-center">
@@ -276,64 +317,49 @@ const Register: React.FC<RegisterProps> = ({ setCloseInterceptReason }) => {
 				{(fetcher.data as { error: boolean })?.error && currentDispatch ? (
 					<MessageContainer message={currentDispatch.message} />
 				) : null}
-						<HoneypotProvider {...honeypotProps}>
-				<ValidatedForm
-					key="SignUpForm"
-					validator={validate}
-					fetcher={fetcher}
-					onSubmit={useCallback(
-						async (data: {
-							email: string
-							password: string
-							confirmPassword: string
-						}) => {
-							if (formIsValid && fetcher.state !== 'submitting') {
-								try {
-									const response = await submit(data, {
-										method: 'post',
-										action: '/register',
-									})
-								} catch (error) {
-									console.error('An error occurred:', error)
-								}
-							}
-						},
-						[formIsValid, fetcher.state, submit],
-					)}
-					className="flex flex-col space-y-4"
-				>
-									<HoneypotInputs />
-					<div>
-						<InputField
-							name="email"
-							type="email"
-							placeholder="Email"
-							tooltipMessage="Clear Email Field"
-							{...emailInput}
-							isTyping={emailInput.isTyping} // Pass the isTyping prop
-						/>
-						<ErrorMessage
-							showError={emailInput.showError}
-							message="Invalid email address"
-							id="email-error"
-						/>
-					</div>
-					<div>
-						<InputField
-							name="password"
-							type="password"
-							placeholder="Password"
-							{...passwordInput}
-							isTyping={passwordInput.isTyping}	
-							tooltipMessage="Show Password"
-						/>
-						<ErrorMessage
-							showError={passwordInput.showError}
-							message="Password must be at least 6 characters"
-							id="password-error"
-						/>
-					</div>
-					{passwordInput.value && !passwordInput.error ? (
+				<HoneypotProvider {...honeypotProps}>
+					<ValidatedForm
+						key="SignUpForm"
+						validator={validate}
+						action="/register"
+						method="POST"
+						fetcher={fetcher}
+						className="flex flex-col space-y-4"
+					>
+						<HoneypotInputs />
+						<div>
+							<InputField
+								name="email"
+								disabled={isSubmitting}
+								type="email"
+								placeholder="Email"
+								tooltipMessage="Clear Email Field"
+								{...emailInput}
+								isTyping={emailInput.isTyping} // Pass the isTyping prop
+							/>
+							<ErrorMessage
+								showError={emailInput.showError}
+								message="Invalid email address"
+								id="email-error"
+							/>
+						</div>
+						<div>
+							<InputField
+								name="password"
+								disabled={isSubmitting}
+								type="password"
+								placeholder="Password"
+								{...passwordInput}
+								isTyping={passwordInput.isTyping}
+								tooltipMessage="Show Password"
+							/>
+							<ErrorMessage
+								showError={passwordInput.showError}
+								message="Password must be at least 6 characters"
+								id="password-error"
+							/>
+						</div>
+						{passwordInput.value && !passwordInput.error ? (
 							<ConfirmPasswordField
 								showField
 								name="confirmPassword"
@@ -342,24 +368,16 @@ const Register: React.FC<RegisterProps> = ({ setCloseInterceptReason }) => {
 								{...confirmPasswordInput}
 								tooltipMessage="Show Confirm Password"
 							/>
-					) : null}
-					<div className="flex justify-end">
-						<SubmitButton
-							onClick={handleClick}
-							isDisabled={
-								fetcher.state === 'submitting' ||
-								fetcher.state === 'loading' ||
-								!formIsValid
-							}
-							classes={`justify-center border-transparent text-sm font-medium text-white transition-opacity duration-300 focus:outline-none ${shake ? animationStyles.shake : ''}`}
-							buttonText={
-								fetcher.state === 'submitting' || fetcher.state === 'loading'
-									? 'Submitting...'
-									: 'Submit'
-							}
-						/>
-					</div>
-				</ValidatedForm>
+						) : null}
+						<div className="flex justify-end">
+							<SubmitButton
+								onClick={handleClick}
+								isDisabled={isDisabled}
+								classes={`justify-center border-transparent text-sm font-medium text-white transition-opacity duration-300 focus:outline-none ${shake ? animationStyles.shake : ''}`}
+								buttonText={isSubmitting ? 'Submitting...' : 'Submit'}
+							/>
+						</div>
+					</ValidatedForm>
 				</HoneypotProvider>
 				<div className="mt-6 flex flex-col items-center justify-between text-center text-sm">
 					{/** Temporarily hide this block until ready **/}
@@ -381,4 +399,4 @@ const Register: React.FC<RegisterProps> = ({ setCloseInterceptReason }) => {
 	)
 }
 
-export default Register
+export default SignUpForm

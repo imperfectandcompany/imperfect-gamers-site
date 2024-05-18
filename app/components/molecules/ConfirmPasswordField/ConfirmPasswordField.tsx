@@ -14,6 +14,7 @@ interface ConfirmPasswordFieldProps {
   handleBlur: () => void;
   ariaDescribedBy: string;
   tooltipMessage?: string; // Optional prop for the tooltip message
+  disabled?: boolean
 }
 
 const ConfirmPasswordField: React.FC<ConfirmPasswordFieldProps> = ({
@@ -28,6 +29,7 @@ const ConfirmPasswordField: React.FC<ConfirmPasswordFieldProps> = ({
   handleBlur,
   ariaDescribedBy,
   tooltipMessage,
+  disabled = false
 }) => {
   return (
     <div
@@ -49,6 +51,7 @@ const ConfirmPasswordField: React.FC<ConfirmPasswordFieldProps> = ({
         className={`${confirmPasswordStyles.transition} ${
           showField ? confirmPasswordStyles.show : ''
         }`}
+        disabled={disabled}
       />
       <ErrorMessage showError={error} message="Passwords do not match" id={ariaDescribedBy} />
     </div>

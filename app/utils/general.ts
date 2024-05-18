@@ -144,6 +144,55 @@ export type ExtendedCustomFetcher<T> = FetcherWithComponents<T> & {
     reset: () => void;
 };
 
+
+
+
+export function useFetcherWithPromiseAndResetStable<T = AppData>(
+    opts?: Parameters<typeof useFetcher>[0]
+): ExtendedCustomFetcher<SerializeFrom<T>> {
+
+    const fetcher = useFetcher<T>(opts);
+    const promiseResolverRef = useRef<(value: SerializeFrom<T>) => void>();
+    const fetcherPromiseRef = useRef<Promise<SerializeFrom<T>>>();
+
+    // Initialize or reset the promise and its resolver.
+    const initializePromise = useCallback(() => {
+        fetcherPromiseRef.current = new Promise(resolve => {
+            promiseResolverRef.current = resolve;
+        });
+    }, []);
+
+    // Manual reset function to reinitialize the promise, allowing the fetcher to be reused after completion.
+    const reset = useCallback(() => {
+        initializePromise();
+    }, [initializePromise]);
+
+    // Custom submit function that uses the promise mechanism.
+    const submit = useCallback(async (...args: Parameters<SubmitFunction>) => {
+        fetcher.submit(...args);
+        return fetcherPromiseRef.current; // Return the current promise which resolves when the fetcher is idle and has data.
+    }, [fetcher]);
+
+    useEffect(() => {
+        initializePromise();
+    }, [initializePromise]);
+
+    return {
+        ...fetcher,
+        submit,
+        reset,
+    };
+}
+
+
+
+
+
+
+
+
+
+
 /**
  * A custom hook that combines the functionality of the standard Remix useFetcher hook with the ability to manually reset its state
  * and manage submissions through promises. This allows components to initiate fetch operations and rely on promises to handle
@@ -254,16 +303,60 @@ export function useFetcherWithPromiseAndManualReset<T = AppData>(
 }
 
 
-export function useFetcherWithPromise(){
+// export function useFetcherWithPromise<T = AppData>(
+// 	opts?: Parameters<typeof useFetcher>[0],
+//   ): FetcherWithComponentsReset<SerializeFrom<T>> {
+// 	let resolveRef = useRef<any>()
+// 	let promiseRef = useRef<Promise<any>>()
+// 	const fetcher = useFetcher<T>(opts);
+
+// 	if (!promiseRef.current) {
+// 		promiseRef.current = new Promise(resolve => {
+// 			resolveRef.current = resolve
+// 		})
+// 	}
+
+// 	const submit = useCallback(
+// 		async (...args: Parameters<SubmitFunction>) => {
+// 			fetcher.submit(...args)
+// 			return promiseRef.current
+// 		},
+// 		[fetcher, promiseRef],
+// 	)
+
+// 	return {
+//         ...fetcher,
+//         submit,
+//     };
+// }
+
+// Inspiration taken from https://gist.github.com/samselikoff/510c020e4c9ec17f1cf76189ce683fa8
+// Contributing users: Samselikoff & jjhiggzw
+// April 27 2024
+
+/**
+ * Custom hook that enhances the useFetcher hook with a promise-based API.
+ * The useFetcherWithPromise hook wraps the useFetcher hook and provides a promise that resolves when the fetcher's state becomes idle and it has data.
+ * This allows you to easily handle asynchronous operations and retrieve the data using promises.
+ *
+ * @returns An object containing the fetcher state, data, and a submit function.
+ */
+export function useFetcherWithPromise() {
 	let resolveRef = useRef<any>()
 	let promiseRef = useRef<Promise<any>>()
-	const fetcher = useFetcher();
+	let fetcher = useFetcher()
 
 	if (!promiseRef.current) {
 		promiseRef.current = new Promise(resolve => {
 			resolveRef.current = resolve
 		})
 	}
+
+	const resetResolver = useCallback(() => {
+		promiseRef.current = new Promise(resolve => {
+			resolveRef.current = resolve
+		})
+	}, [promiseRef, resolveRef])
 
 	const submit = useCallback(
 		async (...args: Parameters<SubmitFunction>) => {
@@ -273,8 +366,12 @@ export function useFetcherWithPromise(){
 		[fetcher, promiseRef],
 	)
 
-	return {
-        ...fetcher,
-        submit,
-    };
+	useEffect(() => {
+		if (fetcher.state === 'idle' && fetcher.data) {
+			resolveRef.current(fetcher.data)
+			resetResolver() // Reset the promise after handling to prepare for next operation
+		}
+	}, [fetcher.data, fetcher.state, resetResolver])
+
+	return { ...fetcher, submit }
 }
