@@ -13,7 +13,10 @@ import UsernameForm from '~/components/molecules/UsernameForm'
 import ProcessProvider from '~/components/pending/ProcessProvider'
 import Register from '~/components/pending/Register'
 import type { LoaderData } from '~/routes/store'
-import { useFetcherWithPromiseAndReset } from '~/utils/general'
+import {
+	useFetcherWithPromiseAndReset,
+	useFetcherWithPromiseAutoReset,
+} from '~/utils/general'
 import ModalWrapper from '../ModalWrapper/ModalWrapper'
 import SignUpForm from '../SignUpForm/SignUpForm'
 import WelcomeScreen from '../WelcomeScreen'
@@ -22,34 +25,37 @@ const AuthForms: React.FC = () => {
 	const { isAuthenticated, isSteamLinked, username } =
 		useLoaderData<LoaderData>()
 	const [isLoginForm, setIsLoginForm] = useState(true)
-	const { submit } = useFetcherWithPromiseAndReset({ key: 'logout-submission' })
+	const { submit } = useFetcherWithPromiseAutoReset({
+		key: 'logout-submission',
+	})
 	const fetchers = useFetchers()
 
-	const relevantFetchers = fetchers.filter((fetcher) => {
+	const relevantFetchers = fetchers.filter(fetcher => {
 		return [
-		  `/auth/check/username`,
-		  `/auth/finalize/username`,
-		  `/auth/check/steam`,
-		  `/auth/steam`,
-		  `/register`,
-		  `/login`,
-		  `/logout`,
-		  `/store/add`,
-		  `/store/create`,
-		].some((path) => fetcher.formAction?.startsWith(path));
-	  });
-	
-	  // Get an array of all in-flight fetchers and their states
-	  const inFlightFetchers = relevantFetchers.map((fetcher) => ({
+			`/auth/check/username`,
+			`/auth/finalize/username`,
+			`/auth/check/steam`,
+			`/auth/steam`,
+			`/register`,
+			`/login`,
+			`/logout`,
+			`/store/add`,
+			`/store/create`,
+		].some(path => fetcher.formAction?.startsWith(path))
+	})
+
+	// Get an array of all in-flight fetchers and their states
+	const inFlightFetchers = relevantFetchers.map(fetcher => ({
 		formData: fetcher.formData,
 		state: fetcher.state,
-	  }));
-	
-	  // Check if any fetcher is loading or submitting
-	  const isInProgress = useMemo(() => {
-		return inFlightFetchers.some((fetcher) => ['loading', 'submitting'].includes(fetcher.state));
-	  }, [inFlightFetchers]);
-	
+	}))
+
+	// Check if any fetcher is loading or submitting
+	const isInProgress = useMemo(() => {
+		return inFlightFetchers.some(fetcher =>
+			['loading', 'submitting'].includes(fetcher.state),
+		)
+	}, [inFlightFetchers])
 
 	const handleLogout = useCallback(async () => {
 		// Logout logic
@@ -57,8 +63,8 @@ const AuthForms: React.FC = () => {
 			await submit({}, { method: 'post', action: '/logout' })
 			setIsInitial(false)
 			setIsLoginForm(true)
-			setTitle(PageTitle.Login)
-			setPageHistory([PageTitle.Welcome])
+			setTitle(PageTitle.Login) // Update the title immediately
+			setPageHistory([PageTitle.Welcome, PageTitle.Login])
 		} catch (error) {
 			// Handle the error
 			console.error('An error occurred:', error)
@@ -199,7 +205,7 @@ const AuthForms: React.FC = () => {
 							handleLogout={handleLogout}
 						/>
 					}
-					isResponsive={!isAuthenticated ? isInitial : null} // Set true only if showing WelcomeScreen
+					isResponsive={!isAuthenticated ? isInitial : false} // Set true only if showing WelcomeScreen
 				>
 					<Button>Join Now</Button>
 				</ModalWrapper>
@@ -243,7 +249,8 @@ const Footer: React.FC<FooterProps> = ({
 						<a
 							href="https://imperfectgamers.org/privacy-policy"
 							target="_blank"
-							className="select-none text-red-500" rel="noreferrer"
+							className="select-none text-red-500"
+							rel="noreferrer"
 						>
 							Privacy Policy
 						</a>
@@ -251,7 +258,8 @@ const Footer: React.FC<FooterProps> = ({
 						<a
 							href="https://imperfectgamers.org/terms-of-service"
 							target="_blank"
-							className="select-none text-red-500" rel="noreferrer"
+							className="select-none text-red-500"
+							rel="noreferrer"
 						>
 							Terms of Service
 						</a>
@@ -259,7 +267,8 @@ const Footer: React.FC<FooterProps> = ({
 						<a
 							href="https://imperfectgamers.org/imprint"
 							target="_blank"
-							className="select-none text-red-500" rel="noreferrer"
+							className="select-none text-red-500"
+							rel="noreferrer"
 						>
 							Imprint
 						</a>
@@ -273,7 +282,8 @@ const Footer: React.FC<FooterProps> = ({
 						href="https://imperfectandcompany.com/"
 						target="_blank"
 						className="flex select-none items-center text-red-500"
-						style={{ alignItems: 'center' }} rel="noreferrer"
+						style={{ alignItems: 'center' }}
+						rel="noreferrer"
 					>
 						Imperfect and Company LLC
 						<ImperfectAndCompanyLogo />
