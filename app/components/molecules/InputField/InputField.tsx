@@ -284,13 +284,7 @@ const InputField: React.FC<InputProps> = ({
 					className="clear-icon-container absolute right-2 top-1/2 -translate-y-1/2 cursor-default"
 					onMouseEnter={handleMouseEnter}
 					onMouseLeave={handleMouseLeave}
-					role="button"
-					tabIndex={0}
-					onKeyDown={event => {
-						if (event.key === 'Enter' || event.key === ' ') {
-							clearInput()
-						}
-					}}
+					role="tooltip"
 				>
 					<i
 						className="fas fa-times-circle clear-icon cursor-pointer text-stone-700"
@@ -318,13 +312,7 @@ const InputField: React.FC<InputProps> = ({
 					className="redo-icon-container absolute right-2 top-1/2 -translate-y-1/2 cursor-default"
 					onMouseEnter={handleMouseEnter}
 					onMouseLeave={handleMouseLeave}
-					role="button"
-					tabIndex={0}
-					onKeyDown={event => {
-						if (event.key === 'Enter' || event.key === ' ') {
-							clearInput()
-						}
-					}}
+					role="tooltip"
 				>
 					<i
 						className="fas fa-undo redo-icon cursor-pointer text-stone-700"
@@ -351,13 +339,7 @@ const InputField: React.FC<InputProps> = ({
 					className="toggle-password-container absolute right-2 top-1/2 -translate-y-1/2 cursor-default"
 					onMouseEnter={handleMouseEnter}
 					onMouseLeave={handleMouseLeave}
-					role="button"
-					tabIndex={0}
-					onKeyDown={event => {
-						if (event.key === 'Enter' || event.key === ' ') {
-							clearInput()
-						}
-					}}
+					role="tooltip"
 				>
 					<i
 						className={`fas ${isPasswordVisible ? 'fa-eye-slash' : 'fa-eye'} toggle-password cursor-pointer text-stone-700`}
