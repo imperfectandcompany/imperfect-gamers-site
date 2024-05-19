@@ -19,6 +19,8 @@ import { Honeypot } from 'remix-utils/honeypot/server'
 import { HoneypotProvider } from 'remix-utils/honeypot/react'
 import { HoneypotInputs } from 'remix-utils/honeypot/react'
 import LottieAnimation from '~/components/atoms/LottieAnimation'
+import { useFetcherWithReset, useHackedFetcher } from '~/utils/general'
+import { loader } from '~/routes/store'
 
 interface SubmitButtonProps {
 	isDisabled: boolean
@@ -48,7 +50,7 @@ interface UseInputReturn {
 	error: boolean
 	setError: React.Dispatch<React.SetStateAction<boolean>>
 	isFocused: boolean
-	isTyping: boolean // Add this line
+	isTyping: boolean
 	isValid: boolean
 	handleValueChange: (e: React.ChangeEvent<HTMLInputElement>) => void
 	handleFocus: () => void
@@ -70,7 +72,6 @@ function useInput(
 	const [isValid, setIsValid] = useState(false)
 	const typingTimeoutRef = useRef<null | NodeJS.Timeout>(null)
 
-
 	const reset = useCallback(
 		(newValue: string = initialValue) => {
 			setValue(newValue) // Reset the value
@@ -90,7 +91,7 @@ function useInput(
 			typingTimeoutRef.current = setTimeout(() => {
 				setIsTyping(false)
 				setError(!validate(newValue)) // Validate after user has stopped typing
-			}, 300) // Consider reducing the timeout to improve responsiveness
+			}, 300)
 		},
 		[validate],
 	)
@@ -164,9 +165,7 @@ const SignUpForm: React.FC<RegisterProps> = ({ setCloseInterceptReason }) => {
 	const honeypotProps = honeypot.getInputProps()
 
 	const [registrationSuccess, setRegistrationSuccess] = useState(false)
-
-	const fetcher = useFetcher({ key: 'registration' })
-
+	const fetcher = useHackedFetcher()
 	const isSubmitting =
 		fetcher.state === 'submitting' || fetcher.state === 'loading'
 
@@ -241,20 +240,21 @@ const SignUpForm: React.FC<RegisterProps> = ({ setCloseInterceptReason }) => {
 	const state = useDispatchState()
 
 	const currentDispatch = state.find(dispatch => dispatch.inProgress)
+	const errorMessage = (fetcher.data as { error: string })?.error
 
 	useEffect(() => {
 		const handleSuccess = () => {
 			console.log('Registration successful:', fetcher.data)
+			emailInput?.reset()
 			passwordInput?.reset()
 			confirmPasswordInput?.reset()
-			emailInput?.reset()
 			setRegistrationSuccess(true)
 		}
 
 		const handleError = () => {
 			console.log('Registration was not successful:', fetcher.data)
-			setRegistrationSuccess(false) // Ensure success is not incorrectly flagged
-			const errorMessage = (fetcher.data as { error: string })?.error
+			passwordInput?.reset()
+			confirmPasswordInput?.reset()
 			if (errorMessage) {
 				dispatch.send(errorMessage)
 			}
@@ -268,7 +268,7 @@ const SignUpForm: React.FC<RegisterProps> = ({ setCloseInterceptReason }) => {
 					handleError()
 				}
 			}
-			prevFetcherState.current = fetcher.state
+			prevFetcherState.current = fetcher.state // Move this line inside the condition
 		}
 	}, [
 		fetcher.state,
@@ -279,7 +279,6 @@ const SignUpForm: React.FC<RegisterProps> = ({ setCloseInterceptReason }) => {
 		confirmPasswordInput,
 	])
 
-	// Move the handleClick function inside the component
 	const handleClick = useCallback(() => {
 		if (isDisabled) {
 			setShake(true)
@@ -308,13 +307,26 @@ const SignUpForm: React.FC<RegisterProps> = ({ setCloseInterceptReason }) => {
 		)
 	}
 
+	const handleFormSubmit = (
+		data: { email: string; password: string; confirmPassword: string },
+		event: React.FormEvent<HTMLFormElement>,
+	) => {
+		event.preventDefault()
+		if (!isSubmitting) {
+			fetcher.submit(data, {
+				method: 'post',
+				action: '/register',
+			})
+		}
+	}
+
 	return (
 		<div className="flex items-center justify-center">
 			<div className=" p-8">
 				<h1 className="form-title mb-6 select-none text-2xl text-white">
 					Get Started
 				</h1>
-				{(fetcher.data as { error: boolean })?.error && currentDispatch ? (
+				{errorMessage && !isSubmitting && currentDispatch ? (
 					<MessageContainer message={currentDispatch.message} />
 				) : null}
 				<HoneypotProvider {...honeypotProps}>
@@ -324,6 +336,7 @@ const SignUpForm: React.FC<RegisterProps> = ({ setCloseInterceptReason }) => {
 						action="/register"
 						method="POST"
 						fetcher={fetcher}
+						onSubmit={handleFormSubmit}
 						className="flex flex-col space-y-4"
 					>
 						<HoneypotInputs />

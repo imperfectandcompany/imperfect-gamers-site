@@ -2,7 +2,19 @@ import { SerializeFrom } from '@remix-run/node';
 import type { FetcherWithComponents, SubmitFunction, SubmitOptions } from '@remix-run/react'
 import { useActionData, useFetcher, useLoaderData, useSubmit } from '@remix-run/react'
 import { AppData } from '@remix-run/react/dist/data';
-import { useRef, useEffect, useCallback, useState, useTransition } from 'react'
+import { useRef, useEffect, useCallback, useState, useTransition, useMemo } from 'react'
+
+
+
+/// https://github.com/remix-run/remix/discussions/3657
+
+export function useHackedFetcher<T>() {
+    const originalFetcher = useFetcher<T>()
+    const fakeMemoizedFetcher = useMemo(() => ({} as typeof originalFetcher), [])
+  
+    return Object.assign(fakeMemoizedFetcher, originalFetcher)
+  }
+  
 
 // Credits: https://gist.github.com/arunmmanoharan/38d313f28dc17637a0e3cfa8c6205bd5
 // Contributing users: arunmmanoharan
@@ -34,20 +46,20 @@ export type FetcherWithComponentsReset<T> = FetcherWithComponents<T> & {
  * @returns {Object} - An object containing fetcher properties with added reset functionality.
  */
 export function useFetcherWithReset<T = AppData>(
-	opts?: Parameters<typeof useFetcher>[0],
+    opts?: Parameters<typeof useFetcher>[0],
   ): FetcherWithComponentsReset<SerializeFrom<T>> {
-	const fetcher = useFetcher<T>(opts);
-	const [data, setData] = useState(fetcher.data);
-	useEffect(() => {
-	  if (fetcher.state === "idle") {
-		setData(fetcher.data);
-	  }
-	}, [fetcher.state, fetcher.data]);
-	return {
-	  ...fetcher,
-	  data: data as SerializeFrom<T>,
-	  reset: () => setData(undefined),
-	};
+    const fetcher = useFetcher<T>(opts);
+    const [data, setData] = useState(fetcher.data);
+    useEffect(() => {
+      if (fetcher.state === "idle") {
+        setData(fetcher.data);
+      }
+    }, [fetcher.state, fetcher.data]);
+    return {
+      ...fetcher,
+      data: data as SerializeFrom<T>,
+      reset: () => setData(undefined),
+    };
   }
 
 

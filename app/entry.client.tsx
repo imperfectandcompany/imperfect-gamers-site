@@ -7,11 +7,14 @@
 import { RemixBrowser } from '@remix-run/react'
 import { startTransition, StrictMode } from 'react'
 import { hydrateRoot } from 'react-dom/client'
+import MsClarity from './utils/msclarity.client'
 
 async function prepareApp() {
 	if (process.env.NODE_ENV === 'development') {
 		const { worker } = await import('./mocks/browser')
 		return worker.start()
+	} else {
+		MsClarity('your-project-id');
 	}
 
 	return Promise.resolve()
@@ -21,9 +24,7 @@ prepareApp().then(() => {
 	startTransition(() => {
 		hydrateRoot(
 			document,
-			<StrictMode>
 				<RemixBrowser />
-			</StrictMode>,
 		)
 	})
 })
