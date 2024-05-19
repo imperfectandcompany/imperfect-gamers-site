@@ -244,12 +244,12 @@ const Footer: React.FC<FooterProps> = ({
 				</>
 			) : !isInitial && !isAuthenticated ? (
 				<>
-					<p className="mt-4 select-none text-xs text-gray-500">
+					<p className="mt-4 select-none text-xs text-stone-500">
 						By signing up, you agree to the{' '}
 						<a
 							href="https://imperfectgamers.org/privacy-policy"
 							target="_blank"
-							className="select-none text-red-500"
+							className="select-none text-red-500/70"
 							rel="noreferrer"
 						>
 							Privacy Policy
@@ -258,7 +258,7 @@ const Footer: React.FC<FooterProps> = ({
 						<a
 							href="https://imperfectgamers.org/terms-of-service"
 							target="_blank"
-							className="select-none text-red-500"
+							className="select-none text-red-500/70"
 							rel="noreferrer"
 						>
 							Terms of Service
@@ -267,7 +267,7 @@ const Footer: React.FC<FooterProps> = ({
 						<a
 							href="https://imperfectgamers.org/imprint"
 							target="_blank"
-							className="select-none text-red-500"
+							className="select-none text-red-500/70"
 							rel="noreferrer"
 						>
 							Imprint
@@ -276,12 +276,12 @@ const Footer: React.FC<FooterProps> = ({
 					</p>{' '}
 				</>
 			) : isInitial && !isAuthenticated ? (
-				<p className="flex select-none justify-center text-xs text-gray-500">
+				<p className="flex select-none justify-center text-xs text-stone-500">
 					Powered by&nbsp;
 					<a
 						href="https://imperfectandcompany.com/"
 						target="_blank"
-						className="flex select-none items-center text-red-500"
+						className="flex select-none items-center text-red-500/70"
 						style={{ alignItems: 'center' }}
 						rel="noreferrer"
 					>

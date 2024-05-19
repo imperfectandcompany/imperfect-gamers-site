@@ -6,7 +6,7 @@ interface MessageContainerProps {
 
 const MessageContainer: React.FC<MessageContainerProps> = ({ message }) => {
   return (
-    <div className="message-container mb-4">
+    <div className="message-container mb-4" role="alert">
       <div className="error-message-fade">{message}</div>
       <div className="progress-container">
         <svg className="progress-ring" viewBox="0 0 100 100">

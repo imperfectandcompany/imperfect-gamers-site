@@ -15,6 +15,54 @@ interface ConfirmPasswordFieldProps {
   ariaDescribedBy: string;
   tooltipMessage?: string; // Optional prop for the tooltip message
   disabled?: boolean
+  autocomplete?:
+  | 'on'
+  | 'off'
+  | 'name'
+  | 'honorific-prefix'
+  | 'given-name'
+  | 'additional-name'
+  | 'family-name'
+  | 'honorific-suffix'
+  | 'nickname'
+  | 'email'
+  | 'username'
+  | 'new-password'
+  | 'current-password'
+  | 'one-time-code'
+  | 'organization-title'
+  | 'organization'
+  | 'street-address'
+  | 'address-line1'
+  | 'address-line2'
+  | 'address-line3'
+  | 'address-level4'
+  | 'address-level3'
+  | 'address-level2'
+  | 'address-level1'
+  | 'country'
+  | 'country-name'
+  | 'postal-code'
+  | 'cc-name'
+  | 'cc-given-name'
+  | 'cc-additional-name'
+  | 'cc-family-name'
+  | 'cc-number'
+  | 'cc-exp'
+  | 'cc-exp-month'
+  | 'cc-exp-year'
+  | 'cc-csc'
+  | 'cc-type'
+  | 'transaction-currency'
+  | 'transaction-amount'
+  | 'language'
+  | 'bday'
+  | 'bday-day'
+  | 'bday-month'
+  | 'bday-year'
+  | 'sex'
+  | 'url'
+  | 'photo'
 }
 
 const ConfirmPasswordField: React.FC<ConfirmPasswordFieldProps> = ({
@@ -29,7 +77,8 @@ const ConfirmPasswordField: React.FC<ConfirmPasswordFieldProps> = ({
   handleBlur,
   ariaDescribedBy,
   tooltipMessage,
-  disabled = false
+  disabled = false,
+	autocomplete
 }) => {
   return (
     <div
@@ -48,6 +97,7 @@ const ConfirmPasswordField: React.FC<ConfirmPasswordFieldProps> = ({
         handleFocus={handleFocus}
         handleBlur={handleBlur}
         ariaDescribedBy={ariaDescribedBy}
+        autocomplete={autocomplete}
         className={`${confirmPasswordStyles.transition} ${
           showField ? confirmPasswordStyles.show : ''
         }`}

@@ -4,8 +4,6 @@ export interface MsClarityObjectOption {
   /**
    * The ID of the project Clarity provides to you.
    *
-   * Can be found in the URL of your project.
-   *
    * @example `k4vhy94oj3`
    */
   id?: string;

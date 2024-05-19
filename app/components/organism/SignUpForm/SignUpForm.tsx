@@ -346,6 +346,7 @@ const SignUpForm: React.FC<RegisterProps> = ({ setCloseInterceptReason }) => {
 								disabled={isSubmitting}
 								type="email"
 								placeholder="Email"
+								autocomplete="email"
 								tooltipMessage="Clear Email Field"
 								{...emailInput}
 								isTyping={emailInput.isTyping} // Pass the isTyping prop
@@ -362,6 +363,7 @@ const SignUpForm: React.FC<RegisterProps> = ({ setCloseInterceptReason }) => {
 								disabled={isSubmitting}
 								type="password"
 								placeholder="Password"
+								autocomplete="new-password"
 								{...passwordInput}
 								isTyping={passwordInput.isTyping}
 								tooltipMessage="Show Password"
@@ -376,6 +378,7 @@ const SignUpForm: React.FC<RegisterProps> = ({ setCloseInterceptReason }) => {
 							<ConfirmPasswordField
 								showField
 								name="confirmPassword"
+								autocomplete="new-password"
 								type="password"
 								placeholder="Confirms Password"
 								{...confirmPasswordInput}
@@ -402,7 +405,7 @@ const SignUpForm: React.FC<RegisterProps> = ({ setCloseInterceptReason }) => {
 							</a>
 						</p>
 					</div> */}
-					<div className="mt-8 text-xs text-stone-400">
+					<div className="mt-8 text-xs text-stone-500">
 						Please note that you are accessing a beta version of the platform,
 						which is still undergoing final testing before its official release.
 					</div>

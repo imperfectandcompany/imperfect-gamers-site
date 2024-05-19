@@ -55,9 +55,9 @@ export let handle: ExternalScriptsHandle = {
 			crossOrigin: 'anonymous',
 			preload: true,
 		},
-		{
-			src: "https://www.clarity.ms/tag/mcqzfowzo2",
-		  }
+		// {
+		// 	src: "https://www.clarity.ms/tag/mcqzfowzo2",
+		//   }
 	],
 }
 

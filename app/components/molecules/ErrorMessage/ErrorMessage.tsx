@@ -12,6 +12,7 @@ const ErrorMessage: React.FC<ErrorMessageProps> = ({ showError, message, id }) =
       id={id}
       className={`${errorMessageStyles.error} ${showError ? errorMessageStyles.show : ''}`}
       aria-live="assertive"
+      role="alert"
     >
       {message}
     </div>
