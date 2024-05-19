@@ -59,6 +59,7 @@
     "@fortawesome/fontawesome-svg-core": "^6.5.2",
     "@fortawesome/free-solid-svg-icons": "^6.5.2",
     "@fortawesome/react-fontawesome": "^0.2.0",
+    "@lottiefiles/react-lottie-player": "^3.5.3",
     "@remix-run/node": "2.9.1",
     "@remix-run/react": "2.9.1",
     "@remix-run/serve": "2.9.1",
@@ -68,6 +69,7 @@
     "@vanilla-extract/vite-plugin": "^4.0.9",
     "@vitejs/plugin-react": "^4.2.1",
     "bcryptjs": "^2.4.3",
+    "crypto-js": "^4.2.0",
     "dotenv": "^16.4.5",
     "is-ip": "^5.0.1",
     "isbot": "^4.1.0",
@@ -75,7 +77,8 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "remix-utils": "^7.6.0",
-    "remix-validated-form": "^5.1.5"
+    "remix-validated-form": "^5.1.5",
+    "zod-form-data": "^2.0.2"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.0.2",
@@ -85,6 +88,7 @@
     "@testing-library/jest-dom": "^6.4.2",
     "@testing-library/react": "^15.0.5",
     "@testing-library/user-event": "^14.5.2",
+    "@types/crypto-js": "^4.2.2",
     "@types/eslint": "^8.56.6",
     "@types/jest": "^29.5.12",
     "@types/lodash": "^4.17.1",

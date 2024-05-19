@@ -11,6 +11,10 @@ interface ModalWrapperProps {
 	content: ReactElement
 	footer?: ReactElement
 	children: ReactElement
+	onBack?: () => void
+	backButtonTitle?: string
+	align?: 'left' | 'center' | 'right'
+	isResponsive?: boolean
 }
 
 export enum CloseInterceptReason {
@@ -23,15 +27,30 @@ export enum CloseInterceptReason {
 }
 
 /**
- * ModalWrapper component displays a modal dialog with a title, content, and children.
- * It manages the state of the modal and provides functions to open and close it.
+ * ModalWrapper component displays a modal dialog with a title, content, and optional footer.
+ * It manages the state of the modal and provides functions to open and close it, with support for handling
+ * interceptions like unsaved changes or active popups.
  */
 const ModalWrapper: React.FC<ModalWrapperProps> = ({
-	title,
+	children,
 	header,
+	title,
 	content,
 	footer,
-	children,
+	onBack,
+	backButtonTitle,
+	align,
+	isResponsive = false,
+}: {
+	children: React.ReactElement
+	header?: React.ReactNode
+	title: string
+	content: React.ReactNode
+	footer?: React.ReactNode
+	onBack?: () => void
+	backButtonTitle?: string
+	align?: 'left' | 'center' | 'right'
+	isResponsive?: boolean
 }) => {
 	const [isOpen, setIsOpen] = useState(false)
 	const [popupWindow, setPopupWindow] = useState<Window | null>(null)
@@ -64,13 +83,29 @@ const ModalWrapper: React.FC<ModalWrapperProps> = ({
 		// dialog or visual feedback to inform the user why the modal cannot be closed and
 		// what actions they might need to take to securely close it.
 		//
-		// SEE: https://github.com/imperfectandcompany/imperfect-gamers-site/issues/54
+		// SEE: https://github.com/imperfectandcompany/imperfect-gamers-site/issuefs/54
 	}
 
 	return (
 		<>
 			{React.cloneElement(children, { onClick: openModal })}
-			<Modal isOpen={isOpen} onClose={closeModal}>
+			{/**
+			 * Modal component that displays a modal dialog.
+			 *
+			 * This component renders a modal overlay that can be toggled via the `isOpen` prop.
+			 * It supports both fixed and responsive behaviors determined by the `isResponsive` prop.
+			 * The modal can be closed by pressing the Escape key, clicking outside its bounds,
+			 * or invoking the `onClose` function.
+			 *
+			 * @component
+			 * @param {Object} props - The component props.
+			 * @param {boolean} props.isOpen - Determines whether the modal is open or closed.
+			 * @param {Function} props.onClose - The function to be called when the modal needs to be closed.
+			 * @param {React.ReactNode} props.children - The content to be displayed inside the modal.
+			 * @param {boolean} [props.isResponsive=false] - Enables responsive behavior, adjusting the modal size based on the viewport.
+			 * @returns {JSX.Element} The rendered Modal component.
+			 */}
+			<Modal isOpen={isOpen} isResponsive={isResponsive} onClose={closeModal}>
 				<ModalContent
 					header={header}
 					title={title}
@@ -79,6 +114,9 @@ const ModalWrapper: React.FC<ModalWrapperProps> = ({
 					isOpen={isOpen}
 					setCloseInterceptReason={setCloseInterceptReason}
 					setPopupWindow={setPopupWindow}
+					onBack={onBack}
+					backButtonTitle={backButtonTitle}
+					align={align}
 				/>
 				{/** Escape modal button **/}
 				<div

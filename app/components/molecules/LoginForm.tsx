@@ -1,145 +1,141 @@
-// ~/app/components/molecules/LoginForm.tsx
-
-import { useFetcher } from '@remix-run/react'
 import { withZod } from '@remix-validated-form/with-zod'
-import { useState, useEffect, useCallback } from 'react'
-import { ValidatedForm } from 'remix-validated-form'
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { Honeypot } from 'remix-utils/honeypot/server'
 import { z } from 'zod'
-import Button from '../atoms/Button/Button'
-import Input from '../atoms/Input/Input'
-import { CloseInterceptReason } from '../organism/ModalWrapper/ModalWrapper'
+import Button from '~/components/atoms/Button/Button'
+import { inputBorderStyles } from '~/components/atoms/styles/InputBorderStyles'
+import type { CloseInterceptReason } from '../organism/ModalWrapper/ModalWrapper'
+import { LoginForm } from './LoginForm.1'
 
-/**
- * LoginForm component renders a login form with email and password fields.
- * It handles form state and submission logic using the provided fetcher.
- * It also tracks whether the form is dirty (has unsaved changes) and updates
- * the close intercept reason accordingly.
- *
- * @component
- * @param {Object} props - The component props.
- * @param {Function} props.setCloseInterceptReason - A function to set the close intercept reason.
- * @returns {JSX.Element} The rendered LoginForm component.
- */
-const LoginForm: React.FC<LoginFormProps> = ({ setCloseInterceptReason }) => {
-	const fetcher = useFetcher()
-	const [formValues, setFormValues] = useState<FormValues>({
-		email: '',
-		password: '',
-	})
-	const [initialFormValues, setInitialFormValues] = useState<FormValues>({
-		...formValues,
-	})
+interface SubmitButtonProps {
+	isDisabled: boolean
+	onClick: () => void
+	classes: string
+	buttonText: string
+}
 
-	const isFormDirty =
-		JSON.stringify(formValues) !== JSON.stringify(initialFormValues)
+export const SubmitButton = memo(
+	({ isDisabled, onClick, classes, buttonText }: SubmitButtonProps) => {
+		return (
+			<Button
+				type="submit"
+				disabled={isDisabled}
+				onClick={onClick}
+				className={classes}
+			>
+				{buttonText}
+			</Button>
+		)
+	},
+)
+SubmitButton.displayName = 'SubmitButton'
 
-	const updateCloseInterceptReason = useCallback(() => {
-		let reason = CloseInterceptReason.None
+interface UseInputReturn {
+	value: string
+	setValue: React.Dispatch<React.SetStateAction<string>>
+	error: boolean
+	setError: React.Dispatch<React.SetStateAction<boolean>>
+	isFocused: boolean
+	isTyping: boolean
+	isValid: boolean
+	handleValueChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+	handleFocus: () => void
+	handleBlur: () => void
+	inputClassName: string
+	showError: boolean
+	ariaDescribedBy: string
+	reset: () => void
+}
+export function useInput(
+	initialValue: string,
+	validate: (value: string) => boolean,
+	ariaDescribedBy: string,
+): UseInputReturn {
+	const [value, setValue] = useState(initialValue)
+	const [error, setError] = useState(false)
+	const [isFocused, setIsFocused] = useState(false)
+	const [isTyping, setIsTyping] = useState(false)
+	const [isValid, setIsValid] = useState(false)
+	const typingTimeoutRef = useRef<null | NodeJS.Timeout>(null)
 
-		if (fetcher.state === 'submitting' || fetcher.state === 'loading') {
-			reason = CloseInterceptReason.RequestInProgress
-		} else if (isFormDirty) {
-			reason = CloseInterceptReason.UnsavedChanges
-		} else if (
-			(fetcher.data &&
-				typeof fetcher.data === 'object' &&
-				((fetcher.data as { success: boolean })?.success ||
-					'error' in fetcher.data)) ||
-			fetcher.state === 'idle'
-		) {
-			reason = CloseInterceptReason.None
-		}
-
-		if (setCloseInterceptReason) {
-			setCloseInterceptReason(reason)
-		}
-	}, [fetcher.state, isFormDirty, setCloseInterceptReason])
-
-	useEffect(updateCloseInterceptReason, [updateCloseInterceptReason])
-
-	/**
-	 * Mark the form as dirty when an input value changes.
-	 */
-	const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-		setFormValues({
-			...formValues,
-			[event.target.name]: event.target.value,
-		})
-	}
-
-	if (fetcher.state === 'submitting') {
-		return <div>Logging in...</div>
-	}
-
-	return (
-		<ValidatedForm
-			key="loginForm"
-			data-testid="login-form"
-			validator={validator}
-			method="post"
-			action="/login"
-			fetcher={fetcher}
-			className="flex flex-col space-y-4"
-			// Mark the form as clean when it's submitted
-			onSubmit={() => setInitialFormValues({ ...formValues })}
-		>
-			<Input
-				name="email"
-				key="LoginEmail"
-				type="email"
-				placeholder="Email"
-				required
-				onChange={handleInputChange}
-			/>
-			<Input
-				key="LoginPassword"
-				name="password"
-				type="password"
-				placeholder="Password"
-				required
-				onChange={handleInputChange}
-			/>
-			{(fetcher.data as { error: string })?.error ? (
-				<div className="mr-0 text-red-700">
-					{(fetcher.data as { error: string }).error}
-				</div>
-			) : null}
-			<div className="ml-auto">
-				<Button type="submit">Login</Button>
-			</div>
-		</ValidatedForm>
+	const reset = useCallback(
+		(newValue: string = initialValue) => {
+			setValue(newValue) // Reset the value
+			setError(false) // Reset any errors
+			setIsValid(false) // Reset validity state
+		},
+		[initialValue],
 	)
-}
 
-/**
- * Represents the values of a login form.
- */
-interface FormValues {
-	email: string
-	password: string
-}
+	const handleValueChange = useCallback(
+		(e: React.ChangeEvent<HTMLInputElement>) => {
+			const newValue = e.target.value
+			setValue(newValue) // Set value immediately for user feedback
+			setIsTyping(true)
+			clearTimeout(typingTimeoutRef.current!) // Clear existing timeout
 
-/**
- * Props for the LoginForm component.
- */
-interface LoginFormProps {
+			typingTimeoutRef.current = setTimeout(() => {
+				setIsTyping(false)
+				setError(!validate(newValue)) // Validate after user has stopped typing
+			}, 300)
+		},
+		[validate],
+	)
+	const handleFocus = () => setIsFocused(true)
+	const handleBlur = () => {
+		setIsFocused(false)
+		setIsTyping(false)
+	}
+	const inputClassName = useMemo(() => {
+		if (isTyping) return inputBorderStyles.typing
+		if (value.length === 0 || (!error && !isFocused)) return 'border-white/10'
+		if (error) return inputBorderStyles.error
+		if (!error && isFocused) return inputBorderStyles.valid
+		return inputBorderStyles.neutral
+	}, [value, error, isFocused, isTyping])
+	const showError = useMemo(() => {
+		if (value.length === 0 || !isFocused) return false
+		return error ? true : false
+	}, [value, error, isFocused])
+	useEffect(() => {
+		const timeoutId = setTimeout(() => {
+			setIsTyping(false)
+		}, 300)
+		return () => clearTimeout(timeoutId)
+	}, [value])
+	useEffect(() => {
+		setIsValid(!error && value.trim() !== '') // Update validity based on error and value
+	}, [error, value])
+	return {
+		value,
+		setValue,
+		error,
+		setError,
+		isFocused,
+		isTyping,
+		isValid,
+		handleValueChange,
+		handleFocus,
+		handleBlur,
+		inputClassName,
+		showError,
+		ariaDescribedBy,
+		reset,
+	}
+}
+export interface LoginProps {
 	setCloseInterceptReason?: (reason: CloseInterceptReason) => void
 }
 
-/**
- * Represents the login schema for the login form.
- */
-const loginSchema = z.object({
+const signUpSchema = z.object({
 	email: z.string().email({ message: 'Invalid email address' }),
-	password: z.string().min(1, 'Password is required'),
+	password: z
+		.string()
+		.min(6, { message: 'Password must be at least 6 characters' }),
 })
 
-/**
- * Applies the Zod validator to the loginSchema.
- *
- * @param {typeof loginSchema} schema - The login schema to be validated.
- * @returns {Validator<ZodObject>} - The validator with the login schema applied.
- */
-const validator = withZod(loginSchema)
+export const validate = withZod(signUpSchema)
+
+export const honeypot = new Honeypot()
 
 export default LoginForm

@@ -1,6 +1,7 @@
 // components/atoms/Button/Button.tsx
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import type React from 'react'
+import { useEffect, useState } from 'react'
 import { type ButtonProps } from './ButtonProps'
 
 const buttonVariants = {
@@ -21,6 +22,7 @@ const buttonVariants = {
  * @param {React.ReactNode} [props.children] - The content of the button.
  * @param {Function} [props.onClick] - The click event handler for the button.
  * @param {string} [props.className] - Additional CSS classes for the button.
+ * @param {boolean} [props.disabled] - For disabled button
  * @returns {JSX.Element} The rendered Button component.
  */
 const Button: React.FC<ButtonProps> = ({
@@ -30,19 +32,44 @@ const Button: React.FC<ButtonProps> = ({
 	children,
 	onClick,
 	className,
+	disabled = false,
 }) => {
-	const baseStyles = `
-    button text-white py-2 px-5 rounded-md font-bold tracking-wide shadow-custom transition-all duration-300 ease-in-out relative overflow-hidden cursor-pointer
-  `
+	const [shake, setShake] = useState(false)
 
+	// Handle click events on the button
+	const handleClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+		if (disabled) {
+			setShake(true) // Trigger shake
+			e.preventDefault() // Stop all other handlers
+			console.log('Shake due to disabled state.')
+		} else {
+			onClick?.() // Remove the argument from the function call
+		}
+	}
+	// Effect to reset shake state
+	useEffect(() => {
+		if (shake) {
+			const timer = setTimeout(() => {
+				setShake(false) // Reset shake after animation duration
+			}, 820) // Duration of shake animation
+			return () => clearTimeout(timer) // Cleanup timeout on component unmount or before the effect runs again
+		}
+	}, [shake])
+
+	const baseStyles = 'button text-white py-2 px-5 tracking-wide'
 	const variantClasses = buttonVariants[variant] || buttonVariants.primary
-
-	const combinedClasses = `${baseStyles} ${variantClasses} ${className}`
+	const disabledClasses = disabled
+		? 'opacity-50 cursor-not-allowed shadow-none'
+		: ''
 
 	return (
-		<button type={type} className={combinedClasses} onClick={onClick}>
+		<button
+			type={type}
+			className={`${baseStyles} ${variantClasses} ${disabledClasses} ${className} select-none ${shake ? 'shake cursor-grab' : ''}`}
+			onClick={handleClick}
+		>
 			{icon ? <FontAwesomeIcon icon={icon} className="mr-2" /> : null}
-			<span>{children}</span>
+			{children}
 		</button>
 	)
 }

@@ -7,7 +7,9 @@ import { ValidatedForm } from 'remix-validated-form'
 import { z } from 'zod'
 import Button from '~/components/atoms/Button/Button'
 import Input from '~/components/atoms/Input/Input'
+import LottieAnimation from '../atoms/LottieAnimation'
 import { CloseInterceptReason } from '../organism/ModalWrapper/ModalWrapper'
+import SubmitButton from './SubmitButton'
 
 /**
  * Sign up form component.
@@ -59,7 +61,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ setCloseInterceptReason }) => {
 		if (setCloseInterceptReason) {
 			setCloseInterceptReason(reason)
 		}
-	}, [fetcher.state, isFormDirty, setCloseInterceptReason])
+	}, [fetcher.state, fetcher.data, isFormDirty, setCloseInterceptReason])
 
 	useEffect(updateCloseInterceptReason, [updateCloseInterceptReason])
 
@@ -72,12 +74,27 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ setCloseInterceptReason }) => {
 
 	// React to the fetcher's state after submission
 	if ((fetcher.data as { success: boolean })?.success) {
-		return <p>Registration Successful!</p>
+		return (
+			<div className="flex flex-col items-center justify-center">
+				<LottieAnimation
+					animationUrl="https://lottie.host/e5605e5a-c7de-4af0-827e-9be64091bc7f/V2SQO19y5v.json"
+					style={{ width: '250px', height: '250px' }}
+					loop={false}
+				/>
+				<h1 className="mt-6 text-3xl text-white">Registration Complete!</h1>
+				<p className="mt-4 text-gray-400">
+					Nice job! Your account has been successfully created.
+				</p>
+				<Button className="mt-6 rounded bg-gradient-to-r from-red-700 to-red-800 px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
+					Go to Login
+				</Button>
+			</div>
+		)
 	}
 
-	if (fetcher.state === 'submitting' || fetcher.state === 'loading') {
-		return <div>Registering...</div>
-	}
+	// if (fetcher.state === 'submitting' || fetcher.state === 'loading') {
+	// 	return <div>Registering...</div>
+	// }
 
 	return (
 		<ValidatedForm
@@ -124,7 +141,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ setCloseInterceptReason }) => {
 				</div>
 			) : null}
 			<div className="ml-auto">
-				<Button type="submit">Sign Up</Button>
+				<SubmitButton formIsValid={true} />
 			</div>
 		</ValidatedForm>
 	)

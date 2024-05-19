@@ -36,6 +36,13 @@ html {
   border: 3px solid #111;
 }
 
+::selection {
+  background: #ffc107; /* amber */
+  color: black;
+  text-shadow: 2px 2px 2px #000;
+  font-variation-settings: 'wght' 900;
+}
+
 body {
   font-family: "Roboto", sans-serif;
   color: #fff;
@@ -221,6 +228,222 @@ body {
   100% {
     background-position: 0% 50%;
   }
+}
+
+
+/**
+ * FILEPATH: /Users/dijaz/Documents/Coding/GitHub/imperfect-gamers-site/app/styles/store.css
+ * 
+ * This CSS section contains styles for input validation, error messages, and transitions.
+ */
+
+/* Styles for input validation */
+.input-error {
+  border-color: red;
+}
+
+.input-valid {
+  border-color: green;
+}
+
+.input-neutral {
+  border-color: #4B5563; /* stone-700 */
+}
+
+.input-typing {
+  border-color: yellow; /* Set the border color to yellow */
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; /* Apply the pulse animation */
+}
+
+@keyframes pulse {
+  0%, 100% {
+    border-color: yellow; /* Start and end with yellow border color */
+  }
+  50% {
+    border-color: transparent; /* Middle with transparent border color */
+  }
+}
+
+/* Styles for input validation on hover and focus */
+.input-hover-error:hover, .input-error:focus {
+  border-color: red;
+}
+
+.input-hover-valid:hover, .input-valid:focus {
+  border-color: green;
+}
+
+.input-hover-neutral:hover, .input-neutral:focus {
+  border-color: #4B5563; /* stone-700 */
+}
+
+/* Transition styles */
+.transition-border {
+  transition: border-color 0.5s, opacity 0.5s, visibility 0.5s;
+}
+
+.error-message {
+  max-height: 0;
+  overflow: hidden;
+  color: #FF5555;
+  font-size: 0.875rem; /* 14px */
+  margin-top: 0.25rem; /* 4px */
+  transition: max-height 0.5s ease-in-out, opacity 0.5s ease-in-out;
+}
+
+.error-message.show {
+  max-height: 1rem; /* Allow enough space for the message */
+  opacity: 1;
+  filter: blur(0);
+}
+.confirm-password-transition {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.5s ease-in-out, opacity 0.5s ease-in-out;
+}
+.confirm-password-transition.show {
+  max-height: 5rem; /* Allow enough space for the input */
+  opacity: 1;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+  20%, 40%, 60%, 80% { transform: translateX(10px); }
+}
+
+.shake {
+  animation: shake 0.82s cubic-bezier(.36,.07,.19,.97) both;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+.error-message-fade {
+  position: relative;
+  animation: fadeOut 5s forwards;
+  color: #9EA8A2;
+  text-align: center;
+}
+
+.message-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+ /*  background-color: #1a1a1a; Dark background for contrast */
+  color: white;
+}
+
+input::placeholder {
+  user-select: none !important;
+}
+.toggle-password {
+  transition: transform 0.3s;
+}
+
+.toggle-password:hover {
+  transform: scale(1.1);
+  color: #ff5555; /* Example hover color */
+}
+
+.input-tooltip {
+  position: absolute;
+  top: -35px; /* Adjusted to position above the icon */
+  left: 50%;
+  transform: translateX(-50%); /* Center the tooltip */
+  background-color: rgba(0, 0, 0, 0.85); /* Same background color */
+  color: #fff; /* Same text color */
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.toggle-password-container:hover .input-tooltip,
+.clear-icon-container:hover .input-tooltip,
+.redo-icon-container:hover .input-tooltip {
+  opacity: 1;
+  visibility: visible;
+}
+
+.redo-icon {
+  transition: transform 0.3s;
+}
+
+.redo-icon:hover {
+  transform: scale(1.1);
+  color: #ff5555; /* Example hover color */
+}
+
+    .form-header {
+      z-index: 20; /* This needs to be higher than the title's z-index */
+        padding: 1rem;
+  color: #E0E0E0 !important;
+  font-size: 17px;
+    }
+
+    .form-header button {
+        fill: currentColor;
+        z-index: 20; /* This needs to be higher than the title's z-index */
+
+    }
+
+    .form-title-modal {
+      text-align: center;
+      width: 100%;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+.progress-container {
+  width: 16px; 
+  height: 16px;
+}
+
+.progress-ring {
+  width: 100%;
+  height: 100%;
+}
+
+.base-circle {
+  stroke: rgba(0, 0, 0, 0.5);
+}
+
+.progress-circle {
+  stroke: white;
+  animation: fillCircle 5s linear forwards, fadeOut 1s linear 4s forwards;
+}
+
+@keyframes fillCircle {
+  from { stroke-dashoffset: 251.2; }
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+.form-title{
+  color: #E0E0E0;
+}
+
+.form-primary-link {
+  color: #D1D7DC;
+}
+
+.form-secondary-links {
+  color: #BBBBBB;
+}
+
+.form-secondary-text {
+  color: #9EA8A2;
 }
 
 /* FAQ Section Styles */

@@ -3,7 +3,7 @@
 import { createRemixStub } from '@remix-run/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import LoginForm from '~/components/molecules/LoginForm'
+import LoginForm from '~/components/molecules/LoginForm.1'
 import '@testing-library/jest-dom'
 
 // @vitest-environment jsdom

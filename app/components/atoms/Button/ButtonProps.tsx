@@ -13,6 +13,11 @@ export type ButtonProps = {
 	variant?: 'primary' | 'secondary' | 'danger'
 
 	/**
+	 * Specifies whether the button is disabled.
+	 */
+	disabled?: boolean
+
+	/**
 	 * The type of the button.
 	 * @default 'button'
 	 */

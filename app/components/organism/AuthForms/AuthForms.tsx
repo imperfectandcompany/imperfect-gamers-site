@@ -1,307 +1,289 @@
 // components/organism/AuthForms/AuthForms.tsx
 
-import { useFetcher, useLoaderData } from '@remix-run/react'
+import { useFetchers, useLoaderData } from '@remix-run/react'
 import type React from 'react'
-import { useEffect, useRef, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useMemo } from 'react'
+import Button from '~/components/atoms/Button/Button'
+import ImperfectAndCompanyLogo from '~/components/atoms/ImperfectAndCompanyLogo'
 import AuthorizeForm from '~/components/molecules/AuthorizeForm'
+import CheckoutProcess from '~/components/molecules/CheckoutProcess/CheckoutProcess'
 import LoginForm from '~/components/molecules/LoginForm'
-import SignUpForm from '~/components/molecules/SignUpForm'
 import UsernameForm from '~/components/molecules/UsernameForm'
+import ProcessProvider from '~/components/pending/ProcessProvider'
 import type { LoaderData } from '~/routes/store'
-import { useFetcherWithPromise } from '~/utils/general'
-import type { TebexCheckoutConfig } from '~/utils/tebex.interface'
-import { CloseInterceptReason } from '../ModalWrapper/ModalWrapper'
+import { useFetcherWithPromiseAutoReset } from '~/utils/general'
+import ModalWrapper from '../ModalWrapper/ModalWrapper'
+import SignUpForm from '../SignUpForm/SignUpForm'
+import WelcomeScreen from '../WelcomeScreen'
 
-interface AuthFormProps {
-	isOpen?: boolean
-	setCloseInterceptReason?: (reason: CloseInterceptReason) => void
-	setPopupWindow?: (window: Window | null) => void
+// Define an enum for the page titles
+enum PageTitle {
+	Welcome = 'Imperfect Gamers Club',
+	Login = 'Log In',
+	Signup = 'Sign Up',
+	LoggedIn = 'Join The Club',
 }
 
-const AuthForms: React.FC<AuthFormProps> = ({
-	isOpen,
-	setCloseInterceptReason,
-	setPopupWindow,
-}) => {
-	const {
-		isAuthenticated,
-		isSteamLinked,
-		steamId,
-		isOnboarded,
-		username,
-		basketId,
-		packages = [],
-	} = useLoaderData<LoaderData>()
+const AuthForms: React.FC = () => {
+	const { isAuthenticated, isSteamLinked, username } =
+		useLoaderData<LoaderData>()
 	const [isLoginForm, setIsLoginForm] = useState(true)
-	const [isAuthorized, setIsAuthorized] = useState(false)
-	const storeRequestTriggeredRef = useRef(false)
-	const { submit } = useFetcherWithPromise()
-	const prevIsAuthenticated = useRef(isAuthenticated)
-	const fetcher = useFetcher()
-	const prevIsOpen = useRef(isOpen)
+	const { submit } = useFetcherWithPromiseAutoReset({
+		key: 'logout-submission',
+	})
+	const fetchers = useFetchers()
 
-	const [basketExists, setBasketExists] = useState(!!basketId)
+	const relevantFetchers = fetchers.filter(fetcher => {
+		return [
+			`/auth/check/username`,
+			`/auth/finalize/username`,
+			`/auth/check/steam`,
+			`/auth/steam`,
+			`/register`,
+			`/login`,
+			`/logout`,
+			`/store/add`,
+			`/store/create`,
+		].some(path => fetcher.formAction?.startsWith(path))
+	})
 
-	useEffect(() => {
-		setBasketExists(!!basketId)
-	}, [basketId])
+	// Get an array of all in-flight fetchers and their states
+	const inFlightFetchers = relevantFetchers.map(fetcher => ({
+		formData: fetcher.formData,
+		state: fetcher.state,
+	}))
 
-	const handleLogout = () => {
-		fetcher.submit({}, { method: 'post', action: '/logout' })
-	}
+	// Check if any fetcher is loading or submitting
+	const isInProgress = useMemo(() => {
+		return inFlightFetchers.some(fetcher =>
+			['loading', 'submitting'].includes(fetcher.state),
+		)
+	}, [inFlightFetchers])
 
-	const switchForm = () => {
-		setIsLoginForm(!isLoginForm)
-	}
-
-	const UseTebexCheckout = useCallback(
-		(checkoutId: string, theme: 'light' | 'dark') => {
-			const { Tebex } = window
-
-			if (!Tebex) return
-
-			const config: TebexCheckoutConfig = {
-				ident: checkoutId,
-				theme: theme,
-			}
-
-			Tebex.checkout.init(config)
-
-			// Listen for Tebex checkout events and set modal close intercept reasons accordingly
-			Tebex.checkout.on(Tebex.events.OPEN, () => {
-				console.log('Tebex Checkout Opened')
-				if (setCloseInterceptReason) {
-					setCloseInterceptReason(CloseInterceptReason.ActivePopup)
-				}
-			})
-
-			Tebex.checkout.on(Tebex.events.CLOSE, () => {
-				console.log('Tebex Checkout Closed')
-				if (setCloseInterceptReason) {
-					setCloseInterceptReason(CloseInterceptReason.None)
-				}
-			})
-
-			Tebex.checkout.on(Tebex.events.PAYMENT_COMPLETE, () => {
-				console.log('Payment Complete')
-				if (setCloseInterceptReason) {
-					setCloseInterceptReason(CloseInterceptReason.None)
-				}
-			})
-
-			Tebex.checkout.on(Tebex.events.PAYMENT_ERROR, () => {
-				console.log('Payment Error')
-				if (setCloseInterceptReason) {
-					setCloseInterceptReason(CloseInterceptReason.None)
-				}
-			})
-
-			Tebex.checkout.launch()
-		},
-		[setCloseInterceptReason],
-	)
-
-	const createBasket = async () => {
-		console.log('Creating basket...')
+	const handleLogout = useCallback(async () => {
+		// Logout logic
 		try {
-			const response = await submit(null, {
-				method: 'post',
-				action: '/store/create',
-			})
-			return response.basketId
+			await submit({}, { method: 'post', action: '/logout' })
+			setIsInitial(false)
+			setIsLoginForm(true)
+			setTitle(PageTitle.Login) // Update the title immediately
+			setPageHistory([PageTitle.Welcome, PageTitle.Login])
 		} catch (error) {
-			console.error('Failed to create basket:', error)
-			throw error
+			// Handle the error
+			console.error('An error occurred:', error)
 		}
-	}
+	}, [])
 
-	const addPackageToBasket = async (basketId: string) => {
-		console.log('Adding package to basket...')
-		try {
-			const response = await submit(
-				{ basketId },
-				{ method: 'post', action: '/store/add' },
-			)
-			return response.packages
-		} catch (error) {
-			console.error('Failed to add package:', error)
-			throw error
-		}
-	}
-
-	const initiateCheckout = (basketId: string) => {
-		console.log('Initiating checkout...')
-		UseTebexCheckout(basketId, 'dark')
-	}
-
-	const handleStoreInteractions = useCallback(async () => {
-		if (!isAuthorized || !isOpen) return
-
-		let localBasketId = basketId
-		let localPackages = packages
-
-		// Step 1: Create the basket if it doesn't exist
-		if (!localBasketId) {
-			const result = await createBasket()
-			if (result) {
-				localBasketId = result // Update the package with the response
-				setBasketExists(true)
-			}
-		}
-
-		// Step 2: Add a package if it's not already in the basket
-		if (localBasketId && !packages.some(pkg => pkg.id === 6154841)) {
-			const result = await addPackageToBasket(localBasketId)
-			if (result) {
-				localPackages = result // Update the package with the response
-			}
-		}
-
-		// Step 3: Initiate checkout
-		if (localBasketId && localPackages.some(pkg => pkg.id === 6154841)) {
-			initiateCheckout(localBasketId)
-		}
-	}, [basketId, packages, isAuthorized, isOpen, UseTebexCheckout, submit])
-
-	useEffect(() => {
-		const authorizationStatus = isAuthenticated && isOnboarded && isSteamLinked
-		setIsAuthorized(authorizationStatus)
-
-		if (!isAuthenticated && prevIsAuthenticated.current) {
-			storeRequestTriggeredRef.current = false
-			setIsAuthorized(false)
-			setBasketExists(false) // Reset on logout
-			return // Exit if user is not authenticated
-		}
-
-		prevIsAuthenticated.current = isAuthenticated
-
-		// Trigger interactions only when necessary and prevent multiple triggers
-		if (isOpen && isAuthorized && !storeRequestTriggeredRef.current) {
-			handleStoreInteractions()
-			storeRequestTriggeredRef.current = true // Prevent re-triggering until conditions change
-		}
-
-		// Reset trigger when modal closes or user logs out
-		if (!isOpen && prevIsOpen.current) {
-			storeRequestTriggeredRef.current = false
-		}
-
-		prevIsOpen.current = isOpen
-	}, [
-		isOpen,
-		isAuthorized,
-		isAuthenticated,
-		handleStoreInteractions,
-		basketExists,
-	])
+	const [isInitial, setIsInitial] = useState(true)
 
 	const handleSteamLinkSuccess = useCallback(() => {
 		setIsAuthorized(true)
 	}, [])
 
-	// After user is logged in (authenticated) and onboarded (verified)
-	const UserStatus = () => {
-		// Step 2: Does user have a basket (required)
-		if (!basketId) {
-			return <div>Loading or creating your basket...</div>
-		}
+	const updateAuthorization = useCallback((newState: boolean) => {
+		setIsAuthorized(newState)
+	}, [])
 
-		// Check if fetching data or processing a request
-		if (fetcher.state === 'loading') {
-			return <div>Processing...</div>
-		}
+	const [isAuthorized, setIsAuthorized] = useState(false)
 
-		// Check if fetching data or processing a request
-		if ((fetcher.data as { error: string })?.error) {
-			return <div>Error: {(fetcher.data as { error: string }).error}</div>
-		}
+	const [title, setTitle] = useState(PageTitle.Welcome)
+	const [pageHistory, setPageHistory] = useState<PageTitle[]>([
+		PageTitle.Welcome,
+	])
 
-		// Step 3: Does user have premium package in basket (final process)
-		if (!packages.some(pkg => pkg.id === 6154841)) {
-			return <div>Loading or adding premium package to basket...</div>
+	const initialLoggedInPageTitle = useMemo(() => {
+		if (isAuthenticated && username && isSteamLinked) {
+			return PageTitle.LoggedIn
+		} else {
+			return title
 		}
+	}, [isAuthenticated, username, isSteamLinked, PageTitle.LoggedIn, title])
 
-		// Step 4: Show final screen (ready)
-		if (isSteamLinked) {
-			return (
-				<>
-					<div>Steam Linked with ID: {steamId}</div>
-					<div>Onboarded as: {username}</div>
-				</>
-			)
+	useEffect(() => {
+		setTitle(initialLoggedInPageTitle)
+	}, [initialLoggedInPageTitle])
+
+	const handleNewUser = useCallback(() => {
+		setIsInitial(isInitial => (isInitial ? false : isInitial))
+		setIsLoginForm(false)
+		setTitle(PageTitle.Signup)
+	}, [])
+
+	const handleExistingUser = useCallback(() => {
+		setIsInitial(isInitial => (isInitial ? false : isInitial))
+		setIsLoginForm(true)
+		setTitle(PageTitle.Login)
+		setPageHistory(prevHistory => [...prevHistory, PageTitle.Login])
+	}, [])
+
+	const handleBack = () => {
+		if (pageHistory.length > 1) {
+			const newPageHistory = pageHistory.slice(0, -1)
+			setPageHistory(newPageHistory)
+			const prevPage = newPageHistory[newPageHistory.length - 1]
+			setTitle(prevPage)
+
+			switch (prevPage) {
+				case PageTitle.Welcome:
+					setIsLoginForm(true)
+					setIsInitial(true)
+					break
+				case PageTitle.Login:
+					setIsLoginForm(true)
+					setIsInitial(false)
+					break
+				case PageTitle.Signup:
+					setIsLoginForm(false)
+					setIsInitial(false)
+					break
+			}
 		}
-
-		return (
-			<AuthorizeForm
-				onSuccess={handleSteamLinkSuccess}
-				setCloseInterceptReason={setCloseInterceptReason}
-			/>
-		)
 	}
+
+	useEffect(() => {
+		if (pageHistory[pageHistory.length - 1] !== title) {
+			setPageHistory(prevHistory => [...prevHistory, title])
+		}
+	}, [title])
 
 	return (
 		<>
-			<div className="flex flex-col space-y-6">
-				{isAuthenticated ? (
-					!username ? (
-						<UsernameForm setCloseInterceptReason={setCloseInterceptReason} />
-					) : !isSteamLinked ? (
-						<AuthorizeForm
-							onSuccess={handleSteamLinkSuccess}
-							setCloseInterceptReason={setCloseInterceptReason}
-							setPopupWindow={setPopupWindow} // Pass setPopupWindow to AuthorizeForm
+			<ProcessProvider>
+				<ModalWrapper
+					title={title}
+					onBack={
+						!isInProgress
+							? !isAuthenticated && !isInitial
+								? handleBack
+								: isAuthenticated
+									? handleLogout
+									: undefined
+							: undefined
+					}
+					backButtonTitle={
+						!isAuthenticated && !isInitial
+							? 'Back'
+							: isAuthenticated
+								? 'Log Out'
+								: undefined
+					}
+					content={
+						!isAuthenticated ? (
+							isInitial ? (
+								<WelcomeScreen
+									isAuthenticated={isAuthenticated}
+									onNewUser={handleNewUser}
+									onExistingUser={handleExistingUser}
+								/>
+							) : isLoginForm ? (
+								<LoginForm />
+							) : (
+								<SignUpForm />
+							)
+						) : !username ? (
+							<UsernameForm />
+						) : !isSteamLinked ? (
+							<AuthorizeForm onSuccess={() => handleSteamLinkSuccess()} />
+						) : (
+							<CheckoutProcess
+								isAuthorized={isAuthorized}
+								setIsAuthorized={updateAuthorization}
+							/>
+						)
+					}
+					footer={
+						<Footer
+							isAuthenticated={isAuthenticated}
+							username={username || undefined}
+							isInitial={isInitial}
+							isLoginForm={isLoginForm}
 						/>
-					) : (
-						<UserStatus />
-					)
-				) : isLoginForm ? (
-					<LoginForm setCloseInterceptReason={setCloseInterceptReason} />
-				) : (
-					<SignUpForm setCloseInterceptReason={setCloseInterceptReason} />
-				)}
-			</div>
-			<div className="mx-auto mt-4 flex flex-col text-center text-sm text-white">
-				<div>
-					{isAuthenticated ? (
-						<>
-							You are currently signed in{username ? ' as ' + username : ''}.
-							<button onClick={handleLogout} className="ml-1 underline">
-								Log out
-							</button>
-						</>
-					) : isLoginForm ? (
-						<>
-							Don&apos;t have an account?{' '}
-							<button
-								onClick={() => {
-									switchForm()
-								}}
-								className="ml-2 underline"
-							>
-								Sign up
-							</button>
-						</>
-					) : (
-						<>
-							Already have an account?
-							<button
-								onClick={() => {
-									switchForm()
-								}}
-								className="ml-2 underline"
-							>
-								Sign in
-							</button>
-						</>
-					)}
-				</div>
-				{!isAuthenticated ? (
-					<div className="underline">Forgot password</div>
-				) : null}
-			</div>
+					}
+					isResponsive={!isAuthenticated ? isInitial : false} // Set true only if showing WelcomeScreen
+				>
+					<Button>Join Now</Button>
+				</ModalWrapper>
+			</ProcessProvider>
 		</>
 	)
 }
+
+// Define FooterProps Interface
+interface FooterProps {
+	isAuthenticated: boolean
+	username?: string
+	isLoginForm: boolean
+	isInitial: boolean
+}
+
+const Footer: React.FC<FooterProps> = ({
+	isAuthenticated,
+	username,
+	isLoginForm,
+	isInitial,
+}) => (
+	<div className="mx-auto mt-4 flex flex-col text-sm text-white">
+		<div>
+			{isAuthenticated && username ? (
+				<>You are currently signed in{username ? ' as ' + username : ''}.</>
+			) : !isInitial && !isAuthenticated && isLoginForm ? (
+				<>
+					{/* commented out until design decision is finalized */}
+					{/* Don&apos;t have an account?{' '}
+          <button onClick={handleNewUser} className="ml-2 underline">
+            Sign up
+          </button> */}
+				</>
+			) : !isInitial && !isAuthenticated ? (
+				<>
+					<p className="mt-4 select-none text-xs text-stone-500">
+						By signing up, you agree to the{' '}
+						<a
+							href="https://imperfectgamers.org/privacy-policy"
+							target="_blank"
+							className="select-none text-red-500/70"
+							rel="noreferrer"
+						>
+							Privacy Policy
+						</a>
+						,{' '}
+						<a
+							href="https://imperfectgamers.org/terms-of-service"
+							target="_blank"
+							className="select-none text-red-500/70"
+							rel="noreferrer"
+						>
+							Terms of Service
+						</a>
+						, and{' '}
+						<a
+							href="https://imperfectgamers.org/imprint"
+							target="_blank"
+							className="select-none text-red-500/70"
+							rel="noreferrer"
+						>
+							Imprint
+						</a>
+						.
+					</p>{' '}
+				</>
+			) : isInitial && !isAuthenticated ? (
+				<p className="flex select-none justify-center text-xs text-stone-500">
+					Powered by&nbsp;
+					<a
+						href="https://imperfectandcompany.com/"
+						target="_blank"
+						className="flex select-none items-center text-red-500/70"
+						style={{ alignItems: 'center' }}
+						rel="noreferrer"
+					>
+						Imperfect and Company LLC
+						<ImperfectAndCompanyLogo />
+					</a>
+				</p>
+			) : null}
+		</div>
+	</div>
+)
 
 export default AuthForms

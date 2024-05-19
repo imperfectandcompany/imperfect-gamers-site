@@ -1,10 +1,6 @@
 // components/templates/store/StoreHeader.tsx
-import { useLoaderData } from '@remix-run/react'
-import Button from '~/components/atoms/Button/Button'
 import AuthForms from '~/components/organism/AuthForms/AuthForms'
 import { MembershipCard } from '~/components/organism/MembershipCard/MembershipCard'
-import ModalWrapper from '~/components/organism/ModalWrapper/ModalWrapper'
-import type { LoaderData } from '~/routes/store'
 
 /**
  * Renders the header component for the store page.
@@ -18,13 +14,6 @@ import type { LoaderData } from '~/routes/store'
  */
 
 export default function StoreHeader() {
-	const { isAuthenticated, isSteamLinked, username } =
-		useLoaderData<LoaderData>()
-
-	const title =
-		isAuthenticated && username && isSteamLinked
-			? `Join The Club, ${username}`
-			: 'Unauthorized Action'
 	return (
 		<div>
 			<h1 className="title">Imperfect Gamers Club</h1>
@@ -33,16 +22,8 @@ export default function StoreHeader() {
 			</p>
 			<MembershipCard />
 			<div className="mt-8 flex justify-center">
-				{/** header={header} TODO after priorities **/}
-				<ModalWrapper title={title} content={<AuthForms />}>
-					<Button>Join Now</Button>
-				</ModalWrapper>
+				<AuthForms />
 			</div>
-			{!isAuthenticated ? (
-				<p className="mt-4 text-center text-sm text-white">
-					Please log in or sign up to join the club.
-				</p>
-			) : null}
 		</div>
 	)
 }
