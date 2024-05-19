@@ -1,4 +1,4 @@
 export const errorMessageStyles = {
-    error: 'error-message',
-    show: 'show',
-  }
+	error: 'error-message',
+	show: 'show',
+}

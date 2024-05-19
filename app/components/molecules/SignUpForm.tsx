@@ -3,7 +3,7 @@ import { useFetcher } from '@remix-run/react'
 import { withZod } from '@remix-validated-form/with-zod'
 import type React from 'react'
 import { useCallback, useEffect, useState } from 'react'
-import { ValidatedForm, useFormContext } from 'remix-validated-form'
+import { ValidatedForm } from 'remix-validated-form'
 import { z } from 'zod'
 import Button from '~/components/atoms/Button/Button'
 import Input from '~/components/atoms/Input/Input'
@@ -61,7 +61,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ setCloseInterceptReason }) => {
 		if (setCloseInterceptReason) {
 			setCloseInterceptReason(reason)
 		}
-	}, [fetcher.state, isFormDirty, setCloseInterceptReason])
+	}, [fetcher.state, fetcher.data, isFormDirty, setCloseInterceptReason])
 
 	useEffect(updateCloseInterceptReason, [updateCloseInterceptReason])
 
@@ -75,19 +75,20 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ setCloseInterceptReason }) => {
 	// React to the fetcher's state after submission
 	if ((fetcher.data as { success: boolean })?.success) {
 		return (
-					<div className="flex flex-col items-center justify-center">
-						<LottieAnimation
-							src="https://lottie.host/e5605e5a-c7de-4af0-827e-9be64091bc7f/V2SQO19y5v.json"
-							style={{ width: '250px', height: '250px' }}
-						/>
-						<h1 className="mt-6 text-3xl text-white">Registration Complete!</h1>
-						<p className="mt-4 text-gray-400">
-							Nice job! Your account has been successfully created.
-						</p>
-						<Button className="mt-6 rounded bg-gradient-to-r from-red-700 to-red-800 px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
-							Go to Login
-						</Button>
-					</div>
+			<div className="flex flex-col items-center justify-center">
+				<LottieAnimation
+					animationUrl="https://lottie.host/e5605e5a-c7de-4af0-827e-9be64091bc7f/V2SQO19y5v.json"
+					style={{ width: '250px', height: '250px' }}
+					loop={false}
+				/>
+				<h1 className="mt-6 text-3xl text-white">Registration Complete!</h1>
+				<p className="mt-4 text-gray-400">
+					Nice job! Your account has been successfully created.
+				</p>
+				<Button className="mt-6 rounded bg-gradient-to-r from-red-700 to-red-800 px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
+					Go to Login
+				</Button>
+			</div>
 		)
 	}
 

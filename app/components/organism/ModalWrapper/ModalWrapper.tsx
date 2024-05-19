@@ -12,9 +12,9 @@ interface ModalWrapperProps {
 	footer?: ReactElement
 	children: ReactElement
 	onBack?: () => void
-    backButtonTitle?: string;
+	backButtonTitle?: string
 	align?: 'left' | 'center' | 'right'
-	isResponsive?: boolean;
+	isResponsive?: boolean
 }
 
 export enum CloseInterceptReason {
@@ -40,7 +40,7 @@ const ModalWrapper: React.FC<ModalWrapperProps> = ({
 	onBack,
 	backButtonTitle,
 	align,
-	isResponsive = false
+	isResponsive = false,
 }: {
 	children: React.ReactElement
 	header?: React.ReactNode
@@ -48,7 +48,7 @@ const ModalWrapper: React.FC<ModalWrapperProps> = ({
 	content: React.ReactNode
 	footer?: React.ReactNode
 	onBack?: () => void
-    backButtonTitle?: string
+	backButtonTitle?: string
 	align?: 'left' | 'center' | 'right'
 	isResponsive?: boolean
 }) => {

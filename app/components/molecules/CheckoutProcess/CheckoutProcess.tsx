@@ -1,34 +1,26 @@
-// app/components/molecules/CheckoutProcess/CheckoutProcess.tsx
-
-// Inside the CheckoutProcess, we have the following components:
-
-// CheckoutProcess.tsx: This component handles the overall checkout process, including creating the basket, adding packages, and initiating the Tebex checkout.
-// BasketManager.tsx: This component handles the logic for creating and managing the basket.
-// PackageManager.tsx: This component handles the logic for checking packages from the basket.
-// TebexCheckout.tsx: This component handles the integration with Tebex and initiate the checkout process.
-
-// The CheckoutProcess component combines the BasketManager, PackageManager, and TebexCheckout components to provide the complete checkout flow. It manages the state of the basket ID and packages, and passes them down to the respective components.
-// The setCloseInterceptReason prop is passed down to the TebexCheckout component to handle the modal close intercept reason based on the Tebex checkout events.
+// components/molecules/CheckoutProcess/CheckoutProcess.tsx
 
 import { useFetcher, useLoaderData } from '@remix-run/react'
-import type React from 'react';
+import type React from 'react'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import type { CloseInterceptReason } from '~/components/organism/ModalWrapper/ModalWrapper'
+import { CloseInterceptReason } from '~/components/organism/ModalWrapper/ModalWrapper'
 import type { LoaderData } from '~/routes/store'
-import { addPackageToBasket, createBasket } from './BasketManager'
-import { hasSpecificPackage } from './PackageManager'
-import TebexCheckout from './TebexCheckout'
-
-const PREMIUM_PACKAGE_ID = 6154841
+import { useFetcherWithPromise } from '~/utils/general'
+import type { TebexCheckoutConfig } from '~/utils/tebex.interface'
+import { useAddPackageToBasket, useCreateBasket } from './BasketManager'
 
 interface CheckoutProcessProps {
 	isOpen?: boolean
+	isAuthorized: boolean
 	setCloseInterceptReason?: (reason: CloseInterceptReason) => void
+	setIsAuthorized: (newState: boolean) => void
 }
 
 const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 	isOpen,
+	isAuthorized,
 	setCloseInterceptReason,
+	setIsAuthorized,
 }) => {
 	const {
 		isAuthenticated,
@@ -41,16 +33,75 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 	} = useLoaderData<LoaderData>()
 
 	const [basketExists, setBasketExists] = useState(!!basketId)
-	const [isAuthorized, setIsAuthorized] = useState(false)
 	const prevIsAuthenticated = useRef(isAuthenticated)
 	const storeRequestTriggeredRef = useRef(false)
 	const prevIsOpen = useRef(isOpen)
-	const { initiateCheckout } = TebexCheckout({ setCloseInterceptReason })
+	const { submit } = useFetcherWithPromise()
 	const fetcher = useFetcher()
+
+	// 1.0 Effect to Check Basket Existence
 
 	useEffect(() => {
 		setBasketExists(!!basketId)
 	}, [basketId])
+
+	// 2.0 Tebex Checkout Hook Setup
+
+	const UseTebexCheckout = useCallback(
+		(checkoutId: string, theme: 'light' | 'dark') => {
+			const { Tebex } = window
+
+			if (!Tebex) return
+
+			const config: TebexCheckoutConfig = {
+				ident: checkoutId,
+				theme: theme,
+			}
+
+			Tebex.checkout.init(config)
+
+			// Listen for Tebex checkout events and set modal close intercept reasons accordingly
+			Tebex.checkout.on(Tebex.events.OPEN, () => {
+				console.log('Tebex Checkout Opened')
+				if (setCloseInterceptReason) {
+					setCloseInterceptReason(CloseInterceptReason.ActivePopup)
+				}
+			})
+
+			Tebex.checkout.on(Tebex.events.CLOSE, () => {
+				console.log('Tebex Checkout Closed')
+				if (setCloseInterceptReason) {
+					setCloseInterceptReason(CloseInterceptReason.None)
+				}
+			})
+
+			Tebex.checkout.on(Tebex.events.PAYMENT_COMPLETE, () => {
+				console.log('Payment Complete')
+				if (setCloseInterceptReason) {
+					setCloseInterceptReason(CloseInterceptReason.None)
+				}
+			})
+
+			Tebex.checkout.on(Tebex.events.PAYMENT_ERROR, () => {
+				console.log('Payment Error')
+				if (setCloseInterceptReason) {
+					setCloseInterceptReason(CloseInterceptReason.None)
+				}
+			})
+
+			Tebex.checkout.launch()
+		},
+		[setCloseInterceptReason],
+	)
+
+	// 7.0 Initiate Checkout Function
+
+	const initiateCheckout = (basketId: string) => {
+		console.log('Initiating checkout...')
+		UseTebexCheckout(basketId, 'dark')
+	}
+
+	// 3.0 Handle Store Interactions Hook Setup
 
 	const handleStoreInteractions = useCallback(async () => {
 		if (!isAuthorized || !isOpen) return
@@ -66,9 +117,8 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 				setBasketExists(true)
 			}
 		}
-
 		// Process 3.2: Add a package if it's not already in the basket
-		if (localBasketId && !hasSpecificPackage(packages, PREMIUM_PACKAGE_ID)) {
+		if (localBasketId && !packages.some(pkg => pkg.id === 6154841)) {
 			const result = await addPackageToBasket(localBasketId)
 			if (result) {
 				localPackages = result // Update the package with the response
@@ -76,13 +126,22 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 		}
 
 		// Process 3.3: Initiate checkout
-		if (
-			localBasketId &&
-			hasSpecificPackage(localPackages, PREMIUM_PACKAGE_ID)
-		) {
+		if (localBasketId && localPackages.some(pkg => pkg.id === 6154841)) {
 			initiateCheckout(localBasketId)
 		}
-	}, [basketId, packages, isAuthorized, isOpen, initiateCheckout])
+	}, [
+		basketId,
+		packages,
+		isAuthorized,
+		isOpen,
+		UseTebexCheckout,
+		submit,
+		useAddPackageToBasket,
+		useCreateBasket,
+		initiateCheckout,
+	])
+
+	// 4.0 Effect to Handle Authentication and Store Interaction Triggers
 
 	useEffect(() => {
 		const authorizationStatus = isAuthenticated && isOnboarded && isSteamLinked
@@ -111,42 +170,76 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 		prevIsOpen.current = isOpen
 	}, [
 		isOpen,
-		isAuthorized,
 		isAuthenticated,
+		isAuthorized,
+		isOnboarded,
 		handleStoreInteractions,
 		basketExists,
 	])
 
-	// Render states...
+	// 5.0 Create Basket Function
 
-	return (
-		<>
-			{/* Process 8.1: Does user have a basket (required) */}
-			{!basketId ? <div>Loading or creating your basket...</div> : null}
+	const createBasket = async () => {
+		console.log('Creating basket...')
+		try {
+			const response = await submit(null, {
+				method: 'post',
+				action: '/store/create',
+			})
+			return response.basketId
+		} catch (error) {
+			console.error('Failed to create basket:', error)
+			throw error
+		}
+	}
 
-			{
-				/* Process 8.2: Check if fetching data or processing a request */
-				fetcher.state === 'loading' ? <div>Processing...</div> : null
-			}
+	// 6.0 Add Package to Basket Function
 
-			{
-				/* Process 8.3: Check if fetching data or processing a request */
-				(fetcher.data as { error: string })?.error ? <div>Error: {(fetcher.data as { error: string }).error}</div> : null
-			}
+	const addPackageToBasket = async (basketId: string) => {
+		console.log('Adding package to basket...')
+		try {
+			const response = await submit(
+				{ basketId },
+				{ method: 'post', action: '/store/add' },
+			)
+			return response.packages
+		} catch (error) {
+			console.error('Failed to add package:', error)
+			throw error
+		}
+	}
 
-			{
-				/* Process 8.4: Does user have premium package in basket (final process) */
-				!hasSpecificPackage(packages, PREMIUM_PACKAGE_ID) ? <div>Loading or adding premium package to basket...</div> : null
-			}
+	// 8.0 Render states.
 
-			{
-				/* Process 8.5: Show final screen (ready) */
-				isSteamLinked ? <>
-						<div>Steam Linked with ID: {steamId}</div>
-						<div>Onboarded as: {username}</div>
-					</> : null
-			}
-		</>
-	)
+	// Process 8.1:  Does user have a basket (required)
+	if (!basketId) {
+		return <div>Loading or creating your basket...</div>
+	}
+
+	// Process 8.2: Check if fetching data or processing a request
+	if (fetcher.state === 'loading') {
+		return <div>Processing...</div>
+	}
+
+	// Process 8.3: Check if fetching data or processing a request
+	if ((fetcher.data as { error: string })?.error) {
+		return <div>Error: {(fetcher.data as { error: string }).error}</div>
+	}
+
+	// Process 8.4: Does user have premium package in basket (final process)
+	if (!packages.some(pkg => pkg.id === 6154841)) {
+		return <div>Loading or adding premium package to basket...</div>
+	}
+
+	// Process 8.5: Show final screen (ready)
+	if (isSteamLinked) {
+		return (
+			<>
+				<div>Steam Linked with ID: {steamId}</div>
+				<div>Onboarded as: {username}</div>
+			</>
+		)
+	}
 }
+
 export default CheckoutProcess

@@ -1,14 +1,6 @@
 // components/templates/store/StoreHeader.tsx
-import { useLoaderData } from '@remix-run/react'
-import { useEffect, useMemo, useState } from 'react'
-import Button from '~/components/atoms/Button/Button'
 import AuthForms from '~/components/organism/AuthForms/AuthForms'
 import { MembershipCard } from '~/components/organism/MembershipCard/MembershipCard'
-import ModalWrapper from '~/components/organism/ModalWrapper/ModalWrapper'
-import { ProcessProvider } from '~/components/pending/ProcessProvider'
-import Register from '~/components/pending/Register'
-
-import type { LoaderData } from '~/routes/store'
 
 /**
  * Renders the header component for the store page.
@@ -30,7 +22,7 @@ export default function StoreHeader() {
 			</p>
 			<MembershipCard />
 			<div className="mt-8 flex justify-center">
-					<AuthForms />
+				<AuthForms />
 			</div>
 		</div>
 	)

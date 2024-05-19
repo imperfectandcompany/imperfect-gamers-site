@@ -29,14 +29,17 @@ export const action: ActionFunction = async ({ request }) => {
 			})
 		} else {
 			// Return error message from API
-			return json({
-				error: result.message,
-			}, {
-                status: result.statusCode,
-				// headers: {
-				// 	"Set-Cookie": await commitSession(session),
-				// } as HeadersInit, // Cast headers object to HeadersInit type
-			})
+			return json(
+				{
+					error: result.message,
+				},
+				{
+					status: result.statusCode,
+					// headers: {
+					// 	"Set-Cookie": await commitSession(session),
+					// } as HeadersInit, // Cast headers object to HeadersInit type
+				},
+			)
 		}
 	} catch (error) {
 		const message = (error as Error).message || 'Unable to register'

@@ -13,9 +13,9 @@ import {
 } from '@remix-run/react'
 import { useEffect, type ReactNode } from 'react'
 import { ExternalScripts } from 'remix-utils/external-scripts'
+import stylesheet from '~/tailwind.css?url'
 import * as gtag from '~/utils/gtags.client'
 
-import stylesheet from '~/tailwind.css?url'
 import MsClarity from './utils/msclarity.client'
 
 export const links: LinksFunction = () => [
@@ -32,20 +32,20 @@ export const loader = async () => {
 
 // http://localhost:5173/store/
 
-const gTagMsClarityFlag = false;
+const gTagMsClarityFlag = false
 
 export function Layout({ children }: { children: React.ReactNode }) {
 	const { gaTrackingId, msClarityId } = useLoaderData<typeof loader>()
-	if (process.env.NODE_ENV !== 'development' && gTagMsClarityFlag) {
-		useEffect(() => {
+	useEffect(() => {
+		if (process.env.NODE_ENV !== 'development' && gTagMsClarityFlag) {
 			if (gaTrackingId) {
 				gtag.pageview(window.location.pathname, gaTrackingId)
 			}
 			if (msClarityId) {
 				MsClarity({ id: msClarityId, enableInDevMode: false })
 			}
-		}, [gaTrackingId, msClarityId])
-	}
+		}
+	}, [gaTrackingId, msClarityId])
 	return (
 		<html lang="en">
 			<head>

@@ -16,9 +16,15 @@ type HeadingProps = {
  * @returns {React.ReactElement} The rendered heading component.
  */
 const Heading: React.FC<HeadingProps> = ({ children, className }) => {
-	return<>
-		<h2 className={`form-title mb-4 select-none text-2xl text-white ${className}`}>{children}</h2>
-	</>
+	return (
+		<>
+			<h2
+				className={`form-title mb-4 select-none text-2xl text-white ${className}`}
+			>
+				{children}
+			</h2>
+		</>
+	)
 }
 
 export default Heading

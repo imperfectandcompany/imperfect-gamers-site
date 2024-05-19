@@ -1,4 +1,5 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import type React from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useField } from 'remix-validated-form'
 import { inputBorderStyles } from '~/components/atoms/styles/InputBorderStyles'
 import { inputHoverStyles } from '~/components/atoms/styles/InputHoverStyles'
@@ -110,24 +111,24 @@ const InputField: React.FC<InputProps> = ({
 		[handleValueChange],
 	)
 
-	const setEmailCursorToEnd = (inputElement: HTMLInputElement | null): void => {
-		if (!inputElement) return;
-	
-		// Temporarily change the type to text to manipulate cursor
-		const currentType = inputElement.type;
-		inputElement.type = 'text';
-	
-		// Set cursor position to the end of the input
-		const valueLength = inputElement.value.length;
-		inputElement.setSelectionRange(valueLength, valueLength);
-	
-		// Revert the type to email
-		inputElement.type = currentType;
-	
-		// Ensure the input is focused after manipulation
-		inputElement.focus();
-	};
-	
+	// further testing needed
+	// const setEmailCursorToEnd = (inputElement: HTMLInputElement | null): void => {
+	// 	if (!inputElement) return;
+
+	// 	// Temporarily change the type to text to manipulate cursor
+	// 	const currentType = inputElement.type;
+	// 	inputElement.type = 'text';
+
+	// 	// Set cursor position to the end of the input
+	// 	const valueLength = inputElement.value.length;
+	// 	inputElement.setSelectionRange(valueLength, valueLength);
+
+	// 	// Revert the type to email
+	// 	inputElement.type = currentType;
+
+	// 	// Ensure the input is focused after manipulation
+	// 	inputElement.focus();
+	// };
 
 	const clearInput = useCallback(() => {
 		setPreviousValue(value)
@@ -146,7 +147,7 @@ const InputField: React.FC<InputProps> = ({
 				}
 			}, 0)
 		}
-	}, [value, handleValueChange, handleFocus])
+	}, [value, handleValueChange, handleFocus, type])
 
 	const handleKeyDown = useCallback(
 		(event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -168,11 +169,11 @@ const InputField: React.FC<InputProps> = ({
 			setTimeout(() => {
 				inputRef.current?.focus()
 				if (['text', 'search', 'URL', 'tel', 'password'].includes(type)) {
-				inputRef.current?.setSelectionRange(length, length)
+					inputRef.current?.setSelectionRange(length, length)
 				}
 			}, 0)
 		}
-	}, [handleFocus])
+	}, [handleFocus, type])
 
 	const cancelEscapeMode = useCallback(() => {
 		setIsEscapeMode(false)
@@ -197,12 +198,12 @@ const InputField: React.FC<InputProps> = ({
 				setTimeout(() => {
 					inputRef.current?.focus()
 					if (['text', 'search', 'URL', 'tel', 'password'].includes(type)) {
-					inputRef.current?.setSelectionRange(length, length)
+						inputRef.current?.setSelectionRange(length, length)
 					}
 				}, 0)
 			}
 		}
-	}, [previousValue, handleValueChange, handleFocus])
+	}, [previousValue, handleValueChange, handleFocus, type])
 
 	const togglePasswordVisibility = useCallback(() => {
 		setIsPasswordVisible(prev => !prev)
@@ -211,11 +212,11 @@ const InputField: React.FC<InputProps> = ({
 			setTimeout(() => {
 				inputRef.current?.focus()
 				if (['text', 'search', 'URL', 'tel', 'password'].includes(type)) {
-				inputRef.current?.setSelectionRange(length, length)
+					inputRef.current?.setSelectionRange(length, length)
 				}
 			}, 0)
 		}
-	}, [])
+	}, [type])
 
 	const handleMouseEnter = useCallback(() => {
 		setShowTooltip(true)
@@ -276,63 +277,108 @@ const InputField: React.FC<InputProps> = ({
 				})}
 			/>
 			{showClearIcon &&
-				!redoEnabled &&
-				type !== 'password' &&
-				value.length > 0 && (
-					<div
-						className="clear-icon-container absolute right-2 top-1/2 -translate-y-1/2 transform cursor-default"
-						onMouseEnter={handleMouseEnter}
-						onMouseLeave={handleMouseLeave}
-					>
-						<i
-							className="fas fa-times-circle clear-icon cursor-pointer text-stone-700"
-							style={{ visibility: showClearIcon ? 'visible' : 'hidden' }}
-							onClick={clearInput}
-						/>
-						{tooltipMessage && showTooltip && (
-							<div className="input-tooltip cursor-default select-none">
-								{getTooltipMessage()}
-							</div>
-						)}
-					</div>
-				)}
-			{redoEnabled &&
-				previousValue &&
-				(type !== 'password' || value.length === 0) && (
-					<div
-						className="redo-icon-container absolute right-2 top-1/2 -translate-y-1/2 transform cursor-default "
-						onMouseEnter={handleMouseEnter}
-						onMouseLeave={handleMouseLeave}
-					>
-						<i
-							className="fas fa-undo redo-icon cursor-pointer text-stone-700"
-							style={{ visibility: redoEnabled ? 'visible' : 'hidden' }}
-							onClick={redoInput}
-						/>
-						{showTooltip && (
-							<div className="input-tooltip cursor-default select-none">
-								{getTooltipMessage()}
-							</div>
-						)}
-					</div>
-				)}
-			{type === 'password' && value.length > 0 && (
+			!redoEnabled &&
+			type !== 'password' &&
+			value.length > 0 ? (
 				<div
-					className="toggle-password-container absolute right-2 top-1/2 -translate-y-1/2 transform cursor-default"
+					className="clear-icon-container absolute right-2 top-1/2 -translate-y-1/2 cursor-default"
 					onMouseEnter={handleMouseEnter}
 					onMouseLeave={handleMouseLeave}
+					role="button"
+					tabIndex={0}
+					onKeyDown={event => {
+						if (event.key === 'Enter' || event.key === ' ') {
+							clearInput()
+						}
+					}}
+				>
+					<i
+						className="fas fa-times-circle clear-icon cursor-pointer text-stone-700"
+						style={{ visibility: showClearIcon ? 'visible' : 'hidden' }}
+						onClick={clearInput}
+						role="button"
+						tabIndex={0}
+						onKeyDown={event => {
+							if (event.key === 'Enter' || event.key === ' ') {
+								clearInput()
+							}
+						}}
+					/>
+					{tooltipMessage && showTooltip ? (
+						<div className="input-tooltip cursor-default select-none">
+							{getTooltipMessage()}
+						</div>
+					) : null}
+				</div>
+			) : null}
+			{redoEnabled &&
+			previousValue &&
+			(type !== 'password' || value.length === 0) ? (
+				<div
+					className="redo-icon-container absolute right-2 top-1/2 -translate-y-1/2 cursor-default"
+					onMouseEnter={handleMouseEnter}
+					onMouseLeave={handleMouseLeave}
+					role="button"
+					tabIndex={0}
+					onKeyDown={event => {
+						if (event.key === 'Enter' || event.key === ' ') {
+							clearInput()
+						}
+					}}
+				>
+					<i
+						className="fas fa-undo redo-icon cursor-pointer text-stone-700"
+						style={{ visibility: redoEnabled ? 'visible' : 'hidden' }}
+						onClick={redoInput}
+						role="button"
+						tabIndex={0}
+						onKeyDown={event => {
+							if (event.key === 'Enter' || event.key === ' ') {
+								redoInput()
+							}
+						}}
+					/>
+
+					{showTooltip ? (
+						<div className="input-tooltip cursor-default select-none">
+							{getTooltipMessage()}
+						</div>
+					) : null}
+				</div>
+			) : null}
+			{type === 'password' && value.length > 0 ? (
+				<div
+					className="toggle-password-container absolute right-2 top-1/2 -translate-y-1/2 cursor-default"
+					onMouseEnter={handleMouseEnter}
+					onMouseLeave={handleMouseLeave}
+					role="button"
+					tabIndex={0}
+					onKeyDown={event => {
+						if (event.key === 'Enter' || event.key === ' ') {
+							clearInput()
+						}
+					}}
 				>
 					<i
 						className={`fas ${isPasswordVisible ? 'fa-eye-slash' : 'fa-eye'} toggle-password cursor-pointer text-stone-700`}
 						onClick={togglePasswordVisibility}
+						role="button"
+						tabIndex={0}
+						onKeyDown={event => {
+							if (event.key === 'Enter' || event.key === ' ') {
+								togglePasswordVisibility()
+							}
+						}}
+						aria-pressed={isPasswordVisible}
+						aria-label={isPasswordVisible ? 'Hide password' : 'Show password'}
 					/>
-					{tooltipMessage && showTooltip && (
+					{tooltipMessage && showTooltip ? (
 						<div className="input-tooltip cursor-default select-none">
 							{getTooltipMessage()}
 						</div>
-					)}
+					) : null}
 				</div>
-			)}
+			) : null}
 		</div>
 	)
 }

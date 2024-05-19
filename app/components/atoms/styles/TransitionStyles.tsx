@@ -1,3 +1,3 @@
 export const transitionStyles = {
-    transition: 'transition-border',
-  }
+	transition: 'transition-border',
+}

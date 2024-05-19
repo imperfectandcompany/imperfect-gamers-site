@@ -23,7 +23,8 @@ const UsernameForm: React.FC<UsernameFormProps> = ({
 		useEffect(() => {
 			const handler = setTimeout(effect, delay)
 			return () => clearTimeout(handler)
-		}, [...dependencies, delay])
+			// eslint-disable-next-line react-hooks/exhaustive-deps
+		}, [...dependencies, delay, effect])
 	}
 
 	const handleFetch = (username: string) => {
@@ -86,7 +87,7 @@ const UsernameForm: React.FC<UsernameFormProps> = ({
 				setFinalizing(false)
 			}
 		}
-	}, [fetcher.data, username, fetcher.state])
+	}, [fetcher.data, username, fetcher.state, handleFetch])
 
 	const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		setUsername(event.target.value)

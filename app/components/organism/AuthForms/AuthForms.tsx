@@ -1,25 +1,28 @@
 // components/organism/AuthForms/AuthForms.tsx
 
-import { useFetcher, useFetchers, useLoaderData } from '@remix-run/react'
+import { useFetchers, useLoaderData } from '@remix-run/react'
 import type React from 'react'
 import { useEffect, useState, useCallback, useMemo } from 'react'
 import Button from '~/components/atoms/Button/Button'
 import ImperfectAndCompanyLogo from '~/components/atoms/ImperfectAndCompanyLogo'
 import AuthorizeForm from '~/components/molecules/AuthorizeForm'
 import CheckoutProcess from '~/components/molecules/CheckoutProcess/CheckoutProcess'
-import CheckoutProcessTemp from '~/components/molecules/CheckoutProcess/CheckoutProcessTemp'
 import LoginForm from '~/components/molecules/LoginForm'
 import UsernameForm from '~/components/molecules/UsernameForm'
 import ProcessProvider from '~/components/pending/ProcessProvider'
-import Register from '~/components/pending/Register'
 import type { LoaderData } from '~/routes/store'
-import {
-	useFetcherWithPromiseAndReset,
-	useFetcherWithPromiseAutoReset,
-} from '~/utils/general'
+import { useFetcherWithPromiseAutoReset } from '~/utils/general'
 import ModalWrapper from '../ModalWrapper/ModalWrapper'
 import SignUpForm from '../SignUpForm/SignUpForm'
 import WelcomeScreen from '../WelcomeScreen'
+
+// Define an enum for the page titles
+enum PageTitle {
+	Welcome = 'Imperfect Gamers Club',
+	Login = 'Log In',
+	Signup = 'Sign Up',
+	LoggedIn = 'Join The Club',
+}
 
 const AuthForms: React.FC = () => {
 	const { isAuthenticated, isSteamLinked, username } =
@@ -83,14 +86,6 @@ const AuthForms: React.FC = () => {
 
 	const [isAuthorized, setIsAuthorized] = useState(false)
 
-	// Define an enum for the page titles
-	enum PageTitle {
-		Welcome = 'Imperfect Gamers Club',
-		Login = 'Log In',
-		Signup = 'Sign Up',
-		LoggedIn = 'Join The Club',
-	}
-
 	const [title, setTitle] = useState(PageTitle.Welcome)
 	const [pageHistory, setPageHistory] = useState<PageTitle[]>([
 		PageTitle.Welcome,
@@ -102,7 +97,7 @@ const AuthForms: React.FC = () => {
 		} else {
 			return title
 		}
-	}, [isAuthenticated, username, isSteamLinked])
+	}, [isAuthenticated, username, isSteamLinked, PageTitle.LoggedIn, title])
 
 	useEffect(() => {
 		setTitle(initialLoggedInPageTitle)
@@ -190,7 +185,7 @@ const AuthForms: React.FC = () => {
 						) : !isSteamLinked ? (
 							<AuthorizeForm onSuccess={() => handleSteamLinkSuccess()} />
 						) : (
-							<CheckoutProcessTemp
+							<CheckoutProcess
 								isAuthorized={isAuthorized}
 								setIsAuthorized={updateAuthorization}
 							/>
@@ -202,7 +197,6 @@ const AuthForms: React.FC = () => {
 							username={username || undefined}
 							isInitial={isInitial}
 							isLoginForm={isLoginForm}
-							handleLogout={handleLogout}
 						/>
 					}
 					isResponsive={!isAuthenticated ? isInitial : false} // Set true only if showing WelcomeScreen
@@ -220,7 +214,6 @@ interface FooterProps {
 	username?: string
 	isLoginForm: boolean
 	isInitial: boolean
-	handleLogout: () => void
 }
 
 const Footer: React.FC<FooterProps> = ({
@@ -228,7 +221,6 @@ const Footer: React.FC<FooterProps> = ({
 	username,
 	isLoginForm,
 	isInitial,
-	handleLogout,
 }) => (
 	<div className="mx-auto mt-4 flex flex-col text-sm text-white">
 		<div>

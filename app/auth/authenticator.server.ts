@@ -153,7 +153,11 @@ export async function registerUser(email: string, password: string) {
 			body: JSON.stringify({ email, password }),
 		})
 		const data = await response.json()
-        return { status: response.ok ? 'success' : 'error', message: data.message, statusCode: response.status }
+		return {
+			status: response.ok ? 'success' : 'error',
+			message: data.message,
+			statusCode: response.status,
+		}
 	} catch (error) {
 		console.error('Register error:', error)
 		return { status: 'error', message: 'Network or server error' }

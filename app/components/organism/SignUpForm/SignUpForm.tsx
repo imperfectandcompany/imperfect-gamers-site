@@ -1,9 +1,11 @@
-import { useFetcher } from '@remix-run/react'
 import { withZod } from '@remix-validated-form/with-zod'
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { HoneypotProvider, HoneypotInputs } from 'remix-utils/honeypot/react'
+import { Honeypot } from 'remix-utils/honeypot/server'
 import { ValidatedForm } from 'remix-validated-form'
 import { z } from 'zod'
 import Button from '~/components/atoms/Button/Button'
+import LottieAnimation from '~/components/atoms/LottieAnimation'
 import { animationStyles } from '~/components/atoms/styles/AnimationStyles'
 import { inputBorderStyles } from '~/components/atoms/styles/InputBorderStyles'
 import ConfirmPasswordField from '~/components/molecules/ConfirmPasswordField/ConfirmPasswordField'
@@ -14,13 +16,8 @@ import {
 	useDispatch,
 	useDispatchState,
 } from '~/components/pending/ProcessProvider'
+import { useHackedFetcher } from '~/utils/general'
 import { CloseInterceptReason } from '../ModalWrapper/ModalWrapper'
-import { Honeypot } from 'remix-utils/honeypot/server'
-import { HoneypotProvider } from 'remix-utils/honeypot/react'
-import { HoneypotInputs } from 'remix-utils/honeypot/react'
-import LottieAnimation from '~/components/atoms/LottieAnimation'
-import { useFetcherWithReset, useHackedFetcher } from '~/utils/general'
-import { loader } from '~/routes/store'
 
 interface SubmitButtonProps {
 	isDisabled: boolean
@@ -43,6 +40,8 @@ const SubmitButton = memo(
 		)
 	},
 )
+
+SubmitButton.displayName = 'SubmitButton'
 
 interface UseInputReturn {
 	value: string
@@ -140,11 +139,7 @@ function useInput(
 interface RegisterProps {
 	setCloseInterceptReason?: (reason: CloseInterceptReason) => void
 }
-interface FormValues {
-	email: string
-	password: string
-	confirmPassword: string
-}
+
 const signUpSchema = z
 	.object({
 		email: z.string().email({ message: 'Invalid email address' }),
@@ -203,6 +198,7 @@ const SignUpForm: React.FC<RegisterProps> = ({ setCloseInterceptReason }) => {
 		() => emailInput.value || passwordInput.value || confirmPasswordInput.value,
 		[emailInput.value, passwordInput.value, confirmPasswordInput.value],
 	)
+	const errorMessage = (fetcher.data as { error: string })?.error
 
 	const updateCloseInterceptReason = useCallback(() => {
 		let reason = CloseInterceptReason.None
@@ -223,24 +219,38 @@ const SignUpForm: React.FC<RegisterProps> = ({ setCloseInterceptReason }) => {
 		if (setCloseInterceptReason) {
 			setCloseInterceptReason(reason)
 		}
-	}, [fetcher.state, formIsDirty, isSubmitting, setCloseInterceptReason])
+	}, [
+		fetcher.state,
+		fetcher.data,
+		confirmPasswordInput,
+		errorMessage,
+		formIsDirty,
+		isSubmitting,
+		fetcher.data,
+		confirmPasswordInput,
+		setCloseInterceptReason,
+	])
 
 	useEffect(() => {
 		updateCloseInterceptReason()
 		// No return value from this useEffect
-	}, [updateCloseInterceptReason])
+	}, [updateCloseInterceptReason, fetcher.data])
 
 	useEffect(() => {
 		confirmPasswordInput.setError(
 			confirmPasswordInput.value !== passwordInput.value,
 		)
-	}, [passwordInput.value, confirmPasswordInput.value])
+	}, [
+		passwordInput.value,
+		confirmPasswordInput.value,
+		errorMessage,
+		confirmPasswordInput,
+	])
 
 	const dispatch = useDispatch()
 	const state = useDispatchState()
 
 	const currentDispatch = state.find(dispatch => dispatch.inProgress)
-	const errorMessage = (fetcher.data as { error: string })?.error
 
 	useEffect(() => {
 		const handleSuccess = () => {
@@ -277,6 +287,7 @@ const SignUpForm: React.FC<RegisterProps> = ({ setCloseInterceptReason }) => {
 		emailInput,
 		passwordInput,
 		confirmPasswordInput,
+		errorMessage,
 	])
 
 	const handleClick = useCallback(() => {

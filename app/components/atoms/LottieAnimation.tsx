@@ -16,10 +16,8 @@ const LottieAnimation: React.FC<LottieAnimationProps> = ({
 		autoplay
 		loop={loop}
 		src={animationUrl}
-    rendererSettings={{ preserveAspectRatio: 'xMidYMid slice',
-		}}
-
-		style={{ ...style}} // Use the provided style and set width and height to 100%
+		rendererSettings={{ preserveAspectRatio: 'xMidYMid slice' }}
+		style={{ ...style }} // Use the provided style and set width and height to 100%
 		background="transparent"
 		keepLastFrame={true}
 	/>

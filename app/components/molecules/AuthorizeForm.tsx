@@ -117,7 +117,7 @@ const AuthorizeForm: React.FC<AuthorizeFormProps> = ({
 				clearInterval(interval as NodeJS.Timeout)
 			}
 		}
-	}, [steamPopupOpened, steamPopup])
+	}, [steamPopupOpened, steamPopup, setCloseInterceptReason, setPopupWindow])
 
 	return (
 		<div>

@@ -1,7 +1,7 @@
 // components/atoms/Button/Button.tsx
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import type React from 'react'
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react'
 import { type ButtonProps } from './ButtonProps'
 
 const buttonVariants = {
@@ -26,50 +26,52 @@ const buttonVariants = {
  * @returns {JSX.Element} The rendered Button component.
  */
 const Button: React.FC<ButtonProps> = ({
-    variant = 'primary',
-    type = 'button',
-    icon,
-    children,
-    onClick,
-    className,
-    disabled = false
+	variant = 'primary',
+	type = 'button',
+	icon,
+	children,
+	onClick,
+	className,
+	disabled = false,
 }) => {
-    const [shake, setShake] = useState(false);
+	const [shake, setShake] = useState(false)
 
-    // Handle click events on the button
-const handleClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-	if (disabled) {
-		setShake(true);  // Trigger shake
-		e.preventDefault(); // Stop all other handlers
-		console.log("Shake due to disabled state.");
-	} else {
-		onClick?.(); // Remove the argument from the function call
+	// Handle click events on the button
+	const handleClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+		if (disabled) {
+			setShake(true) // Trigger shake
+			e.preventDefault() // Stop all other handlers
+			console.log('Shake due to disabled state.')
+		} else {
+			onClick?.() // Remove the argument from the function call
+		}
 	}
-};
-    // Effect to reset shake state
-    useEffect(() => {
-        if (shake) {
-            const timer = setTimeout(() => {
-                setShake(false);  // Reset shake after animation duration
-            }, 820); // Duration of shake animation
-            return () => clearTimeout(timer); // Cleanup timeout on component unmount or before the effect runs again
-        }
-    }, [shake]);
+	// Effect to reset shake state
+	useEffect(() => {
+		if (shake) {
+			const timer = setTimeout(() => {
+				setShake(false) // Reset shake after animation duration
+			}, 820) // Duration of shake animation
+			return () => clearTimeout(timer) // Cleanup timeout on component unmount or before the effect runs again
+		}
+	}, [shake])
 
-    const baseStyles = "button text-white py-2 px-5 tracking-wide";
-    const variantClasses = buttonVariants[variant] || buttonVariants.primary;
-    const disabledClasses = disabled ? 'opacity-50 cursor-not-allowed shadow-none' : '';
+	const baseStyles = 'button text-white py-2 px-5 tracking-wide'
+	const variantClasses = buttonVariants[variant] || buttonVariants.primary
+	const disabledClasses = disabled
+		? 'opacity-50 cursor-not-allowed shadow-none'
+		: ''
 
-    return (
-        <button
-            type={type}
-            className={`${baseStyles} ${variantClasses} ${disabledClasses} ${className} select-none ${shake ? 'shake cursor-grab' : ''}`}
-            onClick={handleClick}
-        >
-            {icon ? <FontAwesomeIcon icon={icon} className="mr-2" /> : null}
-            {children}
-        </button>
-    );
-};
+	return (
+		<button
+			type={type}
+			className={`${baseStyles} ${variantClasses} ${disabledClasses} ${className} select-none ${shake ? 'shake cursor-grab' : ''}`}
+			onClick={handleClick}
+		>
+			{icon ? <FontAwesomeIcon icon={icon} className="mr-2" /> : null}
+			{children}
+		</button>
+	)
+}
 
-export default Button;
+export default Button

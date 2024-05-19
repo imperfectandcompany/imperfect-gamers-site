@@ -16,39 +16,38 @@
 @tailwind utilities;
 
 @layer components {
-    .button {
-        @apply relative overflow-hidden rounded-md font-bold text-white shadow-custom transition-all duration-300 ease-in-out;
-        background: linear-gradient(to right, #ff5555, #cc4444);
-    }
+	.button {
+		@apply relative overflow-hidden rounded-md font-bold text-white shadow-custom transition-all duration-300 ease-in-out;
+		background: linear-gradient(to right, #ff5555, #cc4444);
+	}
 
-    .button:hover {
-        @apply -translate-y-0.5 shadow-lg;
-    }
+	.button:hover {
+		@apply -translate-y-0.5 shadow-lg;
+	}
 
-    .button:before {
-        content: '';
-        @apply absolute top-1/2 left-1/2 w-72 h-72 -translate-x-1/2 -translate-y-1/2 scale-0 rounded-full bg-radial-at-c from-white via-white/10 to-transparent transition-all duration-500;
-    }
+	.button:before {
+		content: '';
+		@apply absolute left-1/2 top-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 scale-0 rounded-full bg-radial-at-c from-white via-white/10 to-transparent transition-all duration-500;
+	}
 
-    .button:hover:before {
-        @apply scale-100;
-    }
+	.button:hover:before {
+		@apply scale-100;
+	}
 
-    .button:disabled {
-        @apply opacity-75 cursor-not-allowed;
-        background: linear-gradient(to right, #ff5555, #cc4444);
-        box-shadow: none;
-    }
+	.button:disabled {
+		@apply cursor-not-allowed opacity-75;
+		background: linear-gradient(to right, #ff5555, #cc4444);
+		box-shadow: none;
+	}
 
-    .button:disabled:hover {
-        @apply -translate-y-0;
-    }
+	.button:disabled:hover {
+		@apply -translate-y-0;
+	}
 
-    .button:disabled:before {
-        @apply scale-0;
-    }
+	.button:disabled:before {
+		@apply scale-0;
+	}
 }
-
 
 .button:before {
 	background: radial-gradient(

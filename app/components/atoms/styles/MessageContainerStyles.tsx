@@ -1,3 +1,3 @@
 export const messageContainerStyles = {
-    container: 'message-container',
-  }
+	container: 'message-container',
+}

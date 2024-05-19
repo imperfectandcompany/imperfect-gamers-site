@@ -1,9 +1,9 @@
-import * as React from "react";
-import { HoneypotInputProps } from "./Honeypot.server";
+import * as React from 'react'
+import type { HoneypotInputProps } from './Honeypot.server'
 
-type HoneypotContextType = Partial<HoneypotInputProps>;
+type HoneypotContextType = Partial<HoneypotInputProps>
 
-const HoneypotContext = React.createContext<HoneypotContextType>({});
+const HoneypotContext = React.createContext<HoneypotContextType>({})
 
 export function HoneypotProvider({
 	children,
@@ -13,9 +13,9 @@ export function HoneypotProvider({
 		<HoneypotContext.Provider value={context}>
 			{children}
 		</HoneypotContext.Provider>
-	);
+	)
 }
 
 export function useHoneypotContext() {
-	return React.useContext(HoneypotContext);
+	return React.useContext(HoneypotContext)
 }

@@ -1,20 +1,17 @@
-import { SerializeFrom } from '@remix-run/node';
-import type { FetcherWithComponents, SubmitFunction, SubmitOptions } from '@remix-run/react'
-import { useActionData, useFetcher, useLoaderData, useSubmit } from '@remix-run/react'
-import { AppData } from '@remix-run/react/dist/data';
-import { useRef, useEffect, useCallback, useState, useTransition, useMemo } from 'react'
-
-
+import type { SerializeFrom } from '@remix-run/node'
+import type { FetcherWithComponents, SubmitFunction } from '@remix-run/react'
+import { useFetcher } from '@remix-run/react'
+import type { AppData } from '@remix-run/react/dist/data'
+import { useRef, useEffect, useCallback, useState, useMemo } from 'react'
 
 /// https://github.com/remix-run/remix/discussions/3657
 
 export function useHackedFetcher<T>() {
-    const originalFetcher = useFetcher<T>()
-    const fakeMemoizedFetcher = useMemo(() => ({} as typeof originalFetcher), [])
-  
-    return Object.assign(fakeMemoizedFetcher, originalFetcher)
-  }
-  
+	const originalFetcher = useFetcher<T>()
+	const fakeMemoizedFetcher = useMemo(() => ({}) as typeof originalFetcher, [])
+
+	return Object.assign(fakeMemoizedFetcher, originalFetcher)
+}
 
 // Credits: https://gist.github.com/arunmmanoharan/38d313f28dc17637a0e3cfa8c6205bd5
 // Contributing users: arunmmanoharan
@@ -27,13 +24,13 @@ export function useHackedFetcher<T>() {
  * @template T - The type of data returned by the fetcher.
  * @param fetcherWithComponents - The FetcherWithComponents instance to be extended.
  * @returns A new FetcherWithComponentsReset instance.
- * 
- * 
- * 
+ *
+ *
+ *
  */
 export type FetcherWithComponentsReset<T> = FetcherWithComponents<T> & {
-	reset: () => void;
-  };
+	reset: () => void
+}
 
 // Credits: https://gist.github.com/arunmmanoharan/38d313f28dc17637a0e3cfa8c6205bd5
 // Contributing users: arunmmanoharan
@@ -46,22 +43,21 @@ export type FetcherWithComponentsReset<T> = FetcherWithComponents<T> & {
  * @returns {Object} - An object containing fetcher properties with added reset functionality.
  */
 export function useFetcherWithReset<T = AppData>(
-    opts?: Parameters<typeof useFetcher>[0],
-  ): FetcherWithComponentsReset<SerializeFrom<T>> {
-    const fetcher = useFetcher<T>(opts);
-    const [data, setData] = useState(fetcher.data);
-    useEffect(() => {
-      if (fetcher.state === "idle") {
-        setData(fetcher.data);
-      }
-    }, [fetcher.state, fetcher.data]);
-    return {
-      ...fetcher,
-      data: data as SerializeFrom<T>,
-      reset: () => setData(undefined),
-    };
-  }
-
+	opts?: Parameters<typeof useFetcher>[0],
+): FetcherWithComponentsReset<SerializeFrom<T>> {
+	const fetcher = useFetcher<T>(opts)
+	const [data, setData] = useState(fetcher.data)
+	useEffect(() => {
+		if (fetcher.state === 'idle') {
+			setData(fetcher.data)
+		}
+	}, [fetcher.state, fetcher.data])
+	return {
+		...fetcher,
+		data: data as SerializeFrom<T>,
+		reset: () => setData(undefined),
+	}
+}
 
 // Properly handle environment variables with a helper function
 
@@ -76,7 +72,6 @@ export const getEnvVar = (key: string, defaultValue?: string): string => {
 // Contributing users: Samselikoff & jjhiggzw
 // April 27 2024
 
-
 /**
  * This type extends FetcherWithComponents to include additional methods for reset and promise-based submissions.
  * It encapsulates both state management and asynchronous operations into a single fetcher interface.
@@ -85,8 +80,7 @@ export const getEnvVar = (key: string, defaultValue?: string): string => {
  * @template T - The data type the fetcher is expected to handle.
  * @property reset - A method to manually reset the internal state and promise of the fetcher.
  */
-export type ExtendedCustomFetcherTemp<T> = FetcherWithComponents<T> & {
-};
+export type ExtendedCustomFetcherTemp<T> = FetcherWithComponents<T> & {}
 
 /**
  * Custom hook that enhances the useFetcher hook with a promise-based API.
@@ -96,53 +90,54 @@ export type ExtendedCustomFetcherTemp<T> = FetcherWithComponents<T> & {
  * @returns An object containing the fetcher state, data, and a submit function.
  */
 export function useFetcherWithPromiseAutoReset<T = AppData>(
-    opts?: Parameters<typeof useFetcher>[0],
+	opts?: Parameters<typeof useFetcher>[0],
 ): ExtendedCustomFetcherTemp<SerializeFrom<T>> {
-    let resolveRef = useRef<any>();
-    let promiseRef = useRef<Promise<any>>();
-    const fetcher = useFetcher<T>(opts);
-    const [data, setData] = useState(fetcher.data);
+	let resolveRef = useRef<any>()
+	let promiseRef = useRef<Promise<any>>()
+	const fetcher = useFetcher<T>(opts)
+	const [data, setData] = useState(fetcher.data)
 
-    useEffect(() => {
-        if (fetcher.state === "idle") {
-            setData(fetcher.data);
-        }
-    }, [fetcher.state, fetcher.data]);
+	useEffect(() => {
+		if (fetcher.state === 'idle') {
+			setData(fetcher.data)
+		}
+	}, [fetcher.state, fetcher.data])
 
-    if (!promiseRef.current) {
-        promiseRef.current = new Promise(resolve => {
-            resolveRef.current = resolve;
-        });
-    }
+	if (!promiseRef.current) {
+		promiseRef.current = new Promise(resolve => {
+			resolveRef.current = resolve
+		})
+	}
 
-    // Initialize or reset the promise and its resolver.
-    const initializePromise = useCallback(() => {
-        promiseRef.current = new Promise(resolve => {
-            resolveRef.current = resolve;
-        });
-    }, []);
+	// Initialize or reset the promise and its resolver.
+	const initializePromise = useCallback(() => {
+		promiseRef.current = new Promise(resolve => {
+			resolveRef.current = resolve
+		})
+	}, [])
 
-    // Custom submit function that uses the promise mechanism.
-    const submit = useCallback(async (...args: Parameters<SubmitFunction>) => {
-        await fetcher.submit(...args);
-        return promiseRef.current; // Return the current promise which resolves when the fetcher is idle and has data.
-    }, [fetcher]);
+	// Custom submit function that uses the promise mechanism.
+	const submit = useCallback(
+		async (...args: Parameters<SubmitFunction>) => {
+			await fetcher.submit(...args)
+			return promiseRef.current // Return the current promise which resolves when the fetcher is idle and has data.
+		},
+		[fetcher],
+	)
 
-    useEffect(() => {
-        if (fetcher.state === 'idle' && fetcher.data) {
-            resolveRef.current(fetcher.data);
-            initializePromise(); // Reset the promise after handling to prepare for next operation
-        }
-    }, [fetcher.data, fetcher.state, initializePromise]);
+	useEffect(() => {
+		if (fetcher.state === 'idle' && fetcher.data) {
+			resolveRef.current(fetcher.data)
+			initializePromise() // Reset the promise after handling to prepare for next operation
+		}
+	}, [fetcher.data, fetcher.state, initializePromise])
 
-    return {
-        ...fetcher,
-        data: data as SerializeFrom<T>,
-        submit,
-    };
+	return {
+		...fetcher,
+		data: data as SerializeFrom<T>,
+		submit,
+	}
 }
-
-
 
 /**
  * This type extends FetcherWithComponents to include additional methods for reset and promise-based submissions.
@@ -153,57 +148,47 @@ export function useFetcherWithPromiseAutoReset<T = AppData>(
  * @property reset - A method to manually reset the internal state and promise of the fetcher.
  */
 export type ExtendedCustomFetcher<T> = FetcherWithComponents<T> & {
-    reset: () => void;
-};
-
-
-
-
-export function useFetcherWithPromiseAndResetStable<T = AppData>(
-    opts?: Parameters<typeof useFetcher>[0]
-): ExtendedCustomFetcher<SerializeFrom<T>> {
-
-    const fetcher = useFetcher<T>(opts);
-    const promiseResolverRef = useRef<(value: SerializeFrom<T>) => void>();
-    const fetcherPromiseRef = useRef<Promise<SerializeFrom<T>>>();
-
-    // Initialize or reset the promise and its resolver.
-    const initializePromise = useCallback(() => {
-        fetcherPromiseRef.current = new Promise(resolve => {
-            promiseResolverRef.current = resolve;
-        });
-    }, []);
-
-    // Manual reset function to reinitialize the promise, allowing the fetcher to be reused after completion.
-    const reset = useCallback(() => {
-        initializePromise();
-    }, [initializePromise]);
-
-    // Custom submit function that uses the promise mechanism.
-    const submit = useCallback(async (...args: Parameters<SubmitFunction>) => {
-        fetcher.submit(...args);
-        return fetcherPromiseRef.current; // Return the current promise which resolves when the fetcher is idle and has data.
-    }, [fetcher]);
-
-    useEffect(() => {
-        initializePromise();
-    }, [initializePromise]);
-
-    return {
-        ...fetcher,
-        submit,
-        reset,
-    };
+	reset: () => void
 }
 
+export function useFetcherWithPromiseAndResetStable<T = AppData>(
+	opts?: Parameters<typeof useFetcher>[0],
+): ExtendedCustomFetcher<SerializeFrom<T>> {
+	const fetcher = useFetcher<T>(opts)
+	const promiseResolverRef = useRef<(value: SerializeFrom<T>) => void>()
+	const fetcherPromiseRef = useRef<Promise<SerializeFrom<T>>>()
 
+	// Initialize or reset the promise and its resolver.
+	const initializePromise = useCallback(() => {
+		fetcherPromiseRef.current = new Promise(resolve => {
+			promiseResolverRef.current = resolve
+		})
+	}, [])
 
+	// Manual reset function to reinitialize the promise, allowing the fetcher to be reused after completion.
+	const reset = useCallback(() => {
+		initializePromise()
+	}, [initializePromise])
 
+	// Custom submit function that uses the promise mechanism.
+	const submit = useCallback(
+		async (...args: Parameters<SubmitFunction>) => {
+			fetcher.submit(...args)
+			return fetcherPromiseRef.current // Return the current promise which resolves when the fetcher is idle and has data.
+		},
+		[fetcher],
+	)
 
+	useEffect(() => {
+		initializePromise()
+	}, [initializePromise])
 
-
-
-
+	return {
+		...fetcher,
+		submit,
+		reset,
+	}
+}
 
 /**
  * A custom hook that combines the functionality of the standard Remix useFetcher hook with the ability to manually reset its state
@@ -213,35 +198,37 @@ export function useFetcherWithPromiseAndResetStable<T = AppData>(
  * Imperfect and Company
  * May 10, 2024
  * Inspiration from arunmmanoharan, Samselikoff, jjhiggzw
- * 
+ *
  * @param {Object} opts - Optional configurations for useFetcher, such as `key` to maintain identity in React's reconciliation.
  * @returns {ExtendedCustomFetcher} - An enhanced fetcher that supports manual resetting state and promise-based submissions.
  */
 export function useFetcherWithPromiseAndReset<T = AppData>(
-    opts?: Parameters<typeof useFetcher>[0]
+	opts?: Parameters<typeof useFetcher>[0],
 ): ExtendedCustomFetcher<SerializeFrom<T>> {
+	const fetcher = useFetcher<T>(opts)
+	const promiseResolverRef = useRef<(value: SerializeFrom<T>) => void>()
+	const fetcherPromiseRef = useRef<Promise<SerializeFrom<T>>>()
 
-    const fetcher = useFetcher<T>(opts);
-    const promiseResolverRef = useRef<(value: SerializeFrom<T>) => void>();
-    const fetcherPromiseRef = useRef<Promise<SerializeFrom<T>>>();
+	// Initialize or reset the promise and its resolver.
+	const initializePromise = useCallback(() => {
+		fetcherPromiseRef.current = new Promise(resolve => {
+			promiseResolverRef.current = resolve
+		})
+	}, [])
 
-    // Initialize or reset the promise and its resolver.
-    const initializePromise = useCallback(() => {
-        fetcherPromiseRef.current = new Promise(resolve => {
-            promiseResolverRef.current = resolve;
-        });
-    }, []);
+	// Manual reset function to reinitialize the promise, allowing the fetcher to be reused after completion.
+	const reset = useCallback(() => {
+		initializePromise()
+	}, [initializePromise])
 
-    // Manual reset function to reinitialize the promise, allowing the fetcher to be reused after completion.
-    const reset = useCallback(() => {
-        initializePromise();
-    }, [initializePromise]);
-
-    // Custom submit function that uses the promise mechanism.
-    const submit = useCallback(async (...args: Parameters<SubmitFunction>) => {
-        fetcher.submit(...args);
-        return fetcherPromiseRef.current; // Return the current promise which resolves when the fetcher is idle and has data.
-    }, [fetcher]);
+	// Custom submit function that uses the promise mechanism.
+	const submit = useCallback(
+		async (...args: Parameters<SubmitFunction>) => {
+			fetcher.submit(...args)
+			return fetcherPromiseRef.current // Return the current promise which resolves when the fetcher is idle and has data.
+		},
+		[fetcher],
+	)
 
 	// Return back to updating with this later -- not priority.
 	// useEffect(() => {
@@ -251,33 +238,31 @@ export function useFetcherWithPromiseAndReset<T = AppData>(
 	// 	}
 	// }, [fetcher.data, fetcher.state, initializePromise]);
 
-    useEffect(() => {
-        initializePromise();
-    }, [initializePromise]);
+	useEffect(() => {
+		initializePromise()
+	}, [initializePromise])
 
-    return {
-        ...fetcher,
-        submit,
-        reset,
-    };
+	return {
+		...fetcher,
+		submit,
+		reset,
+	}
 }
-
-
 
 // Inspiration taken from https://gist.github.com/samselikoff/510c020e4c9ec17f1cf76189ce683fa8
 // Contributing users: Samselikoff & jjhiggzw
 // April 27 2024
 
 /**
- * 
+ *
  * @returns An object containing the fetcher state, data, manual reset, and a submit function.
  */
 export function useFetcherWithPromiseAndManualReset<T = AppData>(
 	opts?: Parameters<typeof useFetcher>[0],
-  ): FetcherWithComponentsReset<SerializeFrom<T>> {
+): FetcherWithComponentsReset<SerializeFrom<T>> {
 	let resolveRef = useRef<any>()
 	let promiseRef = useRef<Promise<any>>()
-	const fetcher = useFetcher<T>(opts);
+	const fetcher = useFetcher<T>(opts)
 
 	if (!promiseRef.current) {
 		promiseRef.current = new Promise(resolve => {
@@ -285,35 +270,34 @@ export function useFetcherWithPromiseAndManualReset<T = AppData>(
 		})
 	}
 
-	    // Initialize or reset the promise and its resolver.
-		const resetResolver = useCallback(() => {
-			promiseRef.current = new Promise(resolve => {
-				resolveRef.current = resolve;
-			});
-		}, [promiseRef, resolveRef])
+	// Initialize or reset the promise and its resolver.
+	const resetResolver = useCallback(() => {
+		promiseRef.current = new Promise(resolve => {
+			resolveRef.current = resolve
+		})
+	}, [promiseRef, resolveRef])
 
-		    // Manual reset function to reinitialize the promise, allowing the fetcher to be reused after completion.
-			const reset = useCallback(() => {
-				if (fetcher.state === 'idle' && fetcher.data) {
-				resetResolver();
-			}
-		}, [fetcher.data, fetcher.state, resetResolver])
+	// Manual reset function to reinitialize the promise, allowing the fetcher to be reused after completion.
+	const reset = useCallback(() => {
+		if (fetcher.state === 'idle' && fetcher.data) {
+			resetResolver()
+		}
+	}, [fetcher.data, fetcher.state, resetResolver])
 
-		const submit = useCallback(
-			async (...args: Parameters<SubmitFunction>) => {
-				fetcher.submit(...args)
-				return promiseRef.current
-			},
-			[fetcher, promiseRef],
-		)
+	const submit = useCallback(
+		async (...args: Parameters<SubmitFunction>) => {
+			fetcher.submit(...args)
+			return promiseRef.current
+		},
+		[fetcher, promiseRef],
+	)
 
 	return {
-        ...fetcher,
-        submit,
-        reset,
-    };
+		...fetcher,
+		submit,
+		reset,
+	}
 }
-
 
 // export function useFetcherWithPromise<T = AppData>(
 // 	opts?: Parameters<typeof useFetcher>[0],

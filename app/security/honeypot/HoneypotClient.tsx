@@ -1,24 +1,23 @@
 /* eslint-disable jsx-a11y/autocomplete-valid */
-import * as React from "react";
-import { useHoneypotContext } from "./HoneypotContext";
+import { useHoneypotContext } from './HoneypotContext'
 
 export function HoneypotInputs({
-	label = "Please leave this field blank",
+	label = 'Please leave this field blank',
 }: {
-	label?: string;
+	label?: string
 }): JSX.Element {
-	const context = useHoneypotContext();
+	const context = useHoneypotContext()
 
 	const {
-		nameFieldName = "name__confirm",
-		validFromFieldName = "from__confirm",
+		nameFieldName = 'name__confirm',
+		validFromFieldName = 'from__confirm',
 		encryptedValidFrom,
-	} = context;
+	} = context
 
 	return (
 		<div
 			id={`${nameFieldName}_wrap`}
-			style={{ display: "none" }}
+			style={{ display: 'none' }}
 			aria-hidden="true"
 		>
 			<label htmlFor={nameFieldName}>{label}</label>
@@ -45,5 +44,5 @@ export function HoneypotInputs({
 				</>
 			) : null}
 		</div>
-	);
+	)
 }

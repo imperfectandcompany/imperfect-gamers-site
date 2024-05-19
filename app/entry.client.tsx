@@ -8,7 +8,7 @@ import { RemixBrowser } from '@remix-run/react'
 import { startTransition, StrictMode } from 'react'
 import { hydrateRoot } from 'react-dom/client'
 
-const mswFlag = false;
+const mswFlag = false
 
 async function prepareApp() {
 	if (process.env.NODE_ENV === 'development' && mswFlag) {
