@@ -136,8 +136,10 @@ function useInput(
 		reset,
 	}
 }
-interface RegisterProps {
+interface SignUpFormProps {
 	setCloseInterceptReason?: (reason: CloseInterceptReason) => void
+	setPrefilledEmail: (username: string) => void;
+    switchToLoginForm: () => void;
 }
 
 const signUpSchema = z
@@ -156,7 +158,19 @@ const validate = withZod(signUpSchema)
 
 const honeypot = new Honeypot()
 
-const SignUpForm: React.FC<RegisterProps> = ({ setCloseInterceptReason }) => {
+/**
+ * Sign up form component.
+ *
+ * This component renders a sign-up form using the Remix framework, React Router Fetcher,
+ * and Remix Validated Form flavor. It allows users to enter their email and password,
+ * and submits the form data to the "/register" endpoint.
+ *
+ * @component
+ * @param {Object} props - The component props.
+ * @param {Function} setCloseInterceptReason - Function to set the close intercept reason.
+ * @returns {JSX.Element} The rendered SignUpForm component.
+ */
+const SignUpForm: React.FC<SignUpFormProps> = ({ setCloseInterceptReason, setPrefilledEmail, switchToLoginForm }) => {
 	const honeypotProps = honeypot.getInputProps()
 
 	const [registrationSuccess, setRegistrationSuccess] = useState(false)
@@ -253,9 +267,9 @@ const SignUpForm: React.FC<RegisterProps> = ({ setCloseInterceptReason }) => {
 	const currentDispatch = state.find(dispatch => dispatch.inProgress)
 
 	useEffect(() => {
-		const handleSuccess = () => {
+		const handleSuccess = async () => {
 			console.log('Registration successful:', fetcher.data)
-			emailInput?.reset()
+			setPrefilledEmail(emailInput.value);
 			passwordInput?.reset()
 			confirmPasswordInput?.reset()
 			setRegistrationSuccess(true)
@@ -311,7 +325,7 @@ const SignUpForm: React.FC<RegisterProps> = ({ setCloseInterceptReason }) => {
 				<p className="mt-4 text-gray-400">
 					Nice job! Your account has been successfully created.
 				</p>
-				<Button className="mt-6 rounded bg-gradient-to-r from-red-700 to-red-800 px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
+				<Button onClick={switchToLoginForm} className="mt-6 rounded bg-gradient-to-r from-red-700 to-red-800 px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
 					Go to Login
 				</Button>
 			</div>
