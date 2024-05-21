@@ -124,14 +124,14 @@ const AuthForms: React.FC = () => {
 		setIsLoginForm(true)
 		setTitle(PageTitle.Login)
 		setPageHistory(prevHistory => [...prevHistory, PageTitle.Login])
-		setPrefilledEmail(undefined);
+		setPrefilledEmail(undefined)
 	}, [])
 
 	const switchToLoginForm = useCallback(() => {
-		setIsLoginForm(true);  // Switch to login form
-		setTitle(PageTitle.Login);
-		setPageHistory(prevHistory => [...prevHistory, PageTitle.Login]);
-	}, []);
+		setIsLoginForm(true) // Switch to login form
+		setTitle(PageTitle.Login)
+		setPageHistory(prevHistory => [...prevHistory, PageTitle.Login])
+	}, [])
 
 	const handleBack = () => {
 		if (pageHistory.length > 1) {
@@ -163,7 +163,7 @@ const AuthForms: React.FC = () => {
 		}
 	}, [title])
 
-	const [prefilledEmail, setPrefilledEmail] = useState<string | undefined>();
+	const [prefilledEmail, setPrefilledEmail] = useState<string | undefined>()
 
 	return (
 		<>
@@ -195,10 +195,11 @@ const AuthForms: React.FC = () => {
 									onExistingUser={handleExistingUser}
 								/>
 							) : isLoginForm ? (
-<LoginForm initialEmail={prefilledEmail} />
+								<LoginForm initialEmail={prefilledEmail} />
 							) : (
-								<SignUpForm setPrefilledEmail={setPrefilledEmail}
-								switchToLoginForm={switchToLoginForm} 
+								<SignUpForm
+									setPrefilledEmail={setPrefilledEmail}
+									switchToLoginForm={switchToLoginForm}
 								/>
 							)
 						) : !username ? (

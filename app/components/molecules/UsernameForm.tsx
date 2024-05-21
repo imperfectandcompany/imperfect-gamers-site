@@ -1,6 +1,6 @@
-import { useFetcher } from '@remix-run/react'
+import { Fetcher, SubmitOptions, useFetcher } from '@remix-run/react'
 import { withZod } from '@remix-validated-form/with-zod'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { ValidatedForm } from 'remix-validated-form'
 import { z } from 'zod'
 import Button from '~/components/atoms/Button/Button'
@@ -14,59 +14,38 @@ const UsernameForm: React.FC<UsernameFormProps> = ({
 	const [username, setUsername] = useState('')
 	const [usernameStatus, setUsernameStatus] = useState<string | null>(null)
 	const [finalizing, setFinalizing] = useState(false)
+	const abortControllerRef = useRef<AbortController | null>(null)
 
-	function useDebouncedEffect(
-		effect: () => void,
-		dependencies: any[],
-		delay: number,
-	) {
-		useEffect(() => {
-			const handler = setTimeout(effect, delay)
-			return () => clearTimeout(handler)
-			// eslint-disable-next-line react-hooks/exhaustive-deps
-		}, [...dependencies, delay, effect])
-	}
+	useEffect(() => {
+		const controller = new AbortController()
+		abortControllerRef.current = controller
 
-	const handleFetch = (username: string) => {
-		let reason = CloseInterceptReason.None
-
-		if (fetcher.state === 'submitting' || fetcher.state === 'loading') {
-			reason = CloseInterceptReason.RequestInProgress
-		} else if (username) {
-			reason = CloseInterceptReason.UnsavedChanges
-		} else if (
-			(fetcher.data &&
-				typeof fetcher.data === 'object' &&
-				((fetcher.data as { success: boolean })?.success ||
-					'error' in fetcher.data)) ||
-			fetcher.state === 'idle'
-		) {
-			reason = CloseInterceptReason.None
+		return () => {
+			controller.abort()
 		}
+	}, [])
 
-		if (setCloseInterceptReason) {
-			setCloseInterceptReason(reason)
-		}
-	}
-
-	useDebouncedEffect(
-		() => {
-			handleFetch(username)
+	useEffect(() => {
+		const timeoutId = setTimeout(() => {
 			if (username.length >= 3) {
-				fetcher.submit(
-					{ username },
-					{ method: 'post', action: '/auth/check/username' },
-				)
+				abortControllerRef.current?.abort() // Abort previous requests
+				const newController = new AbortController()
+				abortControllerRef.current = newController
+
+				fetcher.submit({ username }, {
+					method: 'post',
+					action: '/auth/check/username',
+					signal: newController.signal,
+				} as SubmitOptions)
 			} else {
 				setUsernameStatus(null) // Clear status when below 3 characters
 			}
-		},
-		[username, fetcher.state],
-		300,
-	)
+		}, 300)
+
+		return () => clearTimeout(timeoutId)
+	}, [username])
 
 	useEffect(() => {
-		handleFetch(username)
 		if (username.length > 0 && username.length < 3) {
 			setUsernameStatus('Username too short.') // Warning for short username
 		} else if (fetcher.data) {
@@ -87,20 +66,55 @@ const UsernameForm: React.FC<UsernameFormProps> = ({
 				setFinalizing(false)
 			}
 		}
-	}, [fetcher.data, username, fetcher.state, handleFetch])
+	}, [fetcher.data, username])
 
 	const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		setUsername(event.target.value)
-		if (event.target.value) {
-			// If the input field is not empty, set the close intercept reason to UnsavedChanges
-			setCloseInterceptReason &&
-				setCloseInterceptReason(CloseInterceptReason.UnsavedChanges)
-		} else {
-			// If the input field is empty, clear the close intercept reason
-			setCloseInterceptReason &&
-				setCloseInterceptReason(CloseInterceptReason.None)
+		setUsernameStatus(null) // Reset status on every input change
+	}
+
+	// Interface for fetcher's data if not already defined
+	interface FetchData {
+		success?: boolean
+		error?: boolean
+		usernameAvailable?: boolean
+	}
+
+	const updateCloseInterceptReason = (username: string): void => {
+		const reason = determineCloseInterceptReason(
+			username,
+			fetcher.data as FetchData,
+		)
+		if (setCloseInterceptReason) {
+			setCloseInterceptReason(reason)
 		}
 	}
+
+	const determineCloseInterceptReason = (
+		username: string,
+		fetchData?: FetchData,
+	): CloseInterceptReason => {
+		if (fetcher.state === 'submitting' || fetcher.state === 'loading') {
+			return CloseInterceptReason.RequestInProgress
+		} else if (username) {
+			return CloseInterceptReason.UnsavedChanges
+		} else if (fetchData && (fetchData.success || 'error' in fetchData)) {
+			return CloseInterceptReason.None
+		}
+		return CloseInterceptReason.None
+	}
+
+	useEffect(() => {
+		updateCloseInterceptReason(username)
+	}, [username, fetcher.state])
+
+	useEffect(() => {
+		const handleFetchStateUpdate = () => {
+			updateCloseInterceptReason(username)
+		}
+
+		handleFetchStateUpdate()
+	}, [fetcher.state, fetcher.data])
 
 	const handleFormSubmit = (
 		data: { username: string },
@@ -141,14 +155,14 @@ const UsernameForm: React.FC<UsernameFormProps> = ({
 					autoComplete="off"
 					required={true}
 				/>
-				{usernameStatus ? (
+				{usernameStatus && (
 					<div
 						id="usernameStatus"
 						className={`text-sm ${fetcher.state === 'submitting' ? 'text-gray-500' : usernameStatus.includes('taken') ? 'text-red-500' : usernameStatus.includes('short') ? 'text-yellow-500' : 'text-green-500'}`}
 					>
-						{fetcher.state === 'submitting' ? 'Checking' : usernameStatus}
+						{fetcher.state === 'submitting' ? 'Checking...' : usernameStatus}
 					</div>
-				) : null}
+				)}
 				<Button type="submit">
 					{fetcher.state === 'submitting' ? 'Checking...' : 'Continue'}
 				</Button>

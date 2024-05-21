@@ -20,7 +20,7 @@ import { CloseInterceptReason } from '../organism/ModalWrapper/ModalWrapper'
 
 export const LoginForm: React.FC<LoginProps> = ({
 	setCloseInterceptReason,
-	initialEmail
+	initialEmail,
 }) => {
 	const honeypotProps = honeypot.getInputProps()
 
@@ -34,7 +34,7 @@ export const LoginForm: React.FC<LoginProps> = ({
 	const prevFetcherState = useRef(fetcher.state)
 
 	const emailInput = useInput(
-        initialEmail || '',  // Pre-fill the email if provided
+		initialEmail || '', // Pre-fill the email if provided
 		(email: string) =>
 			/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(String(email).toLowerCase()),
 		'email-error',
@@ -246,7 +246,7 @@ export const LoginForm: React.FC<LoginProps> = ({
 
 export interface LoginProps {
 	setCloseInterceptReason?: (reason: CloseInterceptReason) => void
-	initialEmail?: string;
+	initialEmail?: string
 }
 
 export const honeypot = new Honeypot()
