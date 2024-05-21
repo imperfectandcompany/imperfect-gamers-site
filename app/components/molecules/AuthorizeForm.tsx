@@ -1,4 +1,5 @@
 // ~/app/components/molecules/AuthorizeForm.tsx
+import { useRevalidator } from '@remix-run/react'
 import { useEffect, useState } from 'react'
 import Button from '~/components/atoms/Button/Button'
 // import { generateSteamLoginURL } from '~/utils/steamAuth'
@@ -6,7 +7,6 @@ import { CloseInterceptReason } from '../organism/ModalWrapper/ModalWrapper'
 
 // Add setCloseInterceptReason to the props interface
 interface AuthorizeFormProps {
-	onSuccess: () => void
 	setCloseInterceptReason?: (reason: CloseInterceptReason) => void
 	setPopupWindow?: (window: Window | null) => void
 }
@@ -15,7 +15,6 @@ interface AuthorizeFormProps {
  * Represents a form component for authorizing a Steam account.
  */
 const AuthorizeForm: React.FC<AuthorizeFormProps> = ({
-	onSuccess,
 	setCloseInterceptReason,
 	setPopupWindow,
 }) => {
@@ -23,17 +22,36 @@ const AuthorizeForm: React.FC<AuthorizeFormProps> = ({
 	const [fallbackUrl, setFallbackUrl] = useState('')
 	const [steamPopupOpened, setSteamPopupOpened] = useState(false)
 	const [steamPopup, setSteamPopup] = useState<Window | null>(null)
+	const revalidator = useRevalidator()
 
-	const handleSteamLinkSuccess = () => {
-		onSuccess() // Notify the parent component
-	}
-	if (typeof window !== 'undefined') {
-		window.addEventListener('message', event => {
+	const callback = () => revalidator.revalidate()
+
+	useEffect(() => {
+		// Set CloseInterceptReason to None initially when the component mounts
+		if (setCloseInterceptReason) {
+			setCloseInterceptReason(CloseInterceptReason.None)
+		}
+
+		const handleMessage = (event: MessageEvent) => {
 			if (event.data.type === 'steam-auth-success') {
-				handleSteamLinkSuccess()
+				console.log('User has successfully integrated their steam.')
+				/* 
+				"This hook allows you to revalidate the data for any reason. React Router automatically 
+				revalidates the data after actions are called, but you may want to revalidate for other reasons 
+				like when focus returns to the window."
+				https://reactrouter.com/en/main/hooks/use-revalidator
+				*/
+				callback()
 			}
-		})
-	}
+		}
+
+		window.addEventListener('message', handleMessage)
+
+		// Cleanup the event listener when the component unmounts
+		return () => {
+			window.removeEventListener('message', handleMessage)
+		}
+	}, []) // Empty dependency array ensures this effect runs only once on mount
 
 	// Function to fetch URL and open the popup
 	const initiateSteamLinking = async () => {

@@ -11,16 +11,12 @@ import { useAddPackageToBasket, useCreateBasket } from './BasketManager'
 
 interface CheckoutProcessProps {
 	isOpen?: boolean
-	isAuthorized: boolean
 	setCloseInterceptReason?: (reason: CloseInterceptReason) => void
-	setIsAuthorized: (newState: boolean) => void
 }
 
 const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 	isOpen,
-	isAuthorized,
 	setCloseInterceptReason,
-	setIsAuthorized,
 }) => {
 	const {
 		isAuthenticated,
@@ -38,6 +34,7 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 	const prevIsOpen = useRef(isOpen)
 	const { submit } = useFetcherWithPromise()
 	const fetcher = useFetcher()
+	const isAuthorized = isOnboarded && isAuthenticated && isSteamLinked
 
 	// 1.0 Effect to Check Basket Existence
 
@@ -116,6 +113,8 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 				localBasketId = result // Update the package with the response
 				setBasketExists(true)
 			}
+		} else {
+			console.log('User already has basket...')
 		}
 		// Process 3.2: Add a package if it's not already in the basket
 		if (localBasketId && !packages.some(pkg => pkg.id === 6154841)) {
@@ -123,11 +122,17 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 			if (result) {
 				localPackages = result // Update the package with the response
 			}
+		} else {
+			console.log('User already has package added to basket...')
 		}
 
 		// Process 3.3: Initiate checkout
 		if (localBasketId && localPackages.some(pkg => pkg.id === 6154841)) {
 			initiateCheckout(localBasketId)
+		} else {
+			console.log(
+				'User had basket and added package to basket, but somehow added package not matching our expected id...',
+			)
 		}
 	}, [
 		basketId,
@@ -144,12 +149,8 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 	// 4.0 Effect to Handle Authentication and Store Interaction Triggers
 
 	useEffect(() => {
-		const authorizationStatus = isAuthenticated && isOnboarded && isSteamLinked
-		setIsAuthorized(authorizationStatus)
-
 		if (!isAuthenticated && prevIsAuthenticated.current) {
 			storeRequestTriggeredRef.current = false
-			setIsAuthorized(false)
 			setBasketExists(false) // Reset on logout
 			return // Exit if user is not authenticated
 		}
