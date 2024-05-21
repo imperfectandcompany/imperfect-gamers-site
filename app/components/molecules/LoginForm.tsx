@@ -1,7 +1,9 @@
+import { withZod } from '@remix-validated-form/with-zod'
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { HoneypotProvider, HoneypotInputs } from 'remix-utils/honeypot/react'
-import { z } from 'zod'
+import { Honeypot } from 'remix-utils/honeypot/server'
 import { ValidatedForm } from 'remix-validated-form'
+import { z } from 'zod'
 import Button from '~/components/atoms/Button/Button'
 import LottieAnimation from '~/components/atoms/LottieAnimation'
 import { animationStyles } from '~/components/atoms/styles/AnimationStyles'
@@ -13,10 +15,8 @@ import {
 	useDispatchState,
 } from '~/components/pending/ProcessProvider'
 import { useHackedFetcher } from '~/utils/general'
-import { CloseInterceptReason } from '../organism/ModalWrapper/ModalWrapper'
-import { Honeypot } from 'remix-utils/honeypot/server'
-import { withZod } from '@remix-validated-form/with-zod'
 import { inputBorderStyles } from '../atoms/styles/InputBorderStyles'
+import { CloseInterceptReason } from '../organism/ModalWrapper/ModalWrapper'
 
 export const LoginForm: React.FC<LoginProps> = ({
 	setCloseInterceptReason,
@@ -241,7 +241,6 @@ export const LoginForm: React.FC<LoginProps> = ({
 	)
 }
 
-
 export interface LoginProps {
 	setCloseInterceptReason?: (reason: CloseInterceptReason) => void
 }
@@ -358,10 +357,6 @@ export function useInput(
 		reset,
 	}
 }
-
-
-
-
 
 export const SubmitButton = memo(
 	({ isDisabled, onClick, classes, buttonText }: SubmitButtonProps) => {

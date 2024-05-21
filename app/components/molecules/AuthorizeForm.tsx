@@ -1,9 +1,9 @@
 // ~/app/components/molecules/AuthorizeForm.tsx
+import { useRevalidator } from '@remix-run/react'
 import { useEffect, useState } from 'react'
 import Button from '~/components/atoms/Button/Button'
 // import { generateSteamLoginURL } from '~/utils/steamAuth'
 import { CloseInterceptReason } from '../organism/ModalWrapper/ModalWrapper'
-import { useRevalidator } from '@remix-run/react'
 
 // Add setCloseInterceptReason to the props interface
 interface AuthorizeFormProps {
@@ -24,16 +24,14 @@ const AuthorizeForm: React.FC<AuthorizeFormProps> = ({
 	const [steamPopup, setSteamPopup] = useState<Window | null>(null)
 	const revalidator = useRevalidator()
 
-
-
 	const callback = () => revalidator.revalidate()
 
-    useEffect(() => {
-        // Set CloseInterceptReason to None initially when the component mounts
-        if (setCloseInterceptReason) {
-            setCloseInterceptReason(CloseInterceptReason.None);
-        }
-		
+	useEffect(() => {
+		// Set CloseInterceptReason to None initially when the component mounts
+		if (setCloseInterceptReason) {
+			setCloseInterceptReason(CloseInterceptReason.None)
+		}
+
 		const handleMessage = (event: MessageEvent) => {
 			if (event.data.type === 'steam-auth-success') {
 				console.log('User has successfully integrated their steam.')

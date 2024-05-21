@@ -2,11 +2,12 @@
 
 import { useFetchers, useLoaderData } from '@remix-run/react'
 import type React from 'react'
-import { useEffect, useState, useCallback, useMemo, useRef } from 'react'
+import { useEffect, useState, useCallback, useMemo } from 'react'
 import Button from '~/components/atoms/Button/Button'
 import ImperfectAndCompanyLogo from '~/components/atoms/ImperfectAndCompanyLogo'
 import AuthorizeForm from '~/components/molecules/AuthorizeForm'
 import CheckoutProcess from '~/components/molecules/CheckoutProcess/CheckoutProcess'
+import { LoginForm } from '~/components/molecules/LoginForm'
 import UsernameForm from '~/components/molecules/UsernameForm'
 import ProcessProvider from '~/components/pending/ProcessProvider'
 import type { LoaderData } from '~/routes/store'
@@ -14,7 +15,6 @@ import { useFetcherWithPromiseAutoReset } from '~/utils/general'
 import ModalWrapper from '../ModalWrapper/ModalWrapper'
 import SignUpForm from '../SignUpForm/SignUpForm'
 import WelcomeScreen from '../WelcomeScreen'
-import { LoginForm } from '~/components/molecules/LoginForm'
 
 // Define an enum for the page titles
 enum PageTitle {
@@ -27,7 +27,7 @@ enum PageTitle {
 }
 
 const AuthForms: React.FC = () => {
-	const { isAuthenticated, isSteamLinked, isOnboarded,  username } =
+	const { isAuthenticated, isSteamLinked, username } =
 		useLoaderData<LoaderData>()
 	const [isLoginForm, setIsLoginForm] = useState(true)
 	const { submit } = useFetcherWithPromiseAutoReset({
@@ -48,9 +48,6 @@ const AuthForms: React.FC = () => {
 			`/store/create`,
 		].some(path => fetcher.formAction?.startsWith(path))
 	})
-
-	const prevIsAuthenticated = useRef(isAuthenticated)
-
 
 	// Get an array of all in-flight fetchers and their states
 	const inFlightFetchers = relevantFetchers.map(fetcher => ({
@@ -80,8 +77,6 @@ const AuthForms: React.FC = () => {
 	}, [])
 
 	const [isInitial, setIsInitial] = useState(true)
-	const [isAuthorized, setIsAuthorized] = useState(false)
-
 
 	const [title, setTitle] = useState(PageTitle.Welcome)
 	const [pageHistory, setPageHistory] = useState<PageTitle[]>([
@@ -104,7 +99,15 @@ const AuthForms: React.FC = () => {
 		} else {
 			return title
 		}
-	}, [isAuthenticated, username, isSteamLinked, PageTitle.SetUsername, PageTitle.LinkSteam, PageTitle.LoggedIn, title])
+	}, [
+		isAuthenticated,
+		username,
+		isSteamLinked,
+		PageTitle.SetUsername,
+		PageTitle.LinkSteam,
+		PageTitle.LoggedIn,
+		title,
+	])
 
 	useEffect(() => {
 		setTitle(initialLoggedInPageTitle)
@@ -192,8 +195,7 @@ const AuthForms: React.FC = () => {
 						) : !isSteamLinked ? (
 							<AuthorizeForm />
 						) : (
-							<CheckoutProcess
-							/>
+							<CheckoutProcess />
 						)
 					}
 					footer={

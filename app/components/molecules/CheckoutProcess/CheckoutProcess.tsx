@@ -130,7 +130,9 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 		if (localBasketId && localPackages.some(pkg => pkg.id === 6154841)) {
 			initiateCheckout(localBasketId)
 		} else {
-			console.log('User had basket and added package to basket, but somehow added package not matching our expected id...')
+			console.log(
+				'User had basket and added package to basket, but somehow added package not matching our expected id...',
+			)
 		}
 	}, [
 		basketId,
