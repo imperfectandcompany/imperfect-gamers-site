@@ -2,12 +2,11 @@
 
 import { useFetchers, useLoaderData } from '@remix-run/react'
 import type React from 'react'
-import { useEffect, useState, useCallback, useMemo } from 'react'
+import { useEffect, useState, useCallback, useMemo, useRef } from 'react'
 import Button from '~/components/atoms/Button/Button'
 import ImperfectAndCompanyLogo from '~/components/atoms/ImperfectAndCompanyLogo'
 import AuthorizeForm from '~/components/molecules/AuthorizeForm'
 import CheckoutProcess from '~/components/molecules/CheckoutProcess/CheckoutProcess'
-import LoginForm from '~/components/molecules/LoginForm'
 import UsernameForm from '~/components/molecules/UsernameForm'
 import ProcessProvider from '~/components/pending/ProcessProvider'
 import type { LoaderData } from '~/routes/store'
@@ -15,6 +14,7 @@ import { useFetcherWithPromiseAutoReset } from '~/utils/general'
 import ModalWrapper from '../ModalWrapper/ModalWrapper'
 import SignUpForm from '../SignUpForm/SignUpForm'
 import WelcomeScreen from '../WelcomeScreen'
+import { LoginForm } from '~/components/molecules/LoginForm'
 
 // Define an enum for the page titles
 enum PageTitle {
@@ -22,10 +22,12 @@ enum PageTitle {
 	Login = 'Log In',
 	Signup = 'Sign Up',
 	LoggedIn = 'Join The Club',
+	SetUsername = 'Username - 1/2',
+	LinkSteam = 'Steam - 2/2',
 }
 
 const AuthForms: React.FC = () => {
-	const { isAuthenticated, isSteamLinked, username } =
+	const { isAuthenticated, isSteamLinked, isOnboarded,  username } =
 		useLoaderData<LoaderData>()
 	const [isLoginForm, setIsLoginForm] = useState(true)
 	const { submit } = useFetcherWithPromiseAutoReset({
@@ -46,6 +48,9 @@ const AuthForms: React.FC = () => {
 			`/store/create`,
 		].some(path => fetcher.formAction?.startsWith(path))
 	})
+
+	const prevIsAuthenticated = useRef(isAuthenticated)
+
 
 	// Get an array of all in-flight fetchers and their states
 	const inFlightFetchers = relevantFetchers.map(fetcher => ({
@@ -75,16 +80,8 @@ const AuthForms: React.FC = () => {
 	}, [])
 
 	const [isInitial, setIsInitial] = useState(true)
-
-	const handleSteamLinkSuccess = useCallback(() => {
-		setIsAuthorized(true)
-	}, [])
-
-	const updateAuthorization = useCallback((newState: boolean) => {
-		setIsAuthorized(newState)
-	}, [])
-
 	const [isAuthorized, setIsAuthorized] = useState(false)
+
 
 	const [title, setTitle] = useState(PageTitle.Welcome)
 	const [pageHistory, setPageHistory] = useState<PageTitle[]>([
@@ -92,12 +89,22 @@ const AuthForms: React.FC = () => {
 	])
 
 	const initialLoggedInPageTitle = useMemo(() => {
-		if (isAuthenticated && username && isSteamLinked) {
+		//if user is not authenticated
+		if (isAuthenticated) {
+			// if user doesn't have a username
+			if (!username) {
+				return PageTitle.SetUsername
+			}
+			// if user doesn't have a steam linked
+			if (!isSteamLinked) {
+				return PageTitle.LinkSteam
+			}
+			// if user isn't logged in
 			return PageTitle.LoggedIn
 		} else {
 			return title
 		}
-	}, [isAuthenticated, username, isSteamLinked, PageTitle.LoggedIn, title])
+	}, [isAuthenticated, username, isSteamLinked, PageTitle.SetUsername, PageTitle.LinkSteam, PageTitle.LoggedIn, title])
 
 	useEffect(() => {
 		setTitle(initialLoggedInPageTitle)
@@ -183,11 +190,9 @@ const AuthForms: React.FC = () => {
 						) : !username ? (
 							<UsernameForm />
 						) : !isSteamLinked ? (
-							<AuthorizeForm onSuccess={() => handleSteamLinkSuccess()} />
+							<AuthorizeForm />
 						) : (
 							<CheckoutProcess
-								isAuthorized={isAuthorized}
-								setIsAuthorized={updateAuthorization}
 							/>
 						)
 					}
