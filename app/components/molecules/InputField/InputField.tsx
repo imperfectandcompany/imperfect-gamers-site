@@ -111,25 +111,6 @@ const InputField: React.FC<InputProps> = ({
 		[handleValueChange],
 	)
 
-	// further testing needed
-	// const setEmailCursorToEnd = (inputElement: HTMLInputElement | null): void => {
-	// 	if (!inputElement) return;
-
-	// 	// Temporarily change the type to text to manipulate cursor
-	// 	const currentType = inputElement.type;
-	// 	inputElement.type = 'text';
-
-	// 	// Set cursor position to the end of the input
-	// 	const valueLength = inputElement.value.length;
-	// 	inputElement.setSelectionRange(valueLength, valueLength);
-
-	// 	// Revert the type to email
-	// 	inputElement.type = currentType;
-
-	// 	// Ensure the input is focused after manipulation
-	// 	inputElement.focus();
-	// };
-
 	const clearInput = useCallback(() => {
 		setPreviousValue(value)
 		handleValueChange({

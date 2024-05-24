@@ -20,6 +20,7 @@ import { CloseInterceptReason } from '../organism/ModalWrapper/ModalWrapper'
 
 export const LoginForm: React.FC<LoginProps> = ({
 	setCloseInterceptReason,
+	initialEmail,
 }) => {
 	const honeypotProps = honeypot.getInputProps()
 
@@ -33,7 +34,7 @@ export const LoginForm: React.FC<LoginProps> = ({
 	const prevFetcherState = useRef(fetcher.state)
 
 	const emailInput = useInput(
-		'',
+		initialEmail || '', // Pre-fill the email if provided
 		(email: string) =>
 			/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(String(email).toLowerCase()),
 		'email-error',
@@ -123,6 +124,8 @@ export const LoginForm: React.FC<LoginProps> = ({
 	}, [isDisabled, setShake])
 
 	// Modify the main return logic to conditionally render based on Login Success
+	// add future login to redirect to memberzone screen if user already has vip for management.
+	// this screen will be for initial first time purchase onboarding.
 	if (loginSuccess) {
 		return (
 			<div className="flex flex-col items-center justify-center">
@@ -133,10 +136,10 @@ export const LoginForm: React.FC<LoginProps> = ({
 				/>
 				<h1 className="mt-6 text-3xl text-white">Entering memberzone.</h1>
 				<p className="mt-4 text-gray-400">
-					Nice job logging in! Let&apos;s intiate your pass first.
+					Nice job logging in! Let&apos;s initiate your pass first.
 				</p>
 				<Button className="mt-6 rounded bg-gradient-to-r from-red-700 to-red-800 px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
-					Go to Login
+					Initiate pass
 				</Button>
 			</div>
 		)
@@ -166,7 +169,7 @@ export const LoginForm: React.FC<LoginProps> = ({
 				) : null}
 				<HoneypotProvider {...honeypotProps}>
 					<ValidatedForm
-						key="SignUpForm"
+						key="LoginForm"
 						validator={validate}
 						action="/login"
 						method="POST"
@@ -243,6 +246,7 @@ export const LoginForm: React.FC<LoginProps> = ({
 
 export interface LoginProps {
 	setCloseInterceptReason?: (reason: CloseInterceptReason) => void
+	initialEmail?: string
 }
 
 export const honeypot = new Honeypot()
