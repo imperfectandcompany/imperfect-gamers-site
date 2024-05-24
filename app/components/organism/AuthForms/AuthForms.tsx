@@ -218,7 +218,13 @@ const AuthForms: React.FC = () => {
 							isLoginForm={isLoginForm}
 						/>
 					}
-					isResponsive={!isAuthenticated ? isInitial : false} // Set true only if showing WelcomeScreen
+					isResponsive={
+						!isAuthenticated
+							? isInitial
+							: title == PageTitle.SetUsername
+								? false
+								: true
+					} // Set true only if showing WelcomeScreen
 				>
 					<Button>Join Now</Button>
 				</ModalWrapper>
