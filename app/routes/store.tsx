@@ -6,7 +6,8 @@ import {
 } from '@remix-run/node'
 import type { ExternalScriptsHandle } from 'remix-utils/external-scripts'
 import { getSession, storeCookie } from '~/auth/storage.server' // Make sure this matches your file structure
-import { StoreHeader } from '~/components/templates/store'
+import CookieConsent from '~/components/pending/CookieConsent'
+import { StoreFooter, StoreHeader } from '~/components/templates/store'
 import '~/styles/store.css'
 import type { BasketPackage } from '~/utils/tebex.interface'
 
@@ -163,6 +164,8 @@ export default function Store() {
 	return (
 		<>
 			<StoreHeader />
+			<CookieConsent/>
+			<StoreFooter/>
 		</>
 	)
 }
