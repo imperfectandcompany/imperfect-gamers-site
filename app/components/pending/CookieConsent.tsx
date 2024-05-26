@@ -1,19 +1,88 @@
-import React, { useState } from 'react';
+// Import React and other necessary types
+import { useRef, useState, useEffect, FunctionComponent } from 'react';
 
-const CookieConsent: React.FC = () => {
-    const [isVisible, setIsVisible] = useState(true);
+interface ModalProps {
+  title: string;
+  content: string;
+  onClose: () => void;
+}
 
-    const acceptCookies = () => {
-        alert('Cookies accepted!');
-        setIsVisible(false);
+
+interface ModalProps {
+  title: string;
+  content: string;
+  onClose: () => void;
+}
+
+const Modal: FunctionComponent<ModalProps> = ({ title, content, onClose }) => {
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') onClose();
     };
 
-    const openSettings = () => {
-        alert('Opening settings...');
-    };
+    window.addEventListener('keydown', handleEscape);
 
-    return (
-        <>
+    if (modalRef.current) {
+      modalRef.current.style.transform = 'scale(0.9)';
+      modalRef.current.style.opacity = '0';
+      setTimeout(() => {
+        if (modalRef.current) {
+          modalRef.current.style.transform = 'scale(1)';
+          modalRef.current.style.opacity = '1';
+          modalRef.current.style.transition = 'transform 0.3s ease-out, opacity 0.3s ease-out';
+        }
+      }, 10);
+    }
+
+    return () => {
+      window.removeEventListener('keydown', handleEscape);
+    };
+  }, [onClose]);
+
+  const handleBackdropClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    if (event.target === event.currentTarget) {
+      onClose();
+    }
+  };
+
+  return (
+    <div className="fixed text-black/80 inset-0 bg-black bg-opacity-75 flex justify-center items-center p-4" onClick={handleBackdropClick} role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div ref={modalRef} className="bg-white p-6 rounded-xl shadow-xl max-w-lg w-full" onClick={(e) => e.stopPropagation()} role="document">
+        <div className="flex justify-between items-center">
+          <h2 id="modalTitle" className="text-2xl font-semibold">{title}</h2>
+          <button onClick={onClose} className="text-gray-600 hover:text-gray-800" aria-label="Close modal">
+            <i className="fas fa-times"></i>
+          </button>
+        </div>
+        <div className="mt-4">
+          <p>{content}</p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const CookieConsent: FunctionComponent = () => {
+  const [isVisible, setIsVisible] = useState(true);
+  const [activeModal, setActiveModal] = useState<string | null>(null);
+
+  const acceptCookies = () => {
+    alert('Cookies accepted!');
+    setIsVisible(false);
+  };
+
+  const openModal = (modalName: string) => {
+    setActiveModal(modalName);
+  };
+
+  const closeModal = () => {
+    setActiveModal(null);
+  };
+
+  return (
+    <>
             <style>{`
                 body {
                     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -62,40 +131,32 @@ const CookieConsent: React.FC = () => {
                     outline: 2px solid #ff6347; /* High contrast outline for focus */
                 }
             `}</style>
-            {isVisible && (
-                <div className="cookie-popup cookie-consent" role="dialog" aria-labelledby="cookieConsentTitle" aria-describedby="cookieConsentDesc">
-                    <div className="text-sm">
-                        <strong id="cookieConsentTitle">Imperfect Gamers - Committed to Your Privacy.</strong>
-                        <p id="cookieConsentDesc">At Imperfect Gamers, part of Imperfect and Company LLC, we strive to enhance your experience and improve our services. To achieve this, we use cookies and similar technologies provided by our partners Tebex, Google (Analytics GA4), and Microsoft (Clarity). These tools help us understand user behavior and optimize our website accordingly. You can manage your preferences or withdraw your consent at any time. For more detailed information, please visit our "Settings" or view our data protection policies.</p>
-                        <a href="/privacy-policy">Privacy Policy</a> | <a href="/cookie-policy">Cookie Policy</a>
-                    </div>
-                    <div className="flex justify-end space-x-2 mt-2">
-                        <button
-                            className="text-white py-2 px-5 tracking-wide bg-gradient-to-r from-red-500 to-red-700 hover:bg-gradient-to-l opacity-75 cursor-pointer shadow-none justify-center border-transparent text-sm font-medium transition-opacity duration-300 focus:outline-none select-none"
-                            onClick={openSettings}
-                            aria-label="Open cookie settings"
-                            tabIndex={0}
-                        >
-                            Settings
-                        </button>
-                        <button
-                            className="text-white py-2 px-5 tracking-wide bg-gradient-to-r from-red-500 to-red-700 hover:bg-gradient-to-l opacity-100 cursor-pointer shadow-none justify-center border-transparent text-sm font-medium transition-opacity duration-300 focus:outline-none select-none"
-                            onClick={acceptCookies}
-                            aria-label="Accept all cookies"
-                            tabIndex={0}
-                        >
-                            Accept all
-                        </button>
-                    </div>
-                </div>
-            )}
-            {!isVisible && (
-                <div className="footer" style={{ display: 'block' }}>
-                    <a href="/privacy-policy">Privacy Policy</a> | <a href="/cookie-policy">Cookie Policy</a>
-                </div>
-            )}
-        </>
-    );
+      {isVisible && (
+        <div className="cookie-popup cookie-consent fixed bottom-0 left-0 w-full p-4 bg-gray-800 text-white shadow-md z-50" role="alert">
+          <div className="text-sm">
+            <strong>Imperfect Gamers - Committed to Your Privacy.</strong>
+            <p>We use cookies and similar technologies to enhance your experience. Manage your preferences or withdraw your consent at any time. For more information, visit our "Settings" or view our data protection policies.</p>
+            <div className="flex space-x-2 mt-2">
+              <button onClick={() => openModal('privacy')} className="text-red-500 hover:text-red-700 focus:outline-none focus:ring-2 focus:ring-red-500" role="button" tabIndex={0} disabled={activeModal === 'privacy'}>Privacy Policy</button>
+              <button onClick={() => openModal('cookiePolicy')} className="text-red-500 hover:text-red-700 focus:outline-none focus:ring-2 focus:ring-red-500" role="button" tabIndex={0} disabled={activeModal === 'cookiePolicy'}>Cookie Policy</button>
+              <button onClick={() => openModal('settings')} className="text-red-500 hover:text-red-700 focus:outline-none focus:ring-2 focus:ring-red-500" role="button" tabIndex={0} disabled={activeModal === 'settings'}>Settings</button>
+            </div>
+          </div>
+          <div className="flex justify-end mt-2">
+            <button className="text-white py-2 px-5 tracking-wide bg-gradient-to-r from-red-500 to-red-700 hover:bg-gradient-to-l opacity-100 cursor-pointer shadow-none justify-center border-transparent text-sm font-medium transition-opacity duration-300 focus:outline-none select-none focus:ring-2 focus:ring-white" onClick={acceptCookies} role="button" tabIndex={0}>Accept all</button>
+          </div>
+        </div>
+      )}
+
+      {activeModal && (
+        <Modal
+          title={`${activeModal[0].toUpperCase() + activeModal.slice(1)} Policy`}
+          content={`Read our ${activeModal} policy here. This policy provides detailed information about how we use cookies and how you can manage them.`}
+          onClose={closeModal}
+        />
+      )}
+    </>
+  );
 };
 
 export default CookieConsent;
