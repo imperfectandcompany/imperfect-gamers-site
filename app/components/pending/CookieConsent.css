@@ -1,0 +1,128 @@
+/* CookieConsent.css */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: black;
+    color: white;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.75);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 16px;
+  }
+  
+  .modal-content {
+    background: rgba(0, 0, 0, 0.8);
+    padding: 24px;
+    border-radius: 8px;
+    max-width: 600px;
+    width: 100%;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .close-button {
+    cursor: pointer;
+  }
+  
+  .modal-body {
+    margin-top: 16px;
+  }
+  
+  .cookie-popup {
+    width: 100%;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    background: rgba(10, 10, 10, 0.9);
+    border-top: 2px solid #a83232;
+    z-index: 1000;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .button-group button {
+    margin-right: 10px;
+    background: transparent;
+    border: none;
+    color: #ff6347;
+    cursor: pointer;
+    transition: color 0.3s;
+  }
+  
+  .button-group button:hover {
+    color: #ffffff;
+  }
+  
+  .accept-button button {
+
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem; 
+    padding-left: 1.25rem;
+    padding-right: 1.25rem; 
+    justify-content: center; 
+    border-color: transparent; 
+    font-size: 0.875rem;
+    line-height: 1.25rem; 
+    font-weight: 500; 
+    letter-spacing: 0.025em; 
+    color: #ffffff; 
+    background-color: #EF4444; 
+    background-color: #B91C1C; 
+    transition-property: opacity;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 300ms; 
+    transition-duration: 300ms; 
+    cursor: pointer; 
+    user-select: none; 
+    box-shadow: none; 
+    opacity: 1; 
+
+
+  }
+  
+  .accept-button button:hover {
+    background: linear-gradient(to left, #ff6347, #ff4500);
+  }
+  
+  /* Media query for mobile devices */
+  @media (max-width: 768px) {
+    .cookie-popup {
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start; /* Align items to the left on small screens */
+      }
+
+      .button-group {
+        order: 1; /* Ensures the button group is below the text on mobile */
+        width: 100%; /* Full width to prevent overflow */
+      }
+  
+      .accept-button {
+        order: 2; /* Ensures the accept button is below the button group */
+        width: 100%;
+        display: flex;
+        justify-content: flex-end; /* Align the accept button to the right */
+        margin-top: 20px; /* Adds space between the button group and accept button */
+      }
+  }
+  
