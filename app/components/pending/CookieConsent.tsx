@@ -4,14 +4,30 @@ import { FunctionComponent, useState } from 'react'
 import CookieConsentModal from './CookieConsentModal'
 import './CookieConsent.css'
 
+interface Settings {
+  essential: boolean;
+  analytics: {
+    enabled: boolean;
+    googleAnalytics: boolean;
+    microsoftClarity: boolean;
+  };
+  marketing: boolean;
+}
+
+
 const CookieConsent: FunctionComponent = () => {
 	const [isVisible, setIsVisible] = useState(true)
 	const [activeModal, setActiveModal] = useState<string | null>(null)
-	const [settings, setSettings] = useState({
-		essential: true,
-		analytics: false,
-		marketing: false,
-	})
+  const [settings, setSettings] = useState<Settings>({
+    essential: true,
+    analytics: {
+      enabled: false,
+      googleAnalytics: false,
+      microsoftClarity: false,
+    },
+    marketing: false,
+  });
+  
 
 	const acceptCookies = () => {
 		alert('Cookies accepted!')
@@ -26,42 +42,65 @@ const CookieConsent: FunctionComponent = () => {
 		setActiveModal(null)
 	}
 
-	const handleSettingChange = (setting: string, value: boolean) => {
-		setSettings((prev: any) => ({ ...prev, [setting]: value }))
-	}
+  const handleSettingChange = (setting: string, value: boolean, subSetting?: string) => {
+    setSettings((prev) => {
+      if (subSetting) {
+        return {
+          ...prev,
+          [setting]: {
+            ...(prev[setting as keyof typeof prev] as any),
+            [subSetting]: value
+          }
+        };
+      } else {
+        return { ...prev, [setting]: value };
+      }
+    });
+  };
+  
 
-	const SettingsPanel = () => (
-		<div className="settings-panel">
-			<div className="settings-option">
-				<label htmlFor="essential">Essential Cookies:</label>
-				<input
-					type="checkbox"
-					id="essential"
-					checked={settings.essential}
-					onChange={() => handleSettingChange('essential', !settings.essential)}
-					disabled
-				/>
-			</div>
-			<div className="settings-option">
-				<label htmlFor="analytics">Analytics Cookies:</label>
-				<input
-					type="checkbox"
-					id="analytics"
-					checked={settings.analytics}
-					onChange={() => handleSettingChange('analytics', !settings.analytics)}
-				/>
-			</div>
-			<div className="settings-option">
-				<label htmlFor="marketing">Marketing Cookies:</label>
-				<input
-					type="checkbox"
-					id="marketing"
-					checked={settings.marketing}
-					onChange={() => handleSettingChange('marketing', !settings.marketing)}
-				/>
-			</div>
-		</div>
-	)
+  const SettingsPanel = () => (
+    <div className="settings-panel">
+        <div className="settings-option">
+            <label htmlFor="essential">Essential Cookies (required for login sessions):</label>
+            <div className="toggle-switch">
+                <input type="checkbox" checked={settings.essential} disabled />
+                <span className="slider"></span>
+            </div>
+        </div>
+        <div className="settings-option">
+            <label htmlFor="analytics">Analytics Cookies:</label>
+            <div className="toggle-switch">
+                <input type="checkbox" id="analytics" checked={settings.analytics.enabled} onChange={() => handleSettingChange('analytics', !settings.analytics.enabled, 'enabled')} />
+                <span className="slider"></span>
+            </div>
+            <div className={`sub-settings ${settings.analytics.enabled ? "active" : ""}`}>
+                <div className="settings-option">
+                    <label htmlFor="googleAnalytics">Google Analytics (GA4):</label>
+                    <div className="toggle-switch">
+                        <input type="checkbox" id="googleAnalytics" checked={settings.analytics.googleAnalytics} onChange={() => handleSettingChange('analytics', !settings.analytics.googleAnalytics, 'googleAnalytics')} />
+                        <span className="slider"></span>
+                    </div>
+                </div>
+                <div className="settings-option">
+                    <label htmlFor="microsoftClarity">Microsoft Clarity:</label>
+                    <div className="toggle-switch">
+                        <input type="checkbox" id="microsoftClarity" checked={settings.analytics.microsoftClarity} onChange={() => handleSettingChange('analytics', !settings.analytics.microsoftClarity, 'microsoftClarity')} />
+                        <span className="slider"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div className="settings-option">
+            <label htmlFor="marketing">Marketing Cookies:</label>
+            <div className="toggle-switch">
+                <input type="checkbox" id="marketing" checked={settings.marketing} onChange={() => handleSettingChange('marketing', !settings.marketing)} />
+                <span className="slider"></span>
+            </div>
+        </div>
+    </div>
+  );
+  
 
 	const modalContents = {
 		privacy:
@@ -75,7 +114,7 @@ const CookieConsent: FunctionComponent = () => {
 	return (
 		<>
 			{isVisible && (
-				<div className="cookie-popup">
+				<div className="cookie-popup glow-effect">
 					<div>
 						<strong>Imperfect Gamers - Committed to Your Privacy.</strong>
 						<p>
@@ -85,13 +124,13 @@ const CookieConsent: FunctionComponent = () => {
 							data protection policies.
 						</p>
 						<div className="button-group">
-							<button
-								onClick={() => openModal('privacy')}
-								disabled={activeModal === 'privacy'}
-								className="text-red-500/70 focus:outline-none focus:ring-2 focus:ring-red-500 disabled:cursor-auto disabled:text-red-700 disabled:hover:disabled:text-red-700"
-							>
-								Privacy Policy
-							</button>
+                                    <button
+                                        onClick={() => openModal('privacy')}
+                                        disabled={activeModal === 'privacy'}
+                                        className="text-red-500/70 focus:outline-none focus:ring-2 focus:ring-red-500 disabled:cursor-auto disabled:text-red-700 disabled:hover:disabled:text-red-700"
+                                    >
+                                        Privacy Policy
+                                    </button>
 							<button
 								onClick={() => openModal('cookie')}
 								disabled={activeModal === 'cookie'}

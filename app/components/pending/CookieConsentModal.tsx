@@ -22,9 +22,8 @@ const CookieConsentModal: FunctionComponent<ModalProps> = ({ title, content, onC
 
     const modalNode = modalRef.current;
     if (modalNode) {
-      modalNode.style.transform = 'scale(1)';
-      modalNode.style.opacity = '1';
-      modalNode.style.transition = 'transform 0.3s ease-out, opacity 0.3s ease-out';
+        modalNode.style.transform = 'scale(1)';
+        modalNode.style.opacity = '1';
     }
 
     return () => {
