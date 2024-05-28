@@ -9,7 +9,7 @@ interface ModalProps {
 
 const CookieConsentModal: FunctionComponent<ModalProps> = ({ title, content, onClose, children }) => {
   const modalRef = useRef<HTMLDivElement>(null);
-
+  
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
@@ -39,31 +39,32 @@ const CookieConsentModal: FunctionComponent<ModalProps> = ({ title, content, onC
   };
 
   return (
-    <div
-      className="modal-backdrop"
-      onClick={handleBackdropClick}
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="modalTitle"
-    >
-      <div
-        ref={modalRef}
-        className="modal-content"
-        onClick={(e) => e.stopPropagation()}
-        role="document"
-      >
-        <div className="modal-header">
-          <h2 id="modalTitle" className="modal-title">{title}</h2>
-          <button onClick={onClose} className="close-button">
-            <span aria-hidden="true">×</span>
-            <span className="sr-only">Close</span>
-          </button>
+        <div
+            className="modal-backdrop"
+            onClick={handleBackdropClick}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="modalTitle"
+            style={{ opacity: 1, visibility: 'visible' }}
+        >
+            <div
+                ref={modalRef}
+                className="modal-content"
+                onClick={(e) => e.stopPropagation()}
+                role="document"
+            >
+                <div className="modal-header">
+                    <h2 id="modalTitle" className="modal-title">{title}</h2>
+                    <button onClick={onClose} className="close-button">
+                        <span aria-hidden="true">×</span>
+                        <span className="sr-only">Close</span>
+                    </button>
+                </div>
+                <div className="modal-body">
+                    {children || <p>{content}</p>}
+                </div>
+            </div>
         </div>
-        <div className="modal-body">
-        {children || <p>{content}</p>}
-        </div>
-      </div>
-    </div>
   );
 };
 

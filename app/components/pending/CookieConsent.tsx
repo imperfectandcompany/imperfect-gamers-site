@@ -1,8 +1,9 @@
 // CookieConsent.tsx
 
-import { FunctionComponent, useState } from 'react'
-import CookieConsentModal from './CookieConsentModal'
+import { FunctionComponent, useEffect, useState } from 'react'
+
 import './CookieConsent.css'
+import CookieConsentModal from './CookieConsentModal';
 
 interface Settings {
   essential: boolean;
@@ -16,7 +17,7 @@ interface Settings {
 
 
 const CookieConsent: FunctionComponent = () => {
-	const [isVisible, setIsVisible] = useState(true)
+	const [isVisible, setIsVisible] = useState(false)
 	const [activeModal, setActiveModal] = useState<string | null>(null)
   const [settings, setSettings] = useState<Settings>({
     essential: true,
@@ -27,6 +28,14 @@ const CookieConsent: FunctionComponent = () => {
     },
     marketing: false,
   });
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+        setIsVisible(true);
+    }, 2000); // Delay the banner display by 2000 milliseconds
+
+    return () => clearTimeout(timer);
+}, []);
   
 
 	const acceptCookies = () => {
@@ -114,7 +123,7 @@ const CookieConsent: FunctionComponent = () => {
 	return (
 		<>
 			{isVisible && (
-				<div className="cookie-popup glow-effect">
+                        <div className="cookie-popup glow-effect" style={{ visibility: 'visible', animation: 'slideUp 0.5s ease-out forwards' }}>
 					<div>
 						<strong>Imperfect Gamers - Committed to Your Privacy.</strong>
 						<p>
@@ -159,17 +168,17 @@ const CookieConsent: FunctionComponent = () => {
 			)}
 
 			{activeModal && (
-				<CookieConsentModal
-					title={`${activeModal[0].toUpperCase() + activeModal.slice(1)} Policy`}
-					onClose={closeModal}
-					content={''}
-				>
-					{activeModal === 'settings' ? (
-						<SettingsPanel />
-					) : (
-						<p>{`Read our ${activeModal} policy here. This policy provides detailed information about how we use cookies and how you can manage them.`}</p>
-					)}
-				</CookieConsentModal>
+                        <CookieConsentModal
+                        title={`${activeModal[0].toUpperCase() + activeModal.slice(1)} Policy`}
+                        onClose={closeModal}
+                        content={''}
+                    >
+                        {activeModal === 'settings' ? (
+                            <SettingsPanel />
+                        ) : (
+                            <p>{`Read our ${activeModal} policy here. This policy provides detailed information about how we use cookies and how you can manage them.`}</p>
+                        )}
+                    </CookieConsentModal>
 			)}
 		</>
 	)
