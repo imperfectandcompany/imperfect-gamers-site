@@ -34,13 +34,14 @@ interface ModalProps {
 
 const CookieConsentModal: React.FC<ModalProps> = ({ title, content, onClose, children }) => {
     const modalRef = useRef<HTMLDivElement>(null);
+    const [isExiting, setIsExiting] = useState(false); // State to control the exit animation
 
     useEffect(() => {
         const modalNode = modalRef.current;  // Capture the modal ref at the time of effect execution.
 
         const handleEscape = (event: KeyboardEvent) => {
             if (event.key === 'Escape') {
-                onClose();
+                onCloseWithAnimation();
             }
         };
 
@@ -62,33 +63,43 @@ const CookieConsentModal: React.FC<ModalProps> = ({ title, content, onClose, chi
         }
     }, [onClose]);  // Dependencies array includes only the necessary props/state.
 
-    const handleBackdropClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-        if (event.currentTarget === event.target) {
-            onClose();
+    useEffect(() => {
+        // Ensure modal enters normally
+        if (modalRef.current) {
+            modalRef.current.style.opacity = '1';
+            modalRef.current.style.transform = 'scale(1)';
         }
+        return () => {
+            // Prepare for exit animation when component unmounts or state changes
+            if (isExiting && modalRef.current) {
+                modalRef.current.style.opacity = '0';
+                modalRef.current.style.transform = 'scale(0.8)';
+            }
+        };
+    }, [isExiting]); // Depend on isExiting to re-run effect when it changes
+
+
+    const onCloseWithAnimation = () => {
+        setIsExiting(true); // Trigger exit animation
+        setTimeout(() => {
+            onClose(); // Close modal after animation duration
+        }, 300); // Match duration to CSS transition
     };
 
     return (
-        <div
-            className="modal-backdrop"
-            onClick={handleBackdropClick}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="modalTitle"
-            style={{ opacity: 1, visibility: 'visible' }}
-        >
-            <div
-                ref={modalRef}
-                className="modal-content"
-                onClick={(e) => e.stopPropagation()}
-                role="document"
-            >
+        <div className="modal-backdrop" onClick={(e) => {
+            if (e.currentTarget === e.target) onCloseWithAnimation();
+        }}>
+            <div ref={modalRef} className={`modal-content ${isExiting ? 'modal-exiting' : ''}`}>
                 <div className="modal-header">
-                    <h2 id="modalTitle" className="modal-title">{title}</h2>
-                    <button onClick={onClose} className="close-button">
+                <h2 id="modalTitle" className="modal-title">{title}</h2>
+                    <button onClick={onCloseWithAnimation} className="close-button">
                         <span aria-hidden="true">×</span>
                         <span className="sr-only">Close</span>
                     </button>
+                    {/*
+                    <button onClick={onCloseWithAnimation}>Close</button>
+                    **/ }
                 </div>
                 <div className="modal-body">
                     {children || <p>{content}</p>}

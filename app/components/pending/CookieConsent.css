@@ -34,16 +34,39 @@ body {
     align-items: center;
 }
 
+.modal-exiting {
+    opacity: 0;
+    transform: scale(0.8);
+    transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+    animation: exitAnimation 0.3s forwards;
+
+}
+
+@keyframes exitAnimation {
+    from {
+        opacity: 1;
+        transform: scale(1);
+    }
+    to {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+}
+
+.modal-exiting {
+}
+
 .close-button {
     cursor: pointer;
     font-size: 24px;
     color: #fff;
     opacity: 0.8;
-    transition: opacity 0.2s;
+    transition: opacity 0.2s, transform 0.2s;
 }
 
 .close-button:hover {
     opacity: 1;
+    transform: scale(1.1);
 }
 
 .modal-body {
