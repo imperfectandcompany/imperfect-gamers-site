@@ -1,6 +1,6 @@
 // CookieConsent.tsx
 
-import { FunctionComponent, useEffect, useState } from 'react'
+import { FunctionComponent, MouseEvent, useEffect, useState } from 'react'
 
 import './CookieConsent.css'
 import CookieConsentModal from './CookieConsentModal'
@@ -73,6 +73,14 @@ const CookieConsent: FunctionComponent = () => {
 		}))
 	}
 
+	const handleAnalyticsContainerClick = (
+		e: // CookieConsent.tsx
+		MouseEvent<HTMLDivElement, MouseEvent>,
+	) => {
+		e.stopPropagation() // Prevent event bubbling up to other elements
+		handleAnalyticsToggle(!settings.analytics.enabled)
+	}
+
 	const handleAnalyticsToggle = (enabled: boolean) => {
 		setSettings(prev => ({
 			...prev,
@@ -95,22 +103,40 @@ const CookieConsent: FunctionComponent = () => {
 					<span className="slider"></span>
 				</div>
 			</div>
-			<div className="settings-option">
-				<label htmlFor="analytics">Analytics Cookies:</label>
+			<div
+				className="settings-option"
+				onClick={e => handleAnalyticsContainerClick(e)}
+			>
+				<label htmlFor="analytics" className="select-none">
+					Analytics Cookies:
+				</label>
 				<div className="toggle-switch">
 					<input
 						type="checkbox"
 						id="analytics"
 						checked={settings.analytics.enabled}
-						onChange={() => handleAnalyticsToggle(!settings.analytics.enabled)}
-					/>
-					<span className="slider"></span>
+						onClick={e => {
+							e.stopPropagation() // Prevent this click from bubbling up to the container
+							handleAnalyticsToggle(!settings.analytics.enabled)
+						}}					/>
+					<span
+						className="slider"
+						onClick={e => {
+							e.stopPropagation() // Prevent this click from bubbling up to the container
+							handleAnalyticsToggle(!settings.analytics.enabled)
+						}}
+					></span>
 				</div>
 				<div
 					className={`sub-settings ${settings.analytics.enabled ? 'active' : ''}`}
+					onClick={e => e.stopPropagation()}
 				>
+					{' '}
+					{/* Stop propagation to prevent toggling when nested options are clicked */}
 					<div className="settings-option">
-						<label htmlFor="googleAnalytics">Google Analytics (GA4):</label>
+						<label htmlFor="googleAnalytics" className="select-none">
+							Google Analytics (GA4):
+						</label>
 						<div className="toggle-switch">
 							<input
 								type="checkbox"
@@ -129,7 +155,9 @@ const CookieConsent: FunctionComponent = () => {
 						</div>
 					</div>
 					<div className="settings-option">
-						<label htmlFor="microsoftClarity">Microsoft Clarity:</label>
+						<label htmlFor="microsoftClarity" className="select-none">
+							Microsoft Clarity:
+						</label>
 						<div className="toggle-switch">
 							<input
 								type="checkbox"
