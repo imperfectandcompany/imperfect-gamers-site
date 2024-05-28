@@ -1,54 +1,67 @@
-// CookieConsentModal.tsx
-import { useRef, useEffect, FunctionComponent } from 'react';
+import React, { useRef, useEffect, FunctionComponent, ReactNode } from 'react';
 
 interface ModalProps {
-  title: string;
-  content: string;
-  onClose: () => void;
+    title: string;
+    content: string;
+    onClose: () => void;
+    children?: ReactNode;
 }
 
-const CookieConsentModal: FunctionComponent<ModalProps> = ({ title, content, onClose }) => {
+const CookieConsentModal: FunctionComponent<ModalProps> = ({ title, content, onClose, children }) => {
   const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') onClose();
+      if (event.key === 'Escape') {
+        onClose();
+      }
     };
 
     window.addEventListener('keydown', handleEscape);
-    document.body.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden'; // Prevent scrolling when modal is open
 
-    setTimeout(() => {
-      if (modalRef.current) {
-        modalRef.current.style.transform = 'scale(1)';
-        modalRef.current.style.opacity = '1';
-        modalRef.current.style.transition = 'transform 0.3s ease-out, opacity 0.3s ease-out';
-      }
-    }, 10);
+    const modalNode = modalRef.current;
+    if (modalNode) {
+      modalNode.style.transform = 'scale(1)';
+      modalNode.style.opacity = '1';
+      modalNode.style.transition = 'transform 0.3s ease-out, opacity 0.3s ease-out';
+    }
 
     return () => {
       window.removeEventListener('keydown', handleEscape);
-      document.body.style.overflow = '';
+      document.body.style.overflow = ''; // Re-enable scrolling when modal is closed
     };
   }, [onClose]);
 
   const handleBackdropClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    if (event.target === event.currentTarget) {
+    if (event.currentTarget === event.target) {
       onClose();
     }
   };
 
   return (
-    <div className="modal-backdrop" onClick={handleBackdropClick} role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-      <div ref={modalRef} className="modal-content" onClick={e => e.stopPropagation()} role="document">
+    <div
+      className="modal-backdrop"
+      onClick={handleBackdropClick}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modalTitle"
+    >
+      <div
+        ref={modalRef}
+        className="modal-content"
+        onClick={(e) => e.stopPropagation()}
+        role="document"
+      >
         <div className="modal-header">
-          <h2 id="modalTitle">{title}</h2>
+          <h2 id="modalTitle" className="modal-title">{title}</h2>
           <button onClick={onClose} className="close-button">
-            <i className="fas fa-times"></i>
+            <span aria-hidden="true">×</span>
+            <span className="sr-only">Close</span>
           </button>
         </div>
         <div className="modal-body">
-          <p>{content}</p>
+        {children || <p>{content}</p>}
         </div>
       </div>
     </div>
