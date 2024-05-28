@@ -151,6 +151,7 @@ const CookieConsent: FunctionComponent = () => {
 			</div>
 			<div className="settings-option">
 				<label htmlFor="marketing">Marketing Cookies:</label>
+
 				<div className="toggle-switch">
 					<input
 						type="checkbox"
