@@ -3,40 +3,40 @@
 import { FunctionComponent, useEffect, useState } from 'react'
 
 import './CookieConsent.css'
-import CookieConsentModal from './CookieConsentModal';
+import CookieConsentModal from './CookieConsentModal'
 
 interface Settings {
-  essential: boolean;
-  analytics: {
-    enabled: boolean;
-    googleAnalytics: boolean;
-    microsoftClarity: boolean;
-  };
-  marketing: boolean;
+	essential: boolean
+	analytics: AnalyticsSettings
+	marketing: boolean
 }
 
+interface AnalyticsSettings {
+	enabled: boolean
+	googleAnalytics: boolean
+	microsoftClarity: boolean
+}
 
 const CookieConsent: FunctionComponent = () => {
 	const [isVisible, setIsVisible] = useState(false)
 	const [activeModal, setActiveModal] = useState<string | null>(null)
-  const [settings, setSettings] = useState<Settings>({
-    essential: true,
-    analytics: {
-      enabled: false,
-      googleAnalytics: false,
-      microsoftClarity: false,
-    },
-    marketing: false,
-  });
+	const [settings, setSettings] = useState<Settings>({
+		essential: true,
+		analytics: {
+			enabled: false,
+			googleAnalytics: false,
+			microsoftClarity: false,
+		},
+		marketing: false,
+	})
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-        setIsVisible(true);
-    }, 2000); // Delay the banner display by 2000 milliseconds
+	useEffect(() => {
+		const timer = setTimeout(() => {
+			setIsVisible(true)
+		}, 2000) // Delay the banner display by 2000 milliseconds
 
-    return () => clearTimeout(timer);
-}, []);
-  
+		return () => clearTimeout(timer)
+	}, [])
 
 	const acceptCookies = () => {
 		alert('Cookies accepted!')
@@ -51,65 +51,120 @@ const CookieConsent: FunctionComponent = () => {
 		setActiveModal(null)
 	}
 
-  const handleSettingChange = (setting: string, value: boolean, subSetting?: string) => {
-    setSettings((prev) => {
-      if (subSetting) {
-        return {
-          ...prev,
-          [setting]: {
-            ...(prev[setting as keyof typeof prev] as any),
-            [subSetting]: value
-          }
-        };
-      } else {
-        return { ...prev, [setting]: value };
-      }
-    });
-  };
-  
+	// Handle top-level settings like 'marketing'
+	const handleSettingChange = (setting: string, value: boolean) => {
+		setSettings(prev => ({
+			...prev,
+			[setting]: value,
+		}))
+	}
 
-  const SettingsPanel = () => (
-    <div className="settings-panel">
-        <div className="settings-option">
-            <label htmlFor="essential">Essential Cookies (required for login sessions):</label>
-            <div className="toggle-switch">
-                <input type="checkbox" checked={settings.essential} disabled />
-                <span className="slider"></span>
-            </div>
-        </div>
-        <div className="settings-option">
-            <label htmlFor="analytics">Analytics Cookies:</label>
-            <div className="toggle-switch">
-                <input type="checkbox" id="analytics" checked={settings.analytics.enabled} onChange={() => handleSettingChange('analytics', !settings.analytics.enabled, 'enabled')} />
-                <span className="slider"></span>
-            </div>
-            <div className={`sub-settings ${settings.analytics.enabled ? "active" : ""}`}>
-                <div className="settings-option">
-                    <label htmlFor="googleAnalytics">Google Analytics (GA4):</label>
-                    <div className="toggle-switch">
-                        <input type="checkbox" id="googleAnalytics" checked={settings.analytics.googleAnalytics} onChange={() => handleSettingChange('analytics', !settings.analytics.googleAnalytics, 'googleAnalytics')} />
-                        <span className="slider"></span>
-                    </div>
-                </div>
-                <div className="settings-option">
-                    <label htmlFor="microsoftClarity">Microsoft Clarity:</label>
-                    <div className="toggle-switch">
-                        <input type="checkbox" id="microsoftClarity" checked={settings.analytics.microsoftClarity} onChange={() => handleSettingChange('analytics', !settings.analytics.microsoftClarity, 'microsoftClarity')} />
-                        <span className="slider"></span>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div className="settings-option">
-            <label htmlFor="marketing">Marketing Cookies:</label>
-            <div className="toggle-switch">
-                <input type="checkbox" id="marketing" checked={settings.marketing} onChange={() => handleSettingChange('marketing', !settings.marketing)} />
-                <span className="slider"></span>
-            </div>
-        </div>
-    </div>
-  );
-  
+	const handleNestedSettingChange = (
+		category: keyof Settings,
+		subSetting: keyof AnalyticsSettings,
+		value: boolean,
+	) => {
+		setSettings(prev => ({
+			...prev,
+			[category]: {
+				...(prev[category] as AnalyticsSettings),
+				[subSetting]: value,
+			},
+		}))
+	}
+
+	const handleAnalyticsToggle = (enabled: boolean) => {
+		setSettings(prev => ({
+			...prev,
+			analytics: {
+				enabled,
+				googleAnalytics: enabled ? prev.analytics.googleAnalytics : false,
+				microsoftClarity: enabled ? prev.analytics.microsoftClarity : false,
+			},
+		}))
+	}
+
+	const SettingsPanel = () => (
+		<div className="settings-panel">
+			<div className="settings-option">
+				<label htmlFor="essential">
+					Essential Cookies (required for login sessions):
+				</label>
+				<div className="toggle-switch">
+					<input type="checkbox" checked={settings.essential} disabled />
+					<span className="slider"></span>
+				</div>
+			</div>
+			<div className="settings-option">
+				<label htmlFor="analytics">Analytics Cookies:</label>
+				<div className="toggle-switch">
+					<input
+						type="checkbox"
+						id="analytics"
+						checked={settings.analytics.enabled}
+						onChange={() => handleAnalyticsToggle(!settings.analytics.enabled)}
+					/>
+					<span className="slider"></span>
+				</div>
+				<div
+					className={`sub-settings ${settings.analytics.enabled ? 'active' : ''}`}
+				>
+					<div className="settings-option">
+						<label htmlFor="googleAnalytics">Google Analytics (GA4):</label>
+						<div className="toggle-switch">
+							<input
+								type="checkbox"
+								id="googleAnalytics"
+								disabled={!settings.analytics.enabled}
+								checked={settings.analytics.googleAnalytics}
+								onChange={() =>
+									handleNestedSettingChange(
+										'analytics',
+										'googleAnalytics',
+										!settings.analytics.googleAnalytics,
+									)
+								}
+							/>
+							<span className="slider"></span>
+						</div>
+					</div>
+					<div className="settings-option">
+						<label htmlFor="microsoftClarity">Microsoft Clarity:</label>
+						<div className="toggle-switch">
+							<input
+								type="checkbox"
+								id="microsoftClarity"
+								disabled={!settings.analytics.enabled}
+								checked={settings.analytics.microsoftClarity}
+								onChange={() =>
+									handleNestedSettingChange(
+										'analytics',
+										'microsoftClarity',
+										!settings.analytics.microsoftClarity,
+									)
+								}
+							/>
+							<span className="slider"></span>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div className="settings-option">
+				<label htmlFor="marketing">Marketing Cookies:</label>
+				<div className="toggle-switch">
+					<input
+						type="checkbox"
+						id="marketing"
+						checked={settings.marketing}
+						onChange={() =>
+							handleSettingChange('marketing', !settings.marketing)
+						}
+					/>
+					<span className="slider"></span>
+				</div>
+			</div>
+		</div>
+	)
 
 	const modalContents = {
 		privacy:
@@ -123,10 +178,14 @@ const CookieConsent: FunctionComponent = () => {
 	return (
 		<>
 			{isVisible && (
-        <div className="cookie-popup" style={{
-    visibility: 'visible',
-    animation: 'slideUp 0.5s ease-out forwards, glow 1.5s ease-in-out infinite alternate'
-}}>
+				<div
+					className="cookie-popup"
+					style={{
+						visibility: 'visible',
+						animation:
+							'slideUp 0.5s ease-out forwards, glow 1.5s ease-in-out infinite alternate',
+					}}
+				>
 					<div>
 						<strong>Imperfect Gamers - Committed to Your Privacy.</strong>
 						<p>
@@ -136,13 +195,13 @@ const CookieConsent: FunctionComponent = () => {
 							data protection policies.
 						</p>
 						<div className="button-group">
-                                    <button
-                                        onClick={() => openModal('privacy')}
-                                        disabled={activeModal === 'privacy'}
-                                        className="text-red-500/70 focus:outline-none focus:ring-2 focus:ring-red-500 disabled:cursor-auto disabled:text-red-700 disabled:hover:disabled:text-red-700"
-                                    >
-                                        Privacy Policy
-                                    </button>
+							<button
+								onClick={() => openModal('privacy')}
+								disabled={activeModal === 'privacy'}
+								className="text-red-500/70 focus:outline-none focus:ring-2 focus:ring-red-500 disabled:cursor-auto disabled:text-red-700 disabled:hover:disabled:text-red-700"
+							>
+								Privacy Policy
+							</button>
 							<button
 								onClick={() => openModal('cookie')}
 								disabled={activeModal === 'cookie'}
@@ -171,17 +230,17 @@ const CookieConsent: FunctionComponent = () => {
 			)}
 
 			{activeModal && (
-                        <CookieConsentModal
-                        title={`${activeModal[0].toUpperCase() + activeModal.slice(1)} Policy`}
-                        onClose={closeModal}
-                        content={''}
-                    >
-                        {activeModal === 'settings' ? (
-                            <SettingsPanel />
-                        ) : (
-                            <p>{`Read our ${activeModal} policy here. This policy provides detailed information about how we use cookies and how you can manage them.`}</p>
-                        )}
-                    </CookieConsentModal>
+				<CookieConsentModal
+					title={`${activeModal[0].toUpperCase() + activeModal.slice(1)} Policy`}
+					onClose={closeModal}
+					content={''}
+				>
+					{activeModal === 'settings' ? (
+						<SettingsPanel />
+					) : (
+						<p>{`Read our ${activeModal} policy here. This policy provides detailed information about how we use cookies and how you can manage them.`}</p>
+					)}
+				</CookieConsentModal>
 			)}
 		</>
 	)
