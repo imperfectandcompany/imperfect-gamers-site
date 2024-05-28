@@ -123,7 +123,10 @@ const CookieConsent: FunctionComponent = () => {
 	return (
 		<>
 			{isVisible && (
-                        <div className="cookie-popup glow-effect" style={{ visibility: 'visible', animation: 'slideUp 0.5s ease-out forwards' }}>
+        <div className="cookie-popup" style={{
+    visibility: 'visible',
+    animation: 'slideUp 0.5s ease-out forwards, glow 1.5s ease-in-out infinite alternate'
+}}>
 					<div>
 						<strong>Imperfect Gamers - Committed to Your Privacy.</strong>
 						<p>

@@ -63,7 +63,6 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    animation: slideUp 0.5s ease-out forwards;
 }
 
 @keyframes slideUp {
@@ -179,10 +178,6 @@ input:checked + .slider {
 
 input:checked + .slider:before {
     transform: translateX(14px);
-}
-
-.glow-effect {
-    animation: glow 1.5s ease-in-out infinite alternate;
 }
 
 @keyframes glow {
