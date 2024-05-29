@@ -111,6 +111,9 @@ const CookieConsent: FunctionComponent = () => {
 			// If modal is open...
 			if (closeModalWithAnimation) closeModalWithAnimation() // Execute the function
 		}
+		if(settings.analytics.enabled && settings.analytics.microsoftClarity) {
+			window.dispatchEvent(new Event("consentGranted"));
+		}
 		startExitAnimation(); // Start animation when accepting all cookies
 	}
 	const acceptAllCookies = () => {

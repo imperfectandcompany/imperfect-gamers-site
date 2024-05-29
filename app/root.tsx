@@ -32,17 +32,48 @@ export const loader = async () => {
 
 // http://localhost:5173/store/
 
-const gTagMsClarityFlag = false
+const gTagMsClarityFlag = true
+
+
+declare global {
+	interface Window {
+		clarity: (
+			type: string,
+			value?: boolean,
+		) => void
+	}
+}
 
 export function Layout({ children }: { children: React.ReactNode }) {
 	const { gaTrackingId, msClarityId } = useLoaderData<typeof loader>()
+
+	const consentListener = () => {
+
+		const storedSettings = localStorage.getItem('cookieSettings')
+		if (storedSettings) {
+			const settings = JSON.parse(storedSettings)
+			if (settings.analytics.microsoftClarity && msClarityId) {
+				if (!window.clarity) {
+					console.warn(
+						'window.clarity is not defined. This could mean the Microsoft Clarity script has not loaded on the page yet.',
+					)
+					return
+				}
+				window.clarity('consent')
+			}
+		}
+}
+
 	useEffect(() => {
 		if (process.env.NODE_ENV !== 'development' && gTagMsClarityFlag) {
 			if (gaTrackingId) {
 				gtag.pageview(window.location.pathname, gaTrackingId)
 			}
-			if (msClarityId) {
+			if (msClarityId) {	
+				// Loads MsClarity - session cookies disabled - requires consent
 				MsClarity({ id: msClarityId, enableInDevMode: false })
+
+				window.addEventListener("consentGranted", consentListener);
 			}
 		}
 	}, [gaTrackingId, msClarityId])

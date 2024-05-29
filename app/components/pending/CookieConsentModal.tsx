@@ -112,9 +112,6 @@ const CookieConsentModal: React.FC<ModalProps> = ({
 						<span aria-hidden="true">×</span>
 						<span className="sr-only">Close</span>
 					</button>
-					{/*
-                    <button onClick={onCloseWithAnimation}>Close</button>
-                    **/}
 				</div>
 				<div className="modal-body">{children || <p>{content}</p>}</div>
 			</div>
