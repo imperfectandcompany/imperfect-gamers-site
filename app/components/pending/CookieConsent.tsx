@@ -36,7 +36,15 @@ const CookieConsent: FunctionComponent = () => {
 		marketing: false,
 	})
 
-
+	const defaultSettings: Settings = {
+		essential: true,
+		analytics: {
+			enabled: false,
+			googleAnalytics: false,
+			microsoftClarity: false,
+		},
+		marketing: false,
+	};
 
 
 
@@ -48,10 +56,69 @@ const CookieConsent: FunctionComponent = () => {
 		return () => clearTimeout(timer)
 	}, [])
 
-	const acceptCookies = () => {
-		alert('Cookies accepted!')
-		setIsVisible(false)
+	const settingsAreEqual = (settings1: Settings, settings2: Settings): boolean => {
+		return JSON.stringify(settings1) === JSON.stringify(settings2);
 	}
+	const [isSaveDisabled, setIsSaveDisabled] = useState(true);
+	const [isResetDisabled, setIsResetDisabled] = useState(true);
+
+
+	useEffect(() => {
+		const storedSettings = localStorage.getItem('cookieSettings');
+		const currentSettings = settings;
+
+
+		const initialSettings = storedSettings ? JSON.parse(storedSettings) : defaultSettings;
+		setIsResetDisabled(settingsAreEqual(settings, initialSettings));
+		
+		if (storedSettings) {
+			const savedSettings: Settings = JSON.parse(storedSettings);
+			setIsSaveDisabled(settingsAreEqual(currentSettings, savedSettings));
+		} else {
+			setIsSaveDisabled(false); // Enable save if no settings are stored yet
+		}
+	}, [settings]);
+	
+
+	const acceptCookies = () => {
+		localStorage.setItem('cookieSettings', JSON.stringify(settings));
+		setIsVisible(false);
+		setIsSaveDisabled(true); // Enable save if no settings are stored yet
+		setIsResetDisabled(true); // Enable save if no settings are stored yet
+		setActiveModal(null);
+	}
+
+	const resetSettings = () => {
+		const storedSettings = localStorage.getItem('cookieSettings');
+		const currentSettings = settings;
+		let newSettings = defaultSettings; // Default to initial settings
+	
+		if (storedSettings) {
+			newSettings = JSON.parse(storedSettings); // Get stored settings if they exist
+		}
+	
+		// Check if current settings are already the same as the target reset settings
+		if (settingsAreEqual(currentSettings, newSettings)) {
+			return; // Exit function if no changes need to be made
+		}
+	
+		// Apply the new settings and update the state
+		setSettings(newSettings);
+		setIsSaveDisabled(true); // Disable the save button since settings are now reverted to stored/default
+	}
+	
+
+	useEffect(() => {
+		const storedSettings = localStorage.getItem('cookieSettings');
+		if (storedSettings) {
+			const savedSettings: Settings = JSON.parse(storedSettings);
+			setSettings(savedSettings);
+			setIsSaveDisabled(true); // Assume no change upon initial load
+		setIsResetDisabled(settingsAreEqual(settings, storedSettings ? savedSettings : defaultSettings));
+		}
+		// Initial check for reset disable
+	}, []);
+	
 	
 	const openModal = (modalName: ModalNames): void => {
 		setActiveModal(modalName);
@@ -112,11 +179,11 @@ const CookieConsent: FunctionComponent = () => {
 	const SettingsPanel = () => (
 		<>
 		<div className="settings-panel" id="settingsPanel">
-<div className="settings-option text-red-500/50"
+<div className="settings-option font-semibold"
      onClick={(e) => e.stopPropagation()} // Prevent any changes
 >
     <label htmlFor="essential" className="select-none">
-        Essential (required for login sessions):
+        Essential (required for login):
     </label>
     <div className="toggle-switch">
         <input type="checkbox" checked={true} disabled />
@@ -226,21 +293,18 @@ const CookieConsent: FunctionComponent = () => {
 			</div>
 		</div>		
 		<div className="flex justify-between mt-6 mb-2">
-                        <button className="cursor-pointer rounded-md transition-all select-none justify-center border-transparent bg-gradient-to-r from-stone-500 to-stone-700 px-5 py-2 text-sm font-medium tracking-wide text-white opacity-100 shadow-none duration-300 hover:bg-gradient-to-l focus:outline-none focus:ring-2 focus:ring-white" onClick={() => {
-                            setSettings({
-                                essential: true,
-                                analytics: {
-                                    enabled: false,
-                                    googleAnalytics: false,
-                                    microsoftClarity: false,
-                                },
-                                marketing: false,
-                            });
-                        }}>
-                            Reset Settings
-                        </button>
-                        <button className="cursor-pointer rounded-md select-none justify-center border-transparent bg-gradient-to-r from-red-500 to-red-700 px-5 py-2 text-sm font-medium tracking-wide text-white opacity-100 shadow-none transition-all duration-300 hover:bg-gradient-to-l focus:outline-none focus:ring-2 focus:ring-white" onClick={acceptCookies}>
-                            Save Settings
+		<button
+    className="cursor-pointer rounded-md transition-all select-none justify-center border-transparent bg-gradient-to-r from-stone-500 to-stone-700 px-5 py-2 text-sm font-medium tracking-wide text-white opacity-100 shadow-none duration-300 hover:bg-gradient-to-r focus:outline-none focus:ring-2 focus:ring-white disabled:opacity-50"
+    onClick={resetSettings}
+    disabled={isResetDisabled}
+>
+    Reset Settings
+</button>
+
+                        <button
+						    disabled={isSaveDisabled}
+						className="cursor-pointer rounded-md select-none justify-center border-transparent bg-gradient-to-r from-red-500 to-red-700 px-5 py-2 text-sm font-medium tracking-wide text-white opacity-100 shadow-none transition-all duration-300 hover:bg-gradient-to-l focus:outline-none focus:ring-2 focus:ring-white disabled:opacity-50" onClick={acceptCookies}>
+                            {isSaveDisabled ? 'Settings Saved' : 'Save Settings'}
                         </button>
 			</div></>
 	)
