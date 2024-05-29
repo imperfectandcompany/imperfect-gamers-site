@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, ReactNode } from 'react'
+import React, { useState, useRef, useEffect, ReactNode, useCallback } from 'react'
 
 const focusableModalElements: string =
 	'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
@@ -37,6 +37,7 @@ interface ModalProps {
 	title: string
 	content: string
 	onClose: () => void
+	exposeCloseAnimationFunc: (func: () => void) => void;
 	children?: ReactNode
 }
 
@@ -44,6 +45,7 @@ const CookieConsentModal: React.FC<ModalProps> = ({
 	title,
 	content,
 	onClose,
+	exposeCloseAnimationFunc,
 	children,
 }) => {
 	const modalRef = useRef<HTMLDivElement>(null)
@@ -77,27 +79,19 @@ const CookieConsentModal: React.FC<ModalProps> = ({
 		}
 	}, [onClose]) // Dependencies array includes only the necessary props/state.
 
-	useEffect(() => {
-		// Ensure modal enters normally
-		if (modalRef.current) {
-			modalRef.current.style.opacity = '1'
-			modalRef.current.style.transform = 'scale(1)'
-		}
-		return () => {
-			// Prepare for exit animation when component unmounts or state changes
-			if (isExiting && modalRef.current) {
-				modalRef.current.style.opacity = '0'
-				modalRef.current.style.transform = 'scale(0.8)'
-			}
-		}
-	}, [isExiting]) // Depend on isExiting to re-run effect when it changes
-
-	const onCloseWithAnimation = () => {
-		setIsExiting(true) // Trigger exit animation
+	const onCloseWithAnimation = useCallback(() => {
+		// Animation and close logic
+		setIsExiting(true); // For animation
 		setTimeout(() => {
-			onClose() // Close modal after animation duration
-		}, 300) // Match duration to CSS transition
-	}
+		  onClose();  // Actually close the modal
+		}, 300); // Delay for animation
+	  }, [onClose]);  // Ensure dependencies are stable and won't cause re-creation unless necessary
+	  
+
+	  useEffect(() => {
+		exposeCloseAnimationFunc(onCloseWithAnimation);
+	  }, [exposeCloseAnimationFunc]);
+	  
 
 	return (
 		<div

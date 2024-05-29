@@ -23,9 +23,7 @@ prepareApp().then(() => {
 	startTransition(() => {
 		hydrateRoot(
 			document,
-			<StrictMode>
 				<RemixBrowser />
-			</StrictMode>,
 		)
 	})
 })
