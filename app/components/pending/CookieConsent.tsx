@@ -30,6 +30,10 @@ const CookieConsent: FunctionComponent = () => {
 		marketing: false,
 	})
 
+
+
+
+
 	useEffect(() => {
 		const timer = setTimeout(() => {
 			setIsVisible(true)
@@ -59,25 +63,33 @@ const CookieConsent: FunctionComponent = () => {
 		}))
 	}
 
-	const handleNestedSettingChange = (
+  const [isAnimating, setIsAnimating] = useState(false); // Animation tracking
+
+	// Function to toggle the setting when the container is clicked
+	const toggleSettingFromContainer = (
 		category: keyof Settings,
 		subSetting: keyof AnalyticsSettings,
-		value: boolean,
 	) => {
 		setSettings(prev => ({
 			...prev,
 			[category]: {
 				...(prev[category] as AnalyticsSettings),
-				[subSetting]: value,
+				...(prev.analytics.enabled && {
+					[subSetting]: !(prev[category] as AnalyticsSettings)[subSetting],
+				}),
 			},
 		}))
 	}
 
-	const handleAnalyticsContainerClick = (
-		e: // CookieConsent.tsx
-		MouseEvent<HTMLDivElement, MouseEvent>,
-	) => {
-		e.stopPropagation() // Prevent event bubbling up to other elements
+	// Marketing cookies container toggle function
+	const toggleMarketingFromContainer = () => {
+		setSettings(prev => ({
+			...prev,
+			marketing: !prev.marketing,
+		}))
+	}
+
+	const handleAnalyticsContainerClick = () => {
 		handleAnalyticsToggle(!settings.analytics.enabled)
 	}
 
@@ -94,23 +106,28 @@ const CookieConsent: FunctionComponent = () => {
 
 	const SettingsPanel = () => (
 		<div className="settings-panel">
-			<div className="settings-option">
-				<label htmlFor="essential">
-					Essential Cookies (required for login sessions):
-				</label>
-				<div className="toggle-switch">
-					<input type="checkbox" checked={settings.essential} disabled />
-					<span className="slider"></span>
-				</div>
-			</div>
+<div className="settings-option text-red-500/50"
+     onClick={(e) => e.stopPropagation()} // Prevent any changes
+>
+    <label htmlFor="essential" className="select-none">
+        Essential (required for login sessions):
+    </label>
+    <div className="toggle-switch">
+        <input type="checkbox" checked={true} disabled />
+        <span className="slider"></span>
+    </div>
+</div>
 			<div
 				className="settings-option"
-				onClick={e => handleAnalyticsContainerClick(e)}
+				onClick={e => {
+					e.stopPropagation() // Prevent this click from bubbling up to the container
+					handleAnalyticsContainerClick()
+				}}
 			>
 				<label htmlFor="analytics" className="select-none">
-					Analytics Cookies:
+					Analytics:
 				</label>
-				<div className="toggle-switch">
+				<div className="toggle-switch ml-2 md:ml-0">
 					<input
 						type="checkbox"
 						id="analytics"
@@ -118,7 +135,8 @@ const CookieConsent: FunctionComponent = () => {
 						onClick={e => {
 							e.stopPropagation() // Prevent this click from bubbling up to the container
 							handleAnalyticsToggle(!settings.analytics.enabled)
-						}}					/>
+						}}
+					/>
 					<span
 						className="slider"
 						onClick={e => {
@@ -133,61 +151,69 @@ const CookieConsent: FunctionComponent = () => {
 				>
 					{' '}
 					{/* Stop propagation to prevent toggling when nested options are clicked */}
-					<div className="settings-option">
+					<div
+						className={`settings-option mb-2 ${!settings.analytics.enabled ? 'disabled' : ''}`}
+						onClick={() =>
+							toggleSettingFromContainer('analytics', 'googleAnalytics')
+						}
+					>
 						<label htmlFor="googleAnalytics" className="select-none">
-							Google Analytics (GA4):
+							Google Analytics:
 						</label>
-						<div className="toggle-switch">
+						<div className="toggle-switch ml-2" onClick={e => e.stopPropagation()}>
 							<input
 								type="checkbox"
 								id="googleAnalytics"
 								disabled={!settings.analytics.enabled}
 								checked={settings.analytics.googleAnalytics}
-								onChange={() =>
-									handleNestedSettingChange(
-										'analytics',
-										'googleAnalytics',
-										!settings.analytics.googleAnalytics,
-									)
-								}
+								onChange={e => {
+									e.stopPropagation() // Stop propagation to prevent triggering the container click
+									if (settings.analytics.enabled) {
+										toggleSettingFromContainer('analytics', 'googleAnalytics')
+									}
+								}}
 							/>
 							<span className="slider"></span>
 						</div>
 					</div>
-					<div className="settings-option">
+					<div
+						className={`settings-option ${!settings.analytics.enabled ? 'disabled' : ''}`}
+						onClick={() =>
+							toggleSettingFromContainer('analytics', 'microsoftClarity')
+						}
+					>
 						<label htmlFor="microsoftClarity" className="select-none">
 							Microsoft Clarity:
 						</label>
-						<div className="toggle-switch">
+						<div className="toggle-switch ml-2" onClick={e => e.stopPropagation()}>
 							<input
 								type="checkbox"
 								id="microsoftClarity"
 								disabled={!settings.analytics.enabled}
 								checked={settings.analytics.microsoftClarity}
-								onChange={() =>
-									handleNestedSettingChange(
-										'analytics',
-										'microsoftClarity',
-										!settings.analytics.microsoftClarity,
-									)
-								}
+								onChange={e => {
+									e.stopPropagation() // Stop propagation to prevent triggering the container click
+									if (settings.analytics.enabled) {
+										toggleSettingFromContainer('analytics', 'microsoftClarity')
+									}
+								}}
 							/>
 							<span className="slider"></span>
 						</div>
 					</div>
 				</div>
 			</div>
-			<div className="settings-option">
-				<label htmlFor="marketing">Marketing Cookies:</label>
-
-				<div className="toggle-switch">
+			<div className="settings-option" onClick={toggleMarketingFromContainer}>
+				<label htmlFor="marketing">Marketing:</label>
+				<div className="toggle-switch" onClick={e => e.stopPropagation()}>
 					<input
 						type="checkbox"
 						id="marketing"
 						checked={settings.marketing}
-						onChange={() =>
+						onChange={e => {
+							e.stopPropagation() // Prevent this click from triggering the container's onClick
 							handleSettingChange('marketing', !settings.marketing)
-						}
+						}}
 					/>
 					<span className="slider"></span>
 				</div>
@@ -195,20 +221,11 @@ const CookieConsent: FunctionComponent = () => {
 		</div>
 	)
 
-	const modalContents = {
-		privacy:
-			'This Privacy Policy outlines how we handle your personal information to protect your privacy. We collect personal data such as name, email, and contact details for communication purposes and to enhance our services. We ensure that your data is handled securely and in compliance with applicable laws.',
-		cookie:
-			'Our Cookie Policy explains the types of cookies we use and how they improve your experience on our website. Cookies help us understand user behavior, which enables us to improve our web services. You can manage cookie preferences through your browser settings.',
-		settings:
-			'In the settings panel, you can customize your preferences for how we use cookies on our site. You can choose to disable non-essential cookies, adjust notification settings, and more. Your settings will be saved and can be changed at any time.',
-	}
-
 	return (
 		<>
 			{isVisible && (
 				<div
-					className="cookie-popup"
+					className="cookie-popup z-30"
 					style={{
 						visibility: 'visible',
 						animation:

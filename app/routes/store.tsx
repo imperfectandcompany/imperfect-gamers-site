@@ -163,8 +163,8 @@ export const loader: LoaderFunction = async ({ request }) => {
 export default function Store() {
 	return (
 		<>
-			<StoreHeader />
 			<CookieConsent/>
+			<StoreHeader />
 			<StoreFooter/>
 		</>
 	)

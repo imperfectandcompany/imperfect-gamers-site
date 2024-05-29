@@ -101,15 +101,15 @@ const CookieConsentModal: React.FC<ModalProps> = ({
 
 	return (
 		<div
-			className="modal-backdrop"
+			className="modal-backdrop opacity-100 z-50"
 			onClick={e => {
 				if (e.currentTarget === e.target) onCloseWithAnimation()
 			}}
 		>
 			<div
 				ref={modalRef}
-				className={`modal-content mx-4 w-full max-w-md rounded-lg border border-stone-800 bg-black p-5 shadow-xl md:mx-0 ${isExiting ? 'modal-exiting' : ''}`}
-			>
+                className={`modal-content mx-4 w-full max-w-md rounded-lg border border-stone-800 bg-black p-5 shadow-xl md:mx-0 ${isExiting ? 'modal-exiting' : ''}`}
+                			>
 				<div className="modal-header">
 					<h2 id="modalTitle" className="modal-title">
 						{title}
