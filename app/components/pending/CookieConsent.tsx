@@ -17,9 +17,15 @@ interface AnalyticsSettings {
 	microsoftClarity: boolean
 }
 
+enum ModalNames {
+	Privacy = 'privacy',
+	Cookie = 'cookie',
+	Settings = 'settings'
+}
+
 const CookieConsent: FunctionComponent = () => {
 	const [isVisible, setIsVisible] = useState(false)
-	const [activeModal, setActiveModal] = useState<string | null>(null)
+	const [activeModal, setActiveModal] = useState<ModalNames | null>(null)
 	const [settings, setSettings] = useState<Settings>({
 		essential: true,
 		analytics: {
@@ -46,9 +52,9 @@ const CookieConsent: FunctionComponent = () => {
 		alert('Cookies accepted!')
 		setIsVisible(false)
 	}
-
-	const openModal = (modalName: string) => {
-		setActiveModal(modalName)
+	
+	const openModal = (modalName: ModalNames): void => {
+		setActiveModal(modalName);
 	}
 
 	const closeModal = () => {
@@ -62,8 +68,6 @@ const CookieConsent: FunctionComponent = () => {
 			[setting]: value,
 		}))
 	}
-
-  const [isAnimating, setIsAnimating] = useState(false); // Animation tracking
 
 	// Function to toggle the setting when the container is clicked
 	const toggleSettingFromContainer = (
@@ -89,7 +93,8 @@ const CookieConsent: FunctionComponent = () => {
 		}))
 	}
 
-	const handleAnalyticsContainerClick = () => {
+	const handleAnalyticsContainerClick = (e: MouseEvent<HTMLDivElement>): void => {
+		e.stopPropagation();
 		handleAnalyticsToggle(!settings.analytics.enabled)
 	}
 
@@ -105,7 +110,8 @@ const CookieConsent: FunctionComponent = () => {
 	}
 
 	const SettingsPanel = () => (
-		<div className="settings-panel">
+		<>
+		<div className="settings-panel" id="settingsPanel">
 <div className="settings-option text-red-500/50"
      onClick={(e) => e.stopPropagation()} // Prevent any changes
 >
@@ -120,8 +126,7 @@ const CookieConsent: FunctionComponent = () => {
 			<div
 				className="settings-option"
 				onClick={e => {
-					e.stopPropagation() // Prevent this click from bubbling up to the container
-					handleAnalyticsContainerClick()
+					handleAnalyticsContainerClick(e)
 				}}
 			>
 				<label htmlFor="analytics" className="select-none">
@@ -157,7 +162,7 @@ const CookieConsent: FunctionComponent = () => {
 							toggleSettingFromContainer('analytics', 'googleAnalytics')
 						}
 					>
-						<label htmlFor="googleAnalytics" className="select-none">
+						<label id="googleAnalyticsLabel" htmlFor="googleAnalytics" className="select-none">
 							Google Analytics:
 						</label>
 						<div className="toggle-switch ml-2" onClick={e => e.stopPropagation()}>
@@ -172,6 +177,7 @@ const CookieConsent: FunctionComponent = () => {
 										toggleSettingFromContainer('analytics', 'googleAnalytics')
 									}
 								}}
+								aria-labelledby="googleAnalyticsLabel"
 							/>
 							<span className="slider"></span>
 						</div>
@@ -218,16 +224,34 @@ const CookieConsent: FunctionComponent = () => {
 					<span className="slider"></span>
 				</div>
 			</div>
-		</div>
+		</div>		
+		<div className="flex justify-between mt-6 mb-2">
+                        <button className="cursor-pointer rounded-md transition-all select-none justify-center border-transparent bg-gradient-to-r from-stone-500 to-stone-700 px-5 py-2 text-sm font-medium tracking-wide text-white opacity-100 shadow-none duration-300 hover:bg-gradient-to-l focus:outline-none focus:ring-2 focus:ring-white" onClick={() => {
+                            setSettings({
+                                essential: true,
+                                analytics: {
+                                    enabled: false,
+                                    googleAnalytics: false,
+                                    microsoftClarity: false,
+                                },
+                                marketing: false,
+                            });
+                        }}>
+                            Reset Settings
+                        </button>
+                        <button className="cursor-pointer rounded-md select-none justify-center border-transparent bg-gradient-to-r from-red-500 to-red-700 px-5 py-2 text-sm font-medium tracking-wide text-white opacity-100 shadow-none transition-all duration-300 hover:bg-gradient-to-l focus:outline-none focus:ring-2 focus:ring-white" onClick={acceptCookies}>
+                            Save Settings
+                        </button>
+			</div></>
 	)
 
 	return (
 		<>
 			{isVisible && (
 				<div
-					className="cookie-popup z-30"
+					className="cookie-popup z-30" id="cookieBanner"
 					style={{
-						visibility: 'visible',
+						visibility: isVisible ? 'visible' : 'hidden',
 						animation:
 							'slideUp 0.5s ease-out forwards, glow 1.5s ease-in-out infinite alternate',
 					}}
@@ -242,21 +266,21 @@ const CookieConsent: FunctionComponent = () => {
 						</p>
 						<div className="button-group">
 							<button
-								onClick={() => openModal('privacy')}
+								onClick={() => openModal(ModalNames.Privacy)}
 								disabled={activeModal === 'privacy'}
 								className="text-red-500/70 focus:outline-none focus:ring-2 focus:ring-red-500 disabled:cursor-auto disabled:text-red-700 disabled:hover:disabled:text-red-700"
 							>
 								Privacy Policy
 							</button>
 							<button
-								onClick={() => openModal('cookie')}
+								onClick={() => openModal(ModalNames.Cookie)}
 								disabled={activeModal === 'cookie'}
 								className="text-red-500/70 focus:outline-none focus:ring-2 focus:ring-red-500 disabled:cursor-auto disabled:text-red-700 disabled:hover:disabled:text-red-700"
 							>
 								Cookie Policy
 							</button>
 							<button
-								onClick={() => openModal('settings')}
+								onClick={() => openModal(ModalNames.Settings)}
 								disabled={activeModal === 'settings'}
 								className="text-red-500/70 focus:outline-none focus:ring-2 focus:ring-red-500 disabled:cursor-auto disabled:text-red-700 disabled:hover:disabled:text-red-700"
 							>
@@ -264,7 +288,7 @@ const CookieConsent: FunctionComponent = () => {
 							</button>
 						</div>
 					</div>
-					<div className="accept-button">
+					<div className={`accept-button ${activeModal === 'settings' ? 'hidden' : ''}`}>
 						<button
 							className="cursor-pointer select-none justify-center border-transparent bg-gradient-to-r from-red-500 to-red-700 px-5 py-2 text-sm font-medium tracking-wide text-white opacity-100 shadow-none transition-opacity duration-300 hover:bg-gradient-to-l focus:outline-none focus:ring-2 focus:ring-white"
 							onClick={acceptCookies}
