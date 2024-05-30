@@ -34,18 +34,63 @@ export const loader = async () => {
 
 const gTagMsClarityFlag = true
 
+declare global {
+	interface Window {
+		clarity: (type: string, value?: boolean) => void
+	}
+}
+
 export function Layout({ children }: { children: React.ReactNode }) {
 	const { gaTrackingId, msClarityId } = useLoaderData<typeof loader>()
+
+	const consentListener = () => {
+		const storedSettings = localStorage.getItem('cookieSettings')
+		if (storedSettings) {
+			const settings = JSON.parse(storedSettings)
+			if (settings.analytics.microsoftClarity && msClarityId) {
+				if (!window.clarity) {
+					console.warn(
+						'window.clarity is not defined. This could mean the Microsoft Clarity script has not loaded on the page yet.',
+					)
+					return
+				}
+				window.clarity('consent')
+			}
+
+			if (settings.analytics.googleAnalytics && gaTrackingId) {
+				gtag.consent({
+					action: 'default',
+					ad_storage: 'granted',
+					user_data: 'granted',
+					personalization: 'granted',
+					analytics_storage: 'granted',
+					// Our consent banner comes up after 500ms
+					w4update: 550, // milliseconds
+				})
+			}
+		}
+	}
+
 	useEffect(() => {
 		if (process.env.NODE_ENV !== 'development' && gTagMsClarityFlag) {
 			if (gaTrackingId) {
 				gtag.pageview(window.location.pathname, gaTrackingId)
 			}
+
 			if (msClarityId) {
+				// Loads MsClarity - session cookies disabled - requires consent
 				MsClarity({ id: msClarityId, enableInDevMode: false })
+			}
+
+			window.addEventListener('consentGranted', consentListener)
+
+			// Cleanup event listeners when the component unmounts
+			return () => {
+				window.removeEventListener('consentGranted', consentListener)
 			}
 		}
 	}, [gaTrackingId, msClarityId])
+
 	return (
 		<html lang="en">
 			<head>

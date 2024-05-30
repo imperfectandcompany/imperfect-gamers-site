@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import FeaturedPartnership from '../../organism/FeaturedPartnership'
 
 /**
@@ -5,6 +6,8 @@ import FeaturedPartnership from '../../organism/FeaturedPartnership'
  * @returns JSX.Element representing the featured partnership section.
  */
 const FeaturedPartnershipSection: React.FC = () => {
+	const [showBlog] = useState(false)
+
 	return (
 		<FeaturedPartnership
 			logoSrc="https://imperfectgamers.org/assets/store/tebex_logo.svg"
@@ -12,13 +15,14 @@ const FeaturedPartnershipSection: React.FC = () => {
 			title="We are trusted"
 			description={
 				<>
-					Proud partners of Tebex, we were the first to launch with them in
-					CS:GO. Piloting their initial launch in the new CS2 space. You can
-					read more about it{' '}
+					We are proud partners of Tebex! Together, we provide a seamless
+					membership experience. We were the first to pilot their initial launch
+					in the new CS2 space, utilizing their headless API and new checkout
+					experience.
+					{showBlog ? 'You can read more about it here: linkGoesHere' : null}
 				</>
 			}
 			link="#"
-			linkText="here"
 		/>
 	)
 }

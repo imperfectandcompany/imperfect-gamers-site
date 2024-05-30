@@ -6,7 +6,18 @@ import {
 } from '@remix-run/node'
 import type { ExternalScriptsHandle } from 'remix-utils/external-scripts'
 import { getSession, storeCookie } from '~/auth/storage.server' // Make sure this matches your file structure
-import { StoreHeader } from '~/components/templates/store'
+import CookieConsent from '~/components/pending/CookieConsent'
+import {
+	StoreContact,
+	StoreEvents,
+	StoreFAQ,
+	StoreFooter,
+	StoreHeader,
+	StorePartnership,
+	StoreTestimonials,
+	StoreTiers,
+} from '~/components/templates/store'
+import StoreFeatured from '~/components/templates/store/StoreFeatured'
 import '~/styles/store.css'
 import type { BasketPackage } from '~/utils/tebex.interface'
 
@@ -162,7 +173,16 @@ export const loader: LoaderFunction = async ({ request }) => {
 export default function Index() {
 	return (
 		<>
+			<CookieConsent />
 			<StoreHeader />
+			<StoreFeatured />
+			<StoreTiers />
+			<StoreTestimonials />
+			<StoreFAQ />
+			<StoreEvents />
+			<StorePartnership />
+			<StoreContact />
+			<StoreFooter />
 		</>
 	)
 }

@@ -1,6 +1,6 @@
 // components/organism/ModalWrapper/ModalWrapper.tsx
 import type { ReactElement } from 'react'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import ModalContent from '~/components/molecules/ModalContent/ModalContent'
 import Modal from '../../atoms/Modal/Modal'
 import modal from './ModalWrapper.module.css'
@@ -74,9 +74,41 @@ const ModalWrapper: React.FC<ModalWrapperProps> = ({
 		return false
 	}
 
+	const [allowClose, setAllowClose] = useState(true)
+	useEffect(() => {
+		const handleConsentSettingsOpened = () => setAllowClose(false)
+		const handleConsentSettingsClosed = () => setAllowClose(true)
+
+		if (typeof window !== 'undefined') {
+			window.addEventListener(
+				'consentSettingsOpened',
+				handleConsentSettingsOpened,
+			)
+			window.addEventListener(
+				'consentSettingsClosed',
+				handleConsentSettingsClosed,
+			)
+		}
+
+		return () => {
+			if (typeof window !== 'undefined') {
+				window.removeEventListener(
+					'consentSettingsOpened',
+					handleConsentSettingsOpened,
+				)
+				window.removeEventListener(
+					'consentSettingsClosed',
+					handleConsentSettingsClosed,
+				)
+			}
+		}
+	}, [])
 	const closeModal = () => {
 		if (!handlePopupWindow() && shouldClose()) {
-			setIsOpen(false)
+			const consentModalOpen = localStorage.getItem('consentModalOpen')
+			if (consentModalOpen !== 'true') {
+				setIsOpen(false)
+			}
 		}
 		// TODO: Implement UI/UX enhancements for when the modal close attempt is intercepted
 		// due to unsaved changes or an active popup window. Consider adding a confirmation
@@ -119,19 +151,21 @@ const ModalWrapper: React.FC<ModalWrapperProps> = ({
 					align={align}
 				/>
 				{/** Escape modal button **/}
-				<div
-					className={modal.close__button}
-					role="button"
-					tabIndex={0}
-					onClick={closeModal}
-					onKeyDown={e => {
-						if (e.key === 'Enter' || e.key === ' ') {
-							closeModal()
-						}
-					}}
-				>
-					&times;
-				</div>
+				{allowClose ? (
+					<div
+						className={modal.close__button}
+						role="button"
+						tabIndex={0}
+						onClick={closeModal}
+						onKeyDown={e => {
+							if (e.key === 'Enter' || e.key === ' ') {
+								closeModal()
+							}
+						}}
+					>
+						&times;
+					</div>
+				) : null}
 			</Modal>
 		</>
 	)
