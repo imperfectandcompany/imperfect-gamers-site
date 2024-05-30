@@ -36,6 +36,9 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 	const fetcher = useFetcher()
 	const isAuthorized = isOnboarded && isAuthenticated && isSteamLinked
 
+	const [successfulPayment, setSuccessfulPayment] = useState(false)
+	const [failedPayment, setFailedPayment] = useState(false)
+
 	// 1.0 Effect to Check Basket Existence
 
 	useEffect(() => {
@@ -72,18 +75,20 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 				}
 			})
 
-			Tebex.checkout.on(Tebex.events.PAYMENT_COMPLETE, () => {
+			Tebex.checkout.on('payment:complete', () => {
 				console.log('Payment Complete')
 				if (setCloseInterceptReason) {
 					setCloseInterceptReason(CloseInterceptReason.None)
 				}
+				setSuccessfulPayment(true)
 			})
 
-			Tebex.checkout.on(Tebex.events.PAYMENT_ERROR, () => {
+			Tebex.checkout.on('payment:error', () => {
 				console.log('Payment Error')
 				if (setCloseInterceptReason) {
 					setCloseInterceptReason(CloseInterceptReason.None)
 				}
+				setFailedPayment(true)
 			})
 
 			Tebex.checkout.launch()
@@ -234,12 +239,39 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 
 	// Process 8.5: Show final screen (ready)
 	if (isSteamLinked) {
-		return (
-			<>
-				<div>Steam Linked with ID: {steamId}</div>
-				<div>Onboarded as: {username}</div>
-			</>
-		)
+		if (successfulPayment) {
+			return (
+				<>
+					<div>Payment Successful!</div>
+					<div>
+						Our background process will deliver perks to your account in-game!
+					</div>
+					<div>
+						If you are already online, please wait for the next map-change or
+						rejoin.
+					</div>
+					<div>
+						Questions? Reach our Discord: https://imperfectgamers.org/discord/
+					</div>
+				</>
+			)
+		} else if (failedPayment) {
+			return (
+				<>
+					<div>Payment Failed!</div>
+					<div>
+						Reach out to staff on discord: https://imperfectgamers.org/discord/
+					</div>
+				</>
+			)
+		} else {
+			return (
+				<>
+					<div>Steam Linked with ID: {steamId}</div>
+					<div>Onboarded as: {username}</div>
+				</>
+			)
+		}
 	}
 }
 
