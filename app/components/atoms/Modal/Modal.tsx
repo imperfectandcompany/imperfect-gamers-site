@@ -19,29 +19,37 @@ interface ModalProps {
  * @component
  * @param {ModalProps} props - The component props.
  * @returns {JSX.Element} The rendered Modal component.
- */
+ */ 
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, isResponsive = false }) => {
   const modalRef = useRef<HTMLDivElement>(null);
 
+  const isConsentModalBackdropOpen = () => {
+    return document.querySelector('.modal-backdrop') !== null;
+  };
+
   useEffect(() => {
     const handleKeydown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        onClose();
+      if (event.key === 'Escape' && isOpen && !isConsentModalBackdropOpen()) {
+        const consentModalOpen = localStorage.getItem('consentModalOpen');
+        if (consentModalOpen !== 'true') {
+          onClose();
+        }
       }
     };
 
     const handleClickOutside = (event: MouseEvent) => {
-      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
-        onClose();
+
+      if (isOpen && modalRef.current && !modalRef.current.contains(event.target as Node) && !isConsentModalBackdropOpen()) {
+        const consentModalOpen = localStorage.getItem('consentModalOpen');
+        if (consentModalOpen !== 'true') {
+          onClose();
+        }
       }
     };
 
     if (isOpen) {
       window.addEventListener('keydown', handleKeydown);
       document.addEventListener('mousedown', handleClickOutside);
-    } else {
-      window.removeEventListener('keydown', handleKeydown);
-      document.removeEventListener('mousedown', handleClickOutside);
     }
 
     return () => {
@@ -56,7 +64,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, isResponsive =
 
   return (
     <div
-      className={`fixed inset-0 z-50 flex items-center justify-center overflow-auto bg-black/50 px-4 py-2 ${
+      className={`fixed inset-0 z-30 flex items-center justify-center overflow-auto bg-black/50 px-4 py-2 ${
         isOpen ? 'opacity-100' : 'pointer-events-none opacity-0'
       }`}
     >

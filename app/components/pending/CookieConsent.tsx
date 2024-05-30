@@ -171,11 +171,13 @@ const CookieConsent: FunctionComponent = () => {
 	}, [])
 
 	const openModal = (modalName: ModalNames): void => {
+		localStorage.setItem('consentModalOpen', 'true');
 		setActiveModal(modalName)
 	}
 
 	const closeModal = () => {
 		if (activeModal) {
+		localStorage.setItem('consentModalOpen', 'false');
 			// Check if there's an active modal to close
 			setActiveModal(null)
 		}
@@ -394,7 +396,7 @@ const CookieConsent: FunctionComponent = () => {
 	return (
 		<>
 			{isVisible && (
-                <div className={`cookie-popup z-30 ${isExiting ? 'exiting' : ''}`}
+                <div className={`cookie-popup z-40 ${isExiting ? 'exiting' : ''}`}
 					id="cookieBanner"
 					style={{
 						visibility: isVisible ? 'visible' : 'hidden',
@@ -449,7 +451,7 @@ const CookieConsent: FunctionComponent = () => {
 
 			{activeModal && (
 				<CookieConsentModal
-					title={`${activeModal[0].toUpperCase() + activeModal.slice(1)} Policy`}
+					title={activeModal === ModalNames.Settings ? "Cookie Settings" : `${activeModal[0].toUpperCase() + activeModal.slice(1)} Policy`}
 					onClose={closeModal}
 					exposeCloseAnimationFunc={handleExposeCloseFunc}
 					content={''}
