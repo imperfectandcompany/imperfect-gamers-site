@@ -4,6 +4,7 @@ import {
 	json,
 	type LoaderFunction,
 } from '@remix-run/node'
+import { useState } from 'react'
 import type { ExternalScriptsHandle } from 'remix-utils/external-scripts'
 import { getSession, storeCookie } from '~/auth/storage.server' // Make sure this matches your file structure
 import CookieConsent from '~/components/pending/CookieConsent'
@@ -156,15 +157,19 @@ export const loader: LoaderFunction = async ({ request }) => {
 	return json(data) // Include basketId in the response
 }
 
+
 /**
  * Renders the Store component.
  *
  * @returns The rendered Store component.
  */
 export default function Store() {
+
+	const [isVisible, setIsVisible] = useState(!localStorage.getItem('cookieSettings'));
+
 	return (
 		<>
-			<CookieConsent/>
+		{isVisible ? <CookieConsent/> : null}
 			<StoreHeader />
 			<StoreFeatured/>
 			<StoreTiers />

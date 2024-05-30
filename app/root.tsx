@@ -77,18 +77,24 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
 	useEffect(() => {
 		if (process.env.NODE_ENV !== 'development' && gTagMsClarityFlag) {
-			window.addEventListener("consentGranted", consentListener);
-
 			if (gaTrackingId) {
 				gtag.pageview(window.location.pathname, gaTrackingId)
 			}
 
-			if (msClarityId) {	
+			if (msClarityId) {
 				// Loads MsClarity - session cookies disabled - requires consent
 				MsClarity({ id: msClarityId, enableInDevMode: false })
 			}
+
+			window.addEventListener("consentGranted", consentListener);
+
+			// Cleanup event listeners when the component unmounts
+			return () => {
+				window.removeEventListener("consentGranted", consentListener);
+			}
 		}
-	}, [gaTrackingId, msClarityId])
+	}, [gaTrackingId, msClarityId]);
+	
 	return (
 		<html lang="en">
 			<head>

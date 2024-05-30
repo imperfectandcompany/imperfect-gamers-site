@@ -1,4 +1,6 @@
-import React, { useState, useRef, useEffect, ReactNode, useCallback } from 'react'
+import type { ReactNode} from 'react';
+import type React from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react'
 
 const focusableModalElements: string =
 	'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
@@ -91,11 +93,11 @@ const CookieConsentModal: React.FC<ModalProps> = ({
 	  useEffect(() => {
 		exposeCloseAnimationFunc(onCloseWithAnimation);
 	  }, [exposeCloseAnimationFunc]);
-	  
+
 
 	return (
 		<div
-			className="modal-backdrop opacity-100 z-50"
+			className="modal-backdrop z-40 opacity-100"
 			onClick={e => {
 				if (e.currentTarget === e.target) onCloseWithAnimation()
 			}}

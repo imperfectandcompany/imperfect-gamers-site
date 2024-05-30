@@ -1,8 +1,9 @@
 // CookieConsent.tsx
 
-import {
+import type {
 	FunctionComponent,
-	MouseEvent,
+	MouseEvent} from 'react';
+import {
 	useCallback,
 	useEffect,
 	useState,
@@ -171,13 +172,17 @@ const CookieConsent: FunctionComponent = () => {
 	}, [])
 
 	const openModal = (modalName: ModalNames): void => {
-		localStorage.setItem('consentModalOpen', 'true');
+		if(modalName === ModalNames.Settings){
+					localStorage.setItem('consentModalOpen', 'true');
+					window.dispatchEvent(new Event("consentSettingsOpened"));
+		}
 		setActiveModal(modalName)
 	}
 
 	const closeModal = () => {
 		if (activeModal) {
 		localStorage.setItem('consentModalOpen', 'false');
+		window.dispatchEvent(new Event("consentSettingsClosed"));
 			// Check if there's an active modal to close
 			setActiveModal(null)
 		}
@@ -375,7 +380,7 @@ const CookieConsent: FunctionComponent = () => {
 			</div>
 			<div className="mb-2 mt-6 flex justify-between">
 				<button
-					className="cursor-pointer select-none justify-center rounded-md border-transparent bg-gradient-to-r from-stone-500 to-stone-700 px-5 py-2 text-sm font-medium tracking-wide text-white opacity-100 shadow-none transition-all duration-300 hover:bg-gradient-to-r focus:outline-none focus:ring-2 focus:ring-white disabled:opacity-50 disabled:cursor-not-allowed"
+					className="cursor-pointer select-none justify-center rounded-md border-transparent bg-gradient-to-r from-stone-500 to-stone-700 px-5 py-2 text-sm font-medium tracking-wide text-white opacity-100 shadow-none transition-all duration-300 hover:bg-gradient-to-r focus:outline-none focus:ring-2 focus:ring-white disabled:cursor-not-allowed disabled:opacity-50"
 					onClick={resetSettings}
 					disabled={isResetDisabled}
 				>
@@ -384,7 +389,7 @@ const CookieConsent: FunctionComponent = () => {
 
 				<button
 					disabled={isSaveDisabled}
-					className="cursor-pointer select-none justify-center rounded-md border-transparent bg-gradient-to-r from-red-500 to-red-700 px-5 py-2 text-sm font-medium tracking-wide text-white opacity-100 shadow-none transition-all duration-300 hover:bg-gradient-to-l focus:outline-none focus:ring-2 focus:ring-white disabled:opacity-50 disabled:cursor-not-allowed"
+					className="cursor-pointer select-none justify-center rounded-md border-transparent bg-gradient-to-r from-red-500 to-red-700 px-5 py-2 text-sm font-medium tracking-wide text-white opacity-100 shadow-none transition-all duration-300 hover:bg-gradient-to-l focus:outline-none focus:ring-2 focus:ring-white disabled:cursor-not-allowed disabled:opacity-50"
 					onClick={acceptCookies}
 				>
 					{isSaveDisabled ? 'Settings Saved' : 'Save Settings'}
@@ -395,25 +400,26 @@ const CookieConsent: FunctionComponent = () => {
 
 	return (
 		<>
-			{isVisible && (
-                <div className={`cookie-popup z-40 ${isExiting ? 'exiting' : ''}`}
+			{isVisible ? <div className={`cookie-popup z-50 ${isExiting ? 'exiting' : ''}`}
 					id="cookieBanner"
 					style={{
 						visibility: isVisible ? 'visible' : 'hidden',
 						animation:
 							'slideUp 0.5s ease-out forwards, glow 1.5s ease-in-out infinite alternate',
 					}}
+					onClick={(e)=> e.stopPropagation()}
 				>
-					<div>
-						<strong>Imperfect Gamers - Committed to Your Privacy.</strong>
-						<p>
+					<div id="cookieBanner-inner">
+						<strong id="cookieBanner-Header">Imperfect Gamers - Committed to Your Privacy.</strong>
+						<p id='cookieBanner-paragraph'>
 							We use cookies and similar technologies to enhance your
 							experience. Manage your preferences or withdraw your consent at
 							any time. For more information, visit our "Settings" or view our
 							data protection policies.
 						</p>
-						<div className="button-group">
+						<div className="button-group" id="cookie-banner-buttons">
 							<button
+							id="cookie-banner-privacy-button"
 								onClick={() => openModal(ModalNames.Privacy)}
 								disabled={activeModal === 'privacy'}
 								className="text-red-500/70 focus:outline-none focus:ring-2 focus:ring-red-500 disabled:cursor-not-allowed	 disabled:text-red-700 disabled:hover:disabled:text-red-700"
@@ -421,6 +427,7 @@ const CookieConsent: FunctionComponent = () => {
 								Privacy Policy
 							</button>
 							<button
+							id="cookie-banner-cookie-button"
 								onClick={() => openModal(ModalNames.Cookie)}
 								disabled={activeModal === 'cookie'}
 								className="text-red-500/70 focus:outline-none focus:ring-2 focus:ring-red-500 disabled:cursor-not-allowed disabled:text-red-700 disabled:hover:disabled:text-red-700"
@@ -428,6 +435,8 @@ const CookieConsent: FunctionComponent = () => {
 								Cookie Policy
 							</button>
 							<button
+							id="cookie-banner-settings-button"
+
 								onClick={() => openModal(ModalNames.Settings)}
 								disabled={activeModal === 'settings'}
 								className="text-red-500/70 focus:outline-none focus:ring-2 focus:ring-red-500 disabled:cursor-not-allowed disabled:text-red-700 disabled:hover:disabled:text-red-700"
@@ -437,20 +446,20 @@ const CookieConsent: FunctionComponent = () => {
 						</div>
 					</div>
 					<div
+					id='cookie-banner-accept-all-container'
 						className={`accept-button ${activeModal === 'settings' ? 'hidden' : ''}`}
 					>
 						<button
+						id="cookie-banner-accept-all"
 							className="cursor-pointer select-none justify-center border-transparent bg-gradient-to-r from-red-500 to-red-700 px-5 py-2 text-sm font-medium tracking-wide text-white opacity-100 shadow-none transition-opacity duration-300 hover:bg-gradient-to-l focus:outline-none focus:ring-2 focus:ring-white"
 							onClick={acceptAllCookies}
 						>
 							Accept all
 						</button>
 					</div>
-				</div>
-			)}
+				</div> : null}
 
-			{activeModal && (
-				<CookieConsentModal
+			{activeModal ? <CookieConsentModal
 					title={activeModal === ModalNames.Settings ? "Cookie Settings" : `${activeModal[0].toUpperCase() + activeModal.slice(1)} Policy`}
 					onClose={closeModal}
 					exposeCloseAnimationFunc={handleExposeCloseFunc}
@@ -461,8 +470,7 @@ const CookieConsent: FunctionComponent = () => {
 					) : (
 						<p>{`Read our ${activeModal} policy here. This policy provides detailed information about how we use cookies and how you can manage them.`}</p>
 					)}
-				</CookieConsentModal>
-			)}
+				</CookieConsentModal> : null}
 		</>
 	)
 }

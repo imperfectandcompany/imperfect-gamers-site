@@ -56,7 +56,6 @@
 	left: 0;
 	background: rgba(10, 10, 10, 0.9);
 	border-top: 2px solid #a83232;
-	z-index: 1000;
 	display: flex;
 	justify-content: space-between;
 	align-items: center;

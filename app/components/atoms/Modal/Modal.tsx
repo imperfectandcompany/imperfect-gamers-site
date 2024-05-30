@@ -1,35 +1,47 @@
 import { useEffect, useRef } from 'react';
 
-// Type definition for the props that the Modal component will accept
 interface ModalProps {
-  isOpen: boolean; // Indicates whether the modal is open
-  onClose: () => void; // Function to call when the modal needs to be closed
-  children: React.ReactNode; // Content to be rendered inside the modal
-  isResponsive?: boolean; // Optional prop to enable responsive behavior
+  isOpen: boolean;
+  onClose: () => void;
+  children: React.ReactNode;
+  isResponsive?: boolean;
 }
 
-/**
- * Modal component that displays a modal dialog.
- *
- * This component renders a modal overlay that can be toggled via the `isOpen` prop.
- * It supports both fixed and responsive behaviors determined by the `isResponsive` prop.
- * The modal can be closed by pressing the Escape key, clicking outside its bounds,
- * or invoking the `onClose` function.
- *
- * @component
- * @param {ModalProps} props - The component props.
- * @returns {JSX.Element} The rendered Modal component.
- */ 
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, isResponsive = false }) => {
   const modalRef = useRef<HTMLDivElement>(null);
 
-  const isConsentModalBackdropOpen = () => {
-    return document.querySelector('.modal-backdrop') !== null;
+  const isCloseAllowed = (target: HTMLElement) => {
+    // Add class names or IDs that should not trigger onClose
+    const excludedClassesOrIds = [
+      'cookie-popup', 
+      'button-group', 
+      'cookie-consent-modal-backdrop', 
+      'modal-content', 
+      '#settingsPanel',
+      '#cookieBanner',
+      '#cookieBanner-inner',
+      '#cookieBanner-Header',
+      '#cookieBanner-paragraph',
+      '#cookie-banner-buttons',
+      '#cookie-banner-privacy-button',
+      '#cookie-banner-settings-button',
+      '#cookie-banner-cookie-button',
+      '#cookie-banner-accept-all',
+      '#cookie-banner-accept-all-container',
+      'cookie-consent-modal-backdrop'
+    ];
+
+    return !excludedClassesOrIds.some(selector => {
+      if (selector.startsWith('#')) {
+        return target.id === selector.slice(1);
+      }
+      return target.classList.contains(selector);
+    });
   };
 
   useEffect(() => {
     const handleKeydown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && isOpen && !isConsentModalBackdropOpen()) {
+      if (event.key === 'Escape' && isOpen && isCloseAllowed(event.target as HTMLElement)) {
         const consentModalOpen = localStorage.getItem('consentModalOpen');
         if (consentModalOpen !== 'true') {
           onClose();
@@ -38,8 +50,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, isResponsive =
     };
 
     const handleClickOutside = (event: MouseEvent) => {
-
-      if (isOpen && modalRef.current && !modalRef.current.contains(event.target as Node) && !isConsentModalBackdropOpen()) {
+      if (isOpen && modalRef.current && !modalRef.current.contains(event.target as Node) && isCloseAllowed(event.target as HTMLElement)) {
         const consentModalOpen = localStorage.getItem('consentModalOpen');
         if (consentModalOpen !== 'true') {
           onClose();

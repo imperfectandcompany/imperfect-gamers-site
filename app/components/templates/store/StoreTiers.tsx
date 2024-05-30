@@ -61,7 +61,7 @@ const StoreTiers: React.FC = () => (
 				planType="Premium"
 				planName="Premium"
 				features={premiumFeatures}
-				trialInfo="Free trial for 7 days"
+				trialInfo="BETA"
 				additionalInfo="Enjoy an elegant experience with Premium membership. Full access to all servers and additional perks."
 			/>
 		</div>
