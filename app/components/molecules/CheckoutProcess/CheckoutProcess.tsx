@@ -4,10 +4,10 @@ import { useFetcher, useLoaderData } from '@remix-run/react'
 import type React from 'react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { CloseInterceptReason } from '~/components/organism/ModalWrapper/ModalWrapper'
-import type { LoaderData } from '~/routes/store'
 import { useFetcherWithPromise } from '~/utils/general'
 import type { TebexCheckoutConfig } from '~/utils/tebex.interface'
 import { useAddPackageToBasket, useCreateBasket } from './BasketManager'
+import { LoaderData } from '~/routes/_index'
 
 interface CheckoutProcessProps {
 	isOpen?: boolean

@@ -10,11 +10,12 @@ import CheckoutProcess from '~/components/molecules/CheckoutProcess/CheckoutProc
 import { LoginForm } from '~/components/molecules/LoginForm'
 import UsernameForm from '~/components/molecules/UsernameForm'
 import ProcessProvider from '~/components/pending/ProcessProvider'
-import type { LoaderData } from '~/routes/store'
+
 import { useFetcherWithPromiseAutoReset } from '~/utils/general'
 import ModalWrapper from '../ModalWrapper/ModalWrapper'
 import SignUpForm from '../SignUpForm/SignUpForm'
 import WelcomeScreen from '../WelcomeScreen'
+import { LoaderData } from '~/routes/_index'
 
 // Define an enum for the page titles
 enum PageTitle {
