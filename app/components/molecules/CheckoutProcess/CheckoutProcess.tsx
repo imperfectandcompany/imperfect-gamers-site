@@ -39,7 +39,6 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 	const [successfulPayment, setSuccessfulPayment] = useState(false)
 	const [failedPayment, setFailedPayment] = useState(false)
 
-
 	// 1.0 Effect to Check Basket Existence
 
 	useEffect(() => {
@@ -244,16 +243,25 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 			return (
 				<>
 					<div>Payment Successful!</div>
-					<div>Our background process will deliver perks to your account in-game!</div>
-					<div>If you're already online, please wait for the next map-change or rejoin.</div>
-					<div>Questions? Reach our Discord: https://imperfectgamers.org/discord/</div>
+					<div>
+						Our background process will deliver perks to your account in-game!
+					</div>
+					<div>
+						If you are already online, please wait for the next map-change or
+						rejoin.
+					</div>
+					<div>
+						Questions? Reach our Discord: https://imperfectgamers.org/discord/
+					</div>
 				</>
 			)
 		} else if (failedPayment) {
 			return (
 				<>
 					<div>Payment Failed!</div>
-					<div>Reach out to staff on discord: https://imperfectgamers.org/discord/</div>
+					<div>
+						Reach out to staff on discord: https://imperfectgamers.org/discord/
+					</div>
 				</>
 			)
 		} else {

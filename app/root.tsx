@@ -32,7 +32,7 @@ export const loader = async () => {
 
 // http://localhost:5173/store/
 
-const gTagMsClarityFlag = false
+const gTagMsClarityFlag = true
 
 export function Layout({ children }: { children: React.ReactNode }) {
 	const { gaTrackingId, msClarityId } = useLoaderData<typeof loader>()
@@ -55,7 +55,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 				<Links />
 			</head>
 			<body className="background-svg relative flex flex-col bg-black px-4 text-white sm:px-8 md:px-12">
-				{/* {process.env.NODE_ENV === 'development' || !gaTrackingId ? null : (
+				{process.env.NODE_ENV === 'development' || !gaTrackingId ? null : (
 					<>
 						<script
 							async
@@ -77,7 +77,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 							}}
 						/>
 					</>
-				)} */}
+				)}
 				<main className="space-y-24 md:mx-72 md:space-y-12">{children}</main>
 				<ScrollRestoration />
 				<Scripts />
