@@ -373,7 +373,7 @@ const CookieConsent: FunctionComponent = () => {
 			</div>
 			<div className="mb-2 mt-6 flex justify-between">
 				<button
-					className="cursor-pointer select-none justify-center rounded-md border-transparent bg-gradient-to-r from-stone-500 to-stone-700 px-5 py-2 text-sm font-medium tracking-wide text-white opacity-100 shadow-none transition-all duration-300 hover:bg-gradient-to-r focus:outline-none focus:ring-2 focus:ring-white disabled:opacity-50"
+					className="cursor-pointer select-none justify-center rounded-md border-transparent bg-gradient-to-r from-stone-500 to-stone-700 px-5 py-2 text-sm font-medium tracking-wide text-white opacity-100 shadow-none transition-all duration-300 hover:bg-gradient-to-r focus:outline-none focus:ring-2 focus:ring-white disabled:opacity-50 disabled:cursor-not-allowed"
 					onClick={resetSettings}
 					disabled={isResetDisabled}
 				>
@@ -382,7 +382,7 @@ const CookieConsent: FunctionComponent = () => {
 
 				<button
 					disabled={isSaveDisabled}
-					className="cursor-pointer select-none justify-center rounded-md border-transparent bg-gradient-to-r from-red-500 to-red-700 px-5 py-2 text-sm font-medium tracking-wide text-white opacity-100 shadow-none transition-all duration-300 hover:bg-gradient-to-l focus:outline-none focus:ring-2 focus:ring-white disabled:opacity-50"
+					className="cursor-pointer select-none justify-center rounded-md border-transparent bg-gradient-to-r from-red-500 to-red-700 px-5 py-2 text-sm font-medium tracking-wide text-white opacity-100 shadow-none transition-all duration-300 hover:bg-gradient-to-l focus:outline-none focus:ring-2 focus:ring-white disabled:opacity-50 disabled:cursor-not-allowed"
 					onClick={acceptCookies}
 				>
 					{isSaveDisabled ? 'Settings Saved' : 'Save Settings'}
@@ -414,21 +414,21 @@ const CookieConsent: FunctionComponent = () => {
 							<button
 								onClick={() => openModal(ModalNames.Privacy)}
 								disabled={activeModal === 'privacy'}
-								className="text-red-500/70 focus:outline-none focus:ring-2 focus:ring-red-500 disabled:cursor-auto disabled:text-red-700 disabled:hover:disabled:text-red-700"
+								className="text-red-500/70 focus:outline-none focus:ring-2 focus:ring-red-500 disabled:cursor-not-allowed	 disabled:text-red-700 disabled:hover:disabled:text-red-700"
 							>
 								Privacy Policy
 							</button>
 							<button
 								onClick={() => openModal(ModalNames.Cookie)}
 								disabled={activeModal === 'cookie'}
-								className="text-red-500/70 focus:outline-none focus:ring-2 focus:ring-red-500 disabled:cursor-auto disabled:text-red-700 disabled:hover:disabled:text-red-700"
+								className="text-red-500/70 focus:outline-none focus:ring-2 focus:ring-red-500 disabled:cursor-not-allowed disabled:text-red-700 disabled:hover:disabled:text-red-700"
 							>
 								Cookie Policy
 							</button>
 							<button
 								onClick={() => openModal(ModalNames.Settings)}
 								disabled={activeModal === 'settings'}
-								className="text-red-500/70 focus:outline-none focus:ring-2 focus:ring-red-500 disabled:cursor-auto disabled:text-red-700 disabled:hover:disabled:text-red-700"
+								className="text-red-500/70 focus:outline-none focus:ring-2 focus:ring-red-500 disabled:cursor-not-allowed disabled:text-red-700 disabled:hover:disabled:text-red-700"
 							>
 								Settings
 							</button>
