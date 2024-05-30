@@ -31,7 +31,7 @@ enum ModalNames {
 }
 
 const CookieConsent: FunctionComponent = () => {
-	const [isVisible, setIsVisible] = useState(false)
+	const [isVisible, setIsVisible] = useState(false);
 	const [isExiting, setIsExiting] = useState(false);
 	const [activeModal, setActiveModal] = useState<ModalNames | null>(null)
 	const [settings, setSettings] = useState<Settings>({
@@ -61,14 +61,17 @@ const CookieConsent: FunctionComponent = () => {
 	const handleExposeCloseFunc = useCallback((func: () => void) => {
 		setCloseModalWithAnimation(() => func);
 	  }, []); // Empty dependency array assuming no props or state needed
-
-	useEffect(() => {
-		const timer = setTimeout(() => {
-			setIsVisible(true)
-		}, 2000) // Delay the banner display by 2000 milliseconds
-
-		return () => clearTimeout(timer)
-	}, [])
+	  
+	  useEffect(() => {
+		const storedSettings = localStorage.getItem('cookieSettings');
+		if (!storedSettings) {
+		  const timer = setTimeout(() => {
+			setIsVisible(true);
+		  }, 2000); // Delay the banner display by 2000 milliseconds
+	
+		  return () => clearTimeout(timer);
+		}
+	  }, []);
 
     const startExitAnimation = () => {
         setIsExiting(true);
