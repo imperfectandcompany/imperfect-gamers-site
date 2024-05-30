@@ -6,8 +6,8 @@ type FeaturedPartnershipProps = {
 	logoAlt: string
 	title: string
 	description: React.ReactNode
-	link: string
-	linkText: string
+	link?: string
+	linkText?: string
 }
 
 /**
@@ -38,10 +38,11 @@ const FeaturedPartnership: React.FC<FeaturedPartnershipProps> = ({
 					<h3 className="mb-4 text-3xl font-bold">{title}</h3>
 					<p className="text-sm text-gray-400">
 						{description}
-						<a className="text-red-600" href={link}>
-							{linkText}
-						</a>
-						.
+						{linkText && link ? (
+							<a className="text-red-600" href={link}>
+								{linkText}
+							</a>
+						) : null}
 					</p>
 				</div>
 			</div>

@@ -74,28 +74,40 @@ const ModalWrapper: React.FC<ModalWrapperProps> = ({
 		return false
 	}
 
-const [allowClose, setAllowClose] = useState(true);
-useEffect(() => {
-    const handleConsentSettingsOpened = () => setAllowClose(false);
-    const handleConsentSettingsClosed = () => setAllowClose(true);
+	const [allowClose, setAllowClose] = useState(true)
+	useEffect(() => {
+		const handleConsentSettingsOpened = () => setAllowClose(false)
+		const handleConsentSettingsClosed = () => setAllowClose(true)
 
-    if (typeof window !== 'undefined') {
-      window.addEventListener('consentSettingsOpened', handleConsentSettingsOpened);
-      window.addEventListener('consentSettingsClosed', handleConsentSettingsClosed);
-    }
+		if (typeof window !== 'undefined') {
+			window.addEventListener(
+				'consentSettingsOpened',
+				handleConsentSettingsOpened,
+			)
+			window.addEventListener(
+				'consentSettingsClosed',
+				handleConsentSettingsClosed,
+			)
+		}
 
-    return () => {
-      if (typeof window !== 'undefined') {
-        window.removeEventListener('consentSettingsOpened', handleConsentSettingsOpened);
-        window.removeEventListener('consentSettingsClosed', handleConsentSettingsClosed);
-      }
-    };
-  }, []);
-	const closeModal = () => {		
+		return () => {
+			if (typeof window !== 'undefined') {
+				window.removeEventListener(
+					'consentSettingsOpened',
+					handleConsentSettingsOpened,
+				)
+				window.removeEventListener(
+					'consentSettingsClosed',
+					handleConsentSettingsClosed,
+				)
+			}
+		}
+	}, [])
+	const closeModal = () => {
 		if (!handlePopupWindow() && shouldClose()) {
-			const consentModalOpen = localStorage.getItem('consentModalOpen');
+			const consentModalOpen = localStorage.getItem('consentModalOpen')
 			if (consentModalOpen !== 'true') {
-			setIsOpen(false)
+				setIsOpen(false)
 			}
 		}
 		// TODO: Implement UI/UX enhancements for when the modal close attempt is intercepted
@@ -139,24 +151,24 @@ useEffect(() => {
 					align={align}
 				/>
 				{/** Escape modal button **/}
-				{allowClose ? <div
-								className={modal.close__button}
-								role="button"
-								tabIndex={0}
-								onClick={closeModal}
-								onKeyDown={e => {
-									if (e.key === 'Enter' || e.key === ' ') {
-										closeModal()
-									}
-								}}
-							>
-								&times;
-							</div> : null
-				}
+				{allowClose ? (
+					<div
+						className={modal.close__button}
+						role="button"
+						tabIndex={0}
+						onClick={closeModal}
+						onKeyDown={e => {
+							if (e.key === 'Enter' || e.key === ' ') {
+								closeModal()
+							}
+						}}
+					>
+						&times;
+					</div>
+				) : null}
 			</Modal>
 		</>
 	)
 }
 
 export default ModalWrapper
-

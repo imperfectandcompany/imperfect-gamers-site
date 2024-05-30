@@ -1,13 +1,7 @@
 // CookieConsent.tsx
 
-import type {
-	FunctionComponent,
-	MouseEvent} from 'react';
-import {
-	useCallback,
-	useEffect,
-	useState,
-} from 'react'
+import type { FunctionComponent, MouseEvent, KeyboardEvent } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 import './CookieConsent.css'
 import CookieConsentModal from './CookieConsentModal'
@@ -31,8 +25,8 @@ enum ModalNames {
 }
 
 const CookieConsent: FunctionComponent = () => {
-	const [isVisible, setIsVisible] = useState(false);
-	const [isExiting, setIsExiting] = useState(false);
+	const [isVisible, setIsVisible] = useState(false)
+	const [isExiting, setIsExiting] = useState(false)
 	const [activeModal, setActiveModal] = useState<ModalNames | null>(null)
 	const [settings, setSettings] = useState<Settings>({
 		essential: true,
@@ -59,27 +53,27 @@ const CookieConsent: FunctionComponent = () => {
 	>(null)
 
 	const handleExposeCloseFunc = useCallback((func: () => void) => {
-		setCloseModalWithAnimation(() => func);
-	  }, []); // Empty dependency array assuming no props or state needed
-	  
-	  useEffect(() => {
-		const storedSettings = localStorage.getItem('cookieSettings');
-		if (!storedSettings) {
-		  const timer = setTimeout(() => {
-			setIsVisible(true);
-		  }, 2000); // Delay the banner display by 2000 milliseconds
-	
-		  return () => clearTimeout(timer);
-		}
-	  }, []);
+		setCloseModalWithAnimation(() => func)
+	}, []) // Empty dependency array assuming no props or state needed
 
-    const startExitAnimation = () => {
-        setIsExiting(true);
-        setTimeout(() => {
-            setIsVisible(false);
-            setIsExiting(false); // Reset exiting state
-        }, 500); // Duration of the animation
-    };
+	useEffect(() => {
+		const storedSettings = localStorage.getItem('cookieSettings')
+		if (!storedSettings) {
+			const timer = setTimeout(() => {
+				setIsVisible(true)
+			}, 2000) // Delay the banner display by 2000 milliseconds
+
+			return () => clearTimeout(timer)
+		}
+	}, [])
+
+	const startExitAnimation = () => {
+		setIsExiting(true)
+		setTimeout(() => {
+			setIsVisible(false)
+			setIsExiting(false) // Reset exiting state
+		}, 500) // Duration of the animation
+	}
 
 	const settingsAreEqual = (
 		settings1: Settings,
@@ -115,10 +109,10 @@ const CookieConsent: FunctionComponent = () => {
 			// If modal is open...
 			if (closeModalWithAnimation) closeModalWithAnimation() // Execute the function
 		}
-		if(settings.analytics.enabled && settings.analytics.microsoftClarity) {
-			window.dispatchEvent(new Event("consentGranted"));
+		if (settings.analytics.enabled && settings.analytics.microsoftClarity) {
+			window.dispatchEvent(new Event('consentGranted'))
 		}
-		startExitAnimation(); // Start animation when accepting all cookies
+		startExitAnimation() // Start animation when accepting all cookies
 	}
 	const acceptAllCookies = () => {
 		const allEnabledSettings = {
@@ -132,7 +126,7 @@ const CookieConsent: FunctionComponent = () => {
 		}
 		setSettings(allEnabledSettings)
 		localStorage.setItem('cookieSettings', JSON.stringify(allEnabledSettings))
-		startExitAnimation(); // Start animation when accepting all cookies
+		startExitAnimation() // Start animation when accepting all cookies
 		if (activeModal) {
 			// If modal is open...
 			if (closeModalWithAnimation) closeModalWithAnimation() // Execute the function
@@ -175,17 +169,17 @@ const CookieConsent: FunctionComponent = () => {
 	}, [])
 
 	const openModal = (modalName: ModalNames): void => {
-		if(modalName === ModalNames.Settings){
-					localStorage.setItem('consentModalOpen', 'true');
-					window.dispatchEvent(new Event("consentSettingsOpened"));
+		if (modalName === ModalNames.Settings) {
+			localStorage.setItem('consentModalOpen', 'true')
+			window.dispatchEvent(new Event('consentSettingsOpened'))
 		}
 		setActiveModal(modalName)
 	}
 
 	const closeModal = () => {
 		if (activeModal) {
-		localStorage.setItem('consentModalOpen', 'false');
-		window.dispatchEvent(new Event("consentSettingsClosed"));
+			localStorage.setItem('consentModalOpen', 'false')
+			window.dispatchEvent(new Event('consentSettingsClosed'))
 			// Check if there's an active modal to close
 			setActiveModal(null)
 		}
@@ -234,7 +228,7 @@ const CookieConsent: FunctionComponent = () => {
 	}
 
 	const handleAnalyticsContainerClick = (
-		e: MouseEvent<HTMLDivElement>,
+		e: MouseEvent<HTMLDivElement> | KeyboardEvent<HTMLDivElement>,
 	): void => {
 		e.stopPropagation()
 		handleAnalyticsToggle(!settings.analytics.enabled)
@@ -254,10 +248,7 @@ const CookieConsent: FunctionComponent = () => {
 	const SettingsPanel = () => (
 		<>
 			<div className="settings-panel" id="settingsPanel">
-				<div
-					className="settings-option font-semibold"
-					onClick={e => e.stopPropagation()} // Prevent any changes
-				>
+				<div className="settings-option font-semibold">
 					<label htmlFor="essential" className="select-none">
 						Essential (required for login):
 					</label>
@@ -271,6 +262,12 @@ const CookieConsent: FunctionComponent = () => {
 					onClick={e => {
 						handleAnalyticsContainerClick(e)
 					}}
+					onKeyDown={e => {
+						if (e.key === 'Enter' || e.key === ' ')
+							handleAnalyticsContainerClick(e)
+					}}
+					role="button"
+					tabIndex={0}
 				>
 					<label htmlFor="analytics" className="select-none">
 						Analytics:
@@ -284,6 +281,14 @@ const CookieConsent: FunctionComponent = () => {
 								e.stopPropagation() // Prevent this click from bubbling up to the container
 								handleAnalyticsToggle(!settings.analytics.enabled)
 							}}
+							onKeyDown={e => {
+								if (e.key === 'Enter' || e.key === ' ') {
+									e.stopPropagation()
+									handleAnalyticsToggle(!settings.analytics.enabled)
+								}
+							}}
+							role="button"
+							tabIndex={0}
 						/>
 						<span
 							className="slider"
@@ -291,11 +296,24 @@ const CookieConsent: FunctionComponent = () => {
 								e.stopPropagation() // Prevent this click from bubbling up to the container
 								handleAnalyticsToggle(!settings.analytics.enabled)
 							}}
+							onKeyDown={e => {
+								if (e.key === 'Enter' || e.key === ' ') {
+									e.stopPropagation()
+									handleAnalyticsToggle(!settings.analytics.enabled)
+								}
+							}}
+							role="button"
+							tabIndex={0}
 						></span>
 					</div>
 					<div
 						className={`sub-settings ${settings.analytics.enabled ? 'active' : ''}`}
 						onClick={e => e.stopPropagation()}
+						onKeyDown={e => {
+							if (e.key === 'Enter' || e.key === ' ') e.stopPropagation()
+						}}
+						role="button"
+						tabIndex={0}
 					>
 						{' '}
 						{/* Stop propagation to prevent toggling when nested options are clicked */}
@@ -304,6 +322,14 @@ const CookieConsent: FunctionComponent = () => {
 							onClick={() =>
 								toggleSettingFromContainer('analytics', 'googleAnalytics')
 							}
+							onKeyDown={e => {
+								if (e.key === 'Enter' || e.key === ' ') {
+									e.stopPropagation()
+									toggleSettingFromContainer('analytics', 'googleAnalytics')
+								}
+							}}
+							role="button"
+							tabIndex={0}
 						>
 							<label
 								id="googleAnalyticsLabel"
@@ -315,6 +341,11 @@ const CookieConsent: FunctionComponent = () => {
 							<div
 								className="toggle-switch ml-2"
 								onClick={e => e.stopPropagation()}
+								onKeyDown={e => {
+									if (e.key === 'Enter' || e.key === ' ') e.stopPropagation()
+								}}
+								role="button"
+								tabIndex={0}
 							>
 								<input
 									type="checkbox"
@@ -328,6 +359,19 @@ const CookieConsent: FunctionComponent = () => {
 										}
 									}}
 									aria-labelledby="googleAnalyticsLabel"
+									onKeyDown={e => {
+										if (e.key === 'Enter' || e.key === ' ') {
+											e.stopPropagation()
+											if (settings.analytics.enabled) {
+												toggleSettingFromContainer(
+													'analytics',
+													'googleAnalytics',
+												)
+											}
+										}
+									}}
+									role="button"
+									tabIndex={0}
 								/>
 								<span className="slider"></span>
 							</div>
@@ -337,6 +381,16 @@ const CookieConsent: FunctionComponent = () => {
 							onClick={() =>
 								toggleSettingFromContainer('analytics', 'microsoftClarity')
 							}
+							onKeyDown={e => {
+								if (e.key === 'Enter' || e.key === ' ') {
+									e.stopPropagation()
+									if (settings.analytics.enabled) {
+										toggleSettingFromContainer('analytics', 'microsoftClarity')
+									}
+								}
+							}}
+							role="button"
+							tabIndex={0}
 						>
 							<label htmlFor="microsoftClarity" className="select-none">
 								Microsoft Clarity:
@@ -344,6 +398,13 @@ const CookieConsent: FunctionComponent = () => {
 							<div
 								className="toggle-switch ml-2"
 								onClick={e => e.stopPropagation()}
+								onKeyDown={e => {
+									if (e.key === 'Enter' || e.key === ' ') {
+										e.stopPropagation()
+									}
+								}}
+								role="button"
+								tabIndex={0}
 							>
 								<input
 									type="checkbox"
@@ -359,15 +420,47 @@ const CookieConsent: FunctionComponent = () => {
 											)
 										}
 									}}
+									onKeyDown={e => {
+										if (e.key === 'Enter' || e.key === ' ') {
+											e.stopPropagation() // Stop propagation to prevent triggering the container click
+											if (settings.analytics.enabled) {
+												toggleSettingFromContainer(
+													'analytics',
+													'microsoftClarity',
+												)
+											}
+										}
+									}}
+									role="button"
+									tabIndex={0}
 								/>
 								<span className="slider"></span>
 							</div>
 						</div>
 					</div>
 				</div>
-				<div className="settings-option" onClick={toggleMarketingFromContainer}>
+				<div
+					className="settings-option"
+					onClick={toggleMarketingFromContainer}
+					onKeyDown={e => {
+						if (e.key === 'Enter' || e.key === ' ') {
+							e.stopPropagation() // Stop propagation to prevent triggering the container click
+							toggleMarketingFromContainer()
+						}
+					}}
+					role="button"
+					tabIndex={0}
+				>
 					<label htmlFor="marketing">Marketing:</label>
-					<div className="toggle-switch" onClick={e => e.stopPropagation()}>
+					<div
+						className="toggle-switch"
+						onClick={e => e.stopPropagation()}
+						onKeyDown={e => {
+							if (e.key === 'Enter' || e.key === ' ') e.stopPropagation()
+						}}
+						role="button"
+						tabIndex={0}
+					>
 						<input
 							type="checkbox"
 							id="marketing"
@@ -376,6 +469,14 @@ const CookieConsent: FunctionComponent = () => {
 								e.stopPropagation() // Prevent this click from triggering the container's onClick
 								handleSettingChange('marketing', !settings.marketing)
 							}}
+							onKeyDown={e => {
+								if (e.key === 'Enter' || e.key === ' ') {
+									e.stopPropagation() // Stop propagation to prevent triggering the container click
+									handleSettingChange('marketing', !settings.marketing)
+								}
+							}}
+							role="button"
+							tabIndex={0}
 						/>
 						<span className="slider"></span>
 					</div>
@@ -386,6 +487,7 @@ const CookieConsent: FunctionComponent = () => {
 					className="cursor-pointer select-none justify-center rounded-md border-transparent bg-gradient-to-r from-stone-500 to-stone-700 px-5 py-2 text-sm font-medium tracking-wide text-white opacity-100 shadow-none transition-all duration-300 hover:bg-gradient-to-r focus:outline-none focus:ring-2 focus:ring-white disabled:cursor-not-allowed disabled:opacity-50"
 					onClick={resetSettings}
 					disabled={isResetDisabled}
+					tabIndex={0}
 				>
 					Reset Settings
 				</button>
@@ -394,6 +496,7 @@ const CookieConsent: FunctionComponent = () => {
 					disabled={isSaveDisabled}
 					className="cursor-pointer select-none justify-center rounded-md border-transparent bg-gradient-to-r from-red-500 to-red-700 px-5 py-2 text-sm font-medium tracking-wide text-white opacity-100 shadow-none transition-all duration-300 hover:bg-gradient-to-l focus:outline-none focus:ring-2 focus:ring-white disabled:cursor-not-allowed disabled:opacity-50"
 					onClick={acceptCookies}
+					tabIndex={0}
 				>
 					{isSaveDisabled ? 'Settings Saved' : 'Save Settings'}
 				</button>
@@ -403,26 +506,30 @@ const CookieConsent: FunctionComponent = () => {
 
 	return (
 		<>
-			{isVisible ? <div className={`cookie-popup z-50 ${isExiting ? 'exiting' : ''}`}
+			{isVisible ? (
+				<div
+					className={`cookie-popup z-50 ${isExiting ? 'exiting' : ''}`}
 					id="cookieBanner"
 					style={{
 						visibility: isVisible ? 'visible' : 'hidden',
 						animation:
 							'slideUp 0.5s ease-out forwards, glow 1.5s ease-in-out infinite alternate',
 					}}
-					onClick={(e)=> e.stopPropagation()}
+					role="banner"
 				>
 					<div id="cookieBanner-inner">
-						<strong id="cookieBanner-Header">Imperfect Gamers - Committed to Your Privacy.</strong>
-						<p id='cookieBanner-paragraph'>
+						<strong id="cookieBanner-Header">
+							Imperfect Gamers - Committed to Your Privacy.
+						</strong>
+						<p id="cookieBanner-paragraph">
 							We use cookies and similar technologies to enhance your
 							experience. Manage your preferences or withdraw your consent at
-							any time. For more information, visit our "Settings" or view our
-							data protection policies.
+							any time. For more information, visit our &quot;Settings&quot; or
+							view our data protection policies.
 						</p>
 						<div className="button-group" id="cookie-banner-buttons">
 							<button
-							id="cookie-banner-privacy-button"
+								id="cookie-banner-privacy-button"
 								onClick={() => openModal(ModalNames.Privacy)}
 								disabled={activeModal === 'privacy'}
 								className="text-red-500/70 focus:outline-none focus:ring-2 focus:ring-red-500 disabled:cursor-not-allowed	 disabled:text-red-700 disabled:hover:disabled:text-red-700"
@@ -430,7 +537,7 @@ const CookieConsent: FunctionComponent = () => {
 								Privacy Policy
 							</button>
 							<button
-							id="cookie-banner-cookie-button"
+								id="cookie-banner-cookie-button"
 								onClick={() => openModal(ModalNames.Cookie)}
 								disabled={activeModal === 'cookie'}
 								className="text-red-500/70 focus:outline-none focus:ring-2 focus:ring-red-500 disabled:cursor-not-allowed disabled:text-red-700 disabled:hover:disabled:text-red-700"
@@ -438,8 +545,7 @@ const CookieConsent: FunctionComponent = () => {
 								Cookie Policy
 							</button>
 							<button
-							id="cookie-banner-settings-button"
-
+								id="cookie-banner-settings-button"
 								onClick={() => openModal(ModalNames.Settings)}
 								disabled={activeModal === 'settings'}
 								className="text-red-500/70 focus:outline-none focus:ring-2 focus:ring-red-500 disabled:cursor-not-allowed disabled:text-red-700 disabled:hover:disabled:text-red-700"
@@ -449,21 +555,27 @@ const CookieConsent: FunctionComponent = () => {
 						</div>
 					</div>
 					<div
-					id='cookie-banner-accept-all-container'
+						id="cookie-banner-accept-all-container"
 						className={`accept-button ${activeModal === 'settings' ? 'hidden' : ''}`}
 					>
 						<button
-						id="cookie-banner-accept-all"
+							id="cookie-banner-accept-all"
 							className="cursor-pointer select-none justify-center border-transparent bg-gradient-to-r from-red-500 to-red-700 px-5 py-2 text-sm font-medium tracking-wide text-white opacity-100 shadow-none transition-opacity duration-300 hover:bg-gradient-to-l focus:outline-none focus:ring-2 focus:ring-white"
 							onClick={acceptAllCookies}
 						>
 							Accept all
 						</button>
 					</div>
-				</div> : null}
+				</div>
+			) : null}
 
-			{activeModal ? <CookieConsentModal
-					title={activeModal === ModalNames.Settings ? "Cookie Settings" : `${activeModal[0].toUpperCase() + activeModal.slice(1)} Policy`}
+			{activeModal ? (
+				<CookieConsentModal
+					title={
+						activeModal === ModalNames.Settings
+							? 'Cookie Settings'
+							: `${activeModal[0].toUpperCase() + activeModal.slice(1)} Policy`
+					}
 					onClose={closeModal}
 					exposeCloseAnimationFunc={handleExposeCloseFunc}
 					content={''}
@@ -473,7 +585,8 @@ const CookieConsent: FunctionComponent = () => {
 					) : (
 						<p>{`Read our ${activeModal} policy here. This policy provides detailed information about how we use cookies and how you can manage them.`}</p>
 					)}
-				</CookieConsentModal> : null}
+				</CookieConsentModal>
+			) : null}
 		</>
 	)
 }

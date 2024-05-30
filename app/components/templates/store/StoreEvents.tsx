@@ -17,12 +17,12 @@ const StoreEvents: React.FC = () => {
 					<EventItem
 						title="Premium Surfing and Rap Battle Tournaments"
 						description="Join our monthly Premium-only surfing and rap battle tournaments with big prizes and bragging rights."
-						link="#"
+						link="https://imperfectgamers.org/login"
 					/>
 					<EventItem
 						title="Members-Only Livestream"
 						description="Get exclusive access to our members-only livestreams with special guests and Q&A sessions."
-						link="#"
+						link="https://imperfectgamers.org/login"
 					/>
 				</div>
 			</div>

@@ -25,7 +25,7 @@ prepareApp().then(() => {
 			document,
 			<StrictMode>
 				<RemixBrowser />
-			</StrictMode>
+			</StrictMode>,
 		)
 	})
 })

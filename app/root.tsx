@@ -34,13 +34,9 @@ export const loader = async () => {
 
 const gTagMsClarityFlag = true
 
-
 declare global {
 	interface Window {
-		clarity: (
-			type: string,
-			value?: boolean,
-		) => void
+		clarity: (type: string, value?: boolean) => void
 	}
 }
 
@@ -61,7 +57,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 				window.clarity('consent')
 			}
 
-			if(settings.analytics.googleAnalytics && gaTrackingId){
+			if (settings.analytics.googleAnalytics && gaTrackingId) {
 				gtag.consent({
 					action: 'default',
 					ad_storage: 'granted',
@@ -70,7 +66,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 					analytics_storage: 'granted',
 					// Our consent banner comes up after 500ms
 					w4update: 550, // milliseconds
-				  });
+				})
 			}
 		}
 	}
@@ -86,15 +82,15 @@ export function Layout({ children }: { children: React.ReactNode }) {
 				MsClarity({ id: msClarityId, enableInDevMode: false })
 			}
 
-			window.addEventListener("consentGranted", consentListener);
+			window.addEventListener('consentGranted', consentListener)
 
 			// Cleanup event listeners when the component unmounts
 			return () => {
-				window.removeEventListener("consentGranted", consentListener);
+				window.removeEventListener('consentGranted', consentListener)
 			}
 		}
-	}, [gaTrackingId, msClarityId]);
-	
+	}, [gaTrackingId, msClarityId])
+
 	return (
 		<html lang="en">
 			<head>
@@ -104,17 +100,17 @@ export function Layout({ children }: { children: React.ReactNode }) {
 				<Links />
 			</head>
 			<body className="background-svg relative flex flex-col bg-black px-4 text-white sm:px-8 md:px-12">
-			{process.env.NODE_ENV === 'development' || !gaTrackingId ? null : (
-          <>
-            <script
-              async
-              src={`https://www.googletagmanager.com/gtag/js?id=${gaTrackingId}`}
-            />
-            <script
-              async
-              id="gtag-init"
-              dangerouslySetInnerHTML={{
-                __html: `
+				{process.env.NODE_ENV === 'development' || !gaTrackingId ? null : (
+					<>
+						<script
+							async
+							src={`https://www.googletagmanager.com/gtag/js?id=${gaTrackingId}`}
+						/>
+						<script
+							async
+							id="gtag-init"
+							dangerouslySetInnerHTML={{
+								__html: `
                 window.dataLayer = window.dataLayer || [];
                 function gtag(){dataLayer.push(arguments);}
                 gtag('js', new Date());
@@ -123,10 +119,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
                   page_path: window.location.pathname,
                 });
               `,
-              }}
-            />
-          </>
-        )}
+							}}
+						/>
+					</>
+				)}
 				<main className="space-y-24 md:mx-72 md:space-y-12">{children}</main>
 				<ScrollRestoration />
 				<Scripts />

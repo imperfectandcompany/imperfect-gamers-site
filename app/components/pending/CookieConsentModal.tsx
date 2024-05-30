@@ -1,5 +1,5 @@
-import type { ReactNode} from 'react';
-import type React from 'react';
+import type { ReactNode } from 'react'
+import type React from 'react'
 import { useState, useRef, useEffect, useCallback } from 'react'
 
 const focusableModalElements: string =
@@ -39,7 +39,7 @@ interface ModalProps {
 	title: string
 	content: string
 	onClose: () => void
-	exposeCloseAnimationFunc: (func: () => void) => void;
+	exposeCloseAnimationFunc: (func: () => void) => void
 	children?: ReactNode
 }
 
@@ -52,6 +52,14 @@ const CookieConsentModal: React.FC<ModalProps> = ({
 }) => {
 	const modalRef = useRef<HTMLDivElement>(null)
 	const [isExiting, setIsExiting] = useState(false) // State to control the exit animation
+
+	const onCloseWithAnimation = useCallback(() => {
+		// Animation and close logic
+		setIsExiting(true) // For animation
+		setTimeout(() => {
+			onClose() // Actually close the modal
+		}, 300) // Delay for animation
+	}, [onClose]) // Ensure dependencies are stable and won't cause re-creation unless necessary
 
 	useEffect(() => {
 		const modalNode = modalRef.current // Capture the modal ref at the time of effect execution.
@@ -79,21 +87,11 @@ const CookieConsentModal: React.FC<ModalProps> = ({
 				focusCleanup() // Clean up focus trapping.
 			}
 		}
-	}, [onClose]) // Dependencies array includes only the necessary props/state.
+	}, [onClose, onCloseWithAnimation]) // Dependencies array includes only the necessary props/state.
 
-	const onCloseWithAnimation = useCallback(() => {
-		// Animation and close logic
-		setIsExiting(true); // For animation
-		setTimeout(() => {
-		  onClose();  // Actually close the modal
-		}, 300); // Delay for animation
-	  }, [onClose]);  // Ensure dependencies are stable and won't cause re-creation unless necessary
-	  
-
-	  useEffect(() => {
-		exposeCloseAnimationFunc(onCloseWithAnimation);
-	  }, [exposeCloseAnimationFunc]);
-
+	useEffect(() => {
+		exposeCloseAnimationFunc(onCloseWithAnimation)
+	}, [exposeCloseAnimationFunc])
 
 	return (
 		<div
@@ -101,11 +99,17 @@ const CookieConsentModal: React.FC<ModalProps> = ({
 			onClick={e => {
 				if (e.currentTarget === e.target) onCloseWithAnimation()
 			}}
+			onKeyDown={e => {
+				if (e.key === 'Enter' || e.key === ' ') {
+					if (e.currentTarget === e.target) onCloseWithAnimation()
+				}
+			}}
+			aria-hidden="true"
 		>
 			<div
 				ref={modalRef}
-                className={`modal-content mx-4 w-full max-w-md rounded-lg border border-stone-800 bg-black p-5 shadow-xl md:mx-0 ${isExiting ? 'modal-exiting' : ''}`}
-                			>
+				className={`modal-content mx-4 w-full max-w-md rounded-lg border border-stone-800 bg-black p-5 shadow-xl md:mx-0 ${isExiting ? 'modal-exiting' : ''}`}
+			>
 				<div className="modal-header">
 					<h2 id="modalTitle" className="modal-title">
 						{title}

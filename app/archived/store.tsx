@@ -4,11 +4,18 @@ import {
 	json,
 	type LoaderFunction,
 } from '@remix-run/node'
-import { useState } from 'react'
 import type { ExternalScriptsHandle } from 'remix-utils/external-scripts'
 import { getSession, storeCookie } from '~/auth/storage.server' // Make sure this matches your file structure
-import CookieConsent from '~/components/pending/CookieConsent'
-import { StoreContact, StoreEvents, StoreFAQ, StoreFooter, StoreHeader, StorePartnership, StoreTestimonials, StoreTiers } from '~/components/templates/store'
+import {
+	StoreContact,
+	StoreEvents,
+	StoreFAQ,
+	StoreFooter,
+	StoreHeader,
+	StorePartnership,
+	StoreTestimonials,
+	StoreTiers,
+} from '~/components/templates/store'
 import StoreFeatured from '~/components/templates/store/StoreFeatured'
 import '~/styles/store.css'
 import type { BasketPackage } from '~/utils/tebex.interface'
@@ -157,28 +164,23 @@ export const loader: LoaderFunction = async ({ request }) => {
 	return json(data) // Include basketId in the response
 }
 
-
 /**
  * Renders the Store component.
  *
  * @returns The rendered Store component.
  */
 export default function Store() {
-
-	const [isVisible, setIsVisible] = useState(!localStorage.getItem('cookieSettings'));
-
 	return (
 		<>
-		{isVisible ? <CookieConsent/> : null}
 			<StoreHeader />
-			<StoreFeatured/>
+			<StoreFeatured />
 			<StoreTiers />
-			<StoreTestimonials/>
-			<StoreFAQ/>
-			<StoreEvents/>
-			<StorePartnership/>
-			<StoreContact/>
-			<StoreFooter/>
+			<StoreTestimonials />
+			<StoreFAQ />
+			<StoreEvents />
+			<StorePartnership />
+			<StoreContact />
+			<StoreFooter />
 		</>
 	)
 }

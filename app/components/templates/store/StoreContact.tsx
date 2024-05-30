@@ -13,18 +13,21 @@ const StoreContact: React.FC = () => {
 	}
 
 	const handleSignInClick = () => {
-		window.location.href = '/login'
+		window.location.href = 'https://imperfectgamers.org/login'
 	}
+
+	const [showContactUs] = useState(false)
 
 	return (
 		<section className="mb-12">
 			<div className="flex justify-center md:justify-end">
 				{!showContactForm ? (
 					<div className="contact-section contact-section-transition">
-						<h2>Contact Us or Sign In</h2>
+						<h2>Contact Us {showContactUs ? <>or Sign In</> : null}</h2>
 						<p>
 							For exclusive access to premium membership inquiries, please sign
-							in to create a ticket or contact us for assistance from email.
+							in to create a ticket or contact us for assistance from email
+							joinclub@imperfectgamers.org.
 						</p>
 						<Button
 							onClick={() => {
@@ -33,13 +36,15 @@ const StoreContact: React.FC = () => {
 						>
 							Sign In
 						</Button>
-						<Button
-							onClick={() => {
-								handleContactClick()
-							}}
-						>
-							Contact Us
-						</Button>
+						{showContactUs ? (
+							<Button
+								onClick={() => {
+									handleContactClick()
+								}}
+							>
+								Contact Us
+							</Button>
+						) : null}
 					</div>
 				) : null}
 			</div>
