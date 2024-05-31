@@ -11,6 +11,9 @@ interface CheckoutProcessProps {
 	setCloseInterceptReason?: (reason: CloseInterceptReason) => void
 }
 
+/**
+ * Component to manage the checkout process, handling basket creation, package addition, and payment processing.
+ */
 const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 	isOpen,
 	setCloseInterceptReason,
@@ -42,6 +45,11 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 		setBasketExists(!!basketId)
 	}, [basketId])
 
+	/**
+	 * Initializes the Tebex checkout process.
+	 * @param {string} checkoutId - The ID for the Tebex checkout.
+	 * @param {'light' | 'dark'} theme - The theme for the Tebex checkout.
+	 */
 	const UseTebexCheckout = useCallback(
 		(checkoutId: string, theme: 'light' | 'dark') => {
 			const { Tebex } = window
@@ -57,21 +65,21 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 
 			// Listen for Tebex checkout events and set modal close intercept reasons accordingly
 			Tebex.checkout.on(Tebex.events.OPEN, () => {
-				console.log('Tebex Checkout Opened')
+				console.log('[Checkout Process] Tebex Checkout Opened')
 				if (setCloseInterceptReason) {
 					setCloseInterceptReason(CloseInterceptReason.ActivePopup)
 				}
 			})
 
 			Tebex.checkout.on(Tebex.events.CLOSE, () => {
-				console.log('Tebex Checkout Closed')
+				console.log('[Checkout Process] Tebex Checkout Closed')
 				if (setCloseInterceptReason) {
 					setCloseInterceptReason(CloseInterceptReason.None)
 				}
 			})
 
 			Tebex.checkout.on('payment:complete', () => {
-				console.log('Payment Complete')
+				console.log('[Checkout Process] Payment Complete')
 				if (setCloseInterceptReason) {
 					setCloseInterceptReason(CloseInterceptReason.None)
 				}
@@ -79,7 +87,7 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 			})
 
 			Tebex.checkout.on('payment:error', () => {
-				console.log('Payment Error')
+				console.log('[Checkout Process] Payment Error')
 				if (setCloseInterceptReason) {
 					setCloseInterceptReason(CloseInterceptReason.None)
 				}
@@ -91,14 +99,21 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 		[setCloseInterceptReason],
 	)
 
+	/**
+	 * Initiates the checkout process.
+	 * @param {string} basketId - The ID of the basket to be checked out.
+	 */
 	const initiateCheckout = useCallback(
 		(basketId: string) => {
-			console.log('Initiating checkout...')
+			console.log('[Checkout Process] Step 3: Initiating checkout...')
 			UseTebexCheckout(basketId, 'dark')
 		},
 		[UseTebexCheckout],
 	)
 
+	/**
+	 * Handles store interactions including basket creation and package addition.
+	 */
 	const handleStoreInteractions = useCallback(async () => {
 		if (!isAuthorized || !isOpen || storeRequestTriggeredRef.current) return
 
@@ -107,10 +122,11 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 		let localBasketId = basketId
 		let localPackages = packages
 
+		console.log('[Checkout Process] Step 1: Checking basket existence...')
 		if (!localBasketId) {
 			const result = await createBasket()
 			if (result) {
-				console.log('Result received from createBasket()')
+				console.log('[Checkout Process] Result received from createBasket()')
 				localBasketId = result
 				setBasketExists(true)
 			}
@@ -119,6 +135,7 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 			console.log('[Checkout Process] Basket:', localBasketId)
 		}
 
+		console.log('[Checkout Process] Step 2: Adding package to basket...')
 		if (localBasketId && !packages.some(pkg => pkg.id === 6288193)) {
 			const result = await addPackageToBasket(localBasketId)
 			console.log(result)
@@ -153,8 +170,8 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 	useEffect(() => {
 		if (!isAuthenticated && prevIsAuthenticated.current) {
 			storeRequestTriggeredRef.current = false
-			setBasketExists(false)
-			return
+			setBasketExists(false) // Reset on logout
+			return // Exit if user is not authenticated
 		}
 
 		prevIsAuthenticated.current = isAuthenticated
