@@ -70,7 +70,7 @@ export async function AddPackageToBasket(basketIdent: string): Promise<Basket> {
 			'/packages',
 			{},
 			{
-				package_id: 6154841,
+				package_id: 6288193,
 				quantity,
 				type,
 				variable_data: {
