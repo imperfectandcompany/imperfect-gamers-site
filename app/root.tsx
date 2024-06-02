@@ -30,8 +30,6 @@ export const loader = async () => {
 	})
 }
 
-// http://localhost:5173/store/
-
 const gTagMsClarityFlag = true
 
 declare global {
