@@ -207,9 +207,9 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
 	// https://github.com/imperfectandcompany/Imperfect-Gamers-Site-Store/issues/76#issuecomment-2143657679
 	useEffect(() => {
 		if (!passwordInput.value) {
-			confirmPasswordInput.reset();
+			confirmPasswordInput.reset()
 		}
-	}, [passwordInput.value, confirmPasswordInput]);
+	}, [passwordInput.value, confirmPasswordInput])
 
 	const formIsValid = useMemo(
 		() =>
