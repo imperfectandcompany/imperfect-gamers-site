@@ -1,15 +1,31 @@
 import type React from 'react'
+import { useEffect } from 'react'
 import ImperfectGamersLogo from '../atoms/ImperfectGamersLogo'
 import UserCard from '../molecules/UserCard/UserCard'
+import { CloseInterceptReason } from '../organism/ModalWrapper/ModalWrapper'
 
 interface WelcomeScreenProps {
 	onNewUser: () => void
 	onExistingUser: () => void
+	setCloseInterceptReason?: (reason: CloseInterceptReason) => void
 }
 
 const WelcomeScreen: React.FC<
 	WelcomeScreenProps & { isAuthenticated: boolean }
-> = ({ onNewUser, onExistingUser, isAuthenticated }) => {
+> = ({
+	onNewUser,
+	onExistingUser,
+	isAuthenticated,
+	setCloseInterceptReason,
+}) => {
+	useEffect(() => {
+		// Ensures that modal can be closed without restrictions when on this screen.
+		// https://github.com/imperfectandcompany/Imperfect-Gamers-Site-Store/issues/76#issuecomment-2143657679
+		if (setCloseInterceptReason) {
+			setCloseInterceptReason(CloseInterceptReason.None)
+		}
+	}, [setCloseInterceptReason])
+
 	return (
 		<div className="flex flex-col items-center justify-center bg-black px-4 pb-8">
 			<div className="w-full max-w-4xl">

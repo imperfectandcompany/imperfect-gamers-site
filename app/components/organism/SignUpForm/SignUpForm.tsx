@@ -203,6 +203,14 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
 		'confirm-password-error',
 	)
 
+	// Effect hook to listen for changes in the primary password and handle confirm password field reset.
+	// https://github.com/imperfectandcompany/Imperfect-Gamers-Site-Store/issues/76#issuecomment-2143657679
+	useEffect(() => {
+		if (!passwordInput.value) {
+			confirmPasswordInput.reset()
+		}
+	}, [passwordInput.value, confirmPasswordInput])
+
 	const formIsValid = useMemo(
 		() =>
 			emailInput.isValid &&

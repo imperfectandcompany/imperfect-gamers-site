@@ -115,6 +115,9 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 	 * Handles store interactions including basket creation and package addition.
 	 */
 	const handleStoreInteractions = useCallback(async () => {
+		if (setCloseInterceptReason) {
+			setCloseInterceptReason(CloseInterceptReason.RequestInProgress)
+		}
 		if (!isAuthorized || !isOpen || storeRequestTriggeredRef.current) return
 
 		storeRequestTriggeredRef.current = true // Set the flag to true to prevent multiple calls
@@ -156,6 +159,9 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 			console.log(
 				'[Checkout Process] User had basket and added package to basket, but somehow added package not matching our expected id...',
 			)
+		}
+		if (setCloseInterceptReason) {
+			setCloseInterceptReason(CloseInterceptReason.None)
 		}
 	}, [
 		basketId,
@@ -247,7 +253,6 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 			)
 		}
 	}
-
 	return null
 }
 
