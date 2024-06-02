@@ -1,4 +1,4 @@
-// utils/steamAuth.ts
+// app/utils/steamAuth.ts
 
 // Implementation of Steam authentication utilities for generating login URLs and verifying user assertions.
 import { getEnvVar } from './general'

@@ -1,3 +1,5 @@
+// app/auth/steam.server.ts
+
 export async function directVerificationWithSteam(
 	params: URLSearchParams,
 ): Promise<boolean> {

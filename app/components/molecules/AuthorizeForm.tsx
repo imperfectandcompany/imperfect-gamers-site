@@ -31,6 +31,13 @@ const AuthorizeForm: React.FC<AuthorizeFormProps> = ({
 			if (event.data.type === 'steam-auth-success') {
 				console.log('User has successfully integrated their steam.')
 				callback()
+			} else if (event.data.type === 'steam-auth-error') {
+				console.error('Error during Steam authentication:', event.data.message)
+				// TODO: implement toast in future during ui/ux enhancement related tasks
+				// alert(`Steam authentication error: ${event.data.message}`)
+				setSteamPopup(null)
+				setSteamPopupOpened(false)
+				setCloseInterceptReason?.(CloseInterceptReason.None)
 			}
 		}
 
