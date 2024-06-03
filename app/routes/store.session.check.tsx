@@ -10,13 +10,16 @@ const ERROR_MESSAGES = {
 }
 
 async function fetchCheckoutDetails(userToken: string) {
-	const response = await fetch('https://api.imperfectgamers.org/user/fetchCheckoutDetails', {
-		method: 'GET',
-		headers: {
-			'Content-Type': 'application/json',
-			authorization: `${userToken}`,
+	const response = await fetch(
+		'https://api.imperfectgamers.org/user/fetchCheckoutDetails',
+		{
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json',
+				authorization: `${userToken}`,
+			},
 		},
-	})
+	)
 
 	if (response.ok) {
 		const result = await response.json()
@@ -37,6 +40,12 @@ export const action: ActionFunction = async ({ request }) => {
 	const steamId = session.get('steamId')
 	const userToken = session.get('userToken')
 
+	const formData = await request.formData()
+
+	const basket_id = formData.get('basket_id')
+	const checkout_url = formData.get('checkout_url')
+	const package_id = formData.get('package_id')
+
 	if (!uid) {
 		return json({ error: ERROR_MESSAGES.authentication }, { status: 401 })
 	} else if (!username) {
@@ -52,6 +61,7 @@ export const action: ActionFunction = async ({ request }) => {
 
 		let cookiesToClear: Partial<typeof storeCookies> = {}
 		let clearedCookies: string[] = []
+		let isFirstTime = false
 
 		if (!checkoutDetails) {
 			// Clear all relevant cookies if no details found
@@ -61,45 +71,80 @@ export const action: ActionFunction = async ({ request }) => {
 				checkoutUrl: undefined,
 			}
 			clearedCookies.push('basketId', 'packages', 'checkoutUrl')
+			isFirstTime = true // No relevant details found, first time setup
 		} else {
+			// Check if all details are null to set the first-time flag
+			if (
+				!checkoutDetails.basket_id &&
+				!checkoutDetails.package_id &&
+				!checkoutDetails.checkout_url
+			) {
+				isFirstTime = true
+			}
+
+			if (checkoutDetails.basket_id) {
+				console.log('checkoutDetails.basket_id:', checkoutDetails.basket_id);
+			}
+			if (checkoutDetails.package_id) {
+				console.log('checkoutDetails.package_id:', checkoutDetails.package_id);
+			}
+			if (checkoutDetails.checkout_url) {
+				console.log('checkoutDetails.checkout_url:', checkoutDetails.checkout_url);
+			}
+			// if (checkoutDetails.basket_id !== basket_id) {
+			// 	await storeCookie.serialize(null, { expires: new Date(Date.now() - 1) });
+			// }
+
+			// if (checkoutDetails.package_id !== package_id) {
+			// 	await storeCookie.serialize(null, { expires: new Date(Date.now() - 1) });
+			// }
+
+			// if (checkoutDetails.checkout_url !== checkout_url) {
+			// 	await storeCookie.serialize(null, { expires: new Date(Date.now() - 1) });
+			// }
+
+			let shouldSkipFurtherChecks = false
+
 			// Clear cookies that do not match the database values
-			if (!checkoutDetails.basket_id) {
+			if (
+				!checkoutDetails.basket_id ||
+				(checkoutDetails.basket_id || null) !== (basket_id || null)
+			) {
 				cookiesToClear.basketId = undefined
 				cookiesToClear.packages = []
 				cookiesToClear.checkoutUrl = undefined
 				clearedCookies.push('basketId', 'packages', 'checkoutUrl')
-			} else if (
-				(checkoutDetails.basket_id || null) !== (storeCookies?.basketId || null)
-			) {
-				cookiesToClear.basketId = undefined
-				cookiesToClear.packages = []
-				cookiesToClear.checkoutUrl = undefined
-				clearedCookies.push('basketId', 'packages', 'checkoutUrl')
+				shouldSkipFurtherChecks = true // Set the flag to skip further cookie checks s ince we need to wipe it all if basket is off
 			}
 
-			if (
-				!checkoutDetails.package_id ||
-				(checkoutDetails.package_id || null) !== (storeCookies?.packages?.[0]?.id || null)
-			) {
-				cookiesToClear.packages = []
-				clearedCookies.push('packages')
-			}
+			if (!shouldSkipFurtherChecks) {
+				if (
+					!checkoutDetails.package_id ||
+					(checkoutDetails.package_id || null) !== (package_id || null)
+				) {
+					cookiesToClear.packages = []
+					clearedCookies.push('packages')
+				}
 
-			if (
-				!checkoutDetails.checkout_url ||
-				(checkoutDetails.checkout_url || null) !== (storeCookies?.checkoutUrl || null)
-			) {
-				cookiesToClear.checkoutUrl = undefined
-				clearedCookies.push('checkoutUrl')
+				if (
+					!checkoutDetails.checkout_url ||
+					(checkoutDetails.checkout_url || null) !== (checkout_url || null)
+				) {
+					cookiesToClear.checkoutUrl = undefined
+					clearedCookies.push('checkoutUrl')
+				}
 			}
 		}
 
 		if (Object.keys(cookiesToClear).length > 0) {
-			const clearedCookieHeader = await storeCookie.serialize(cookiesToClear, { maxAge: 0 })
+			const clearedCookieHeader = await storeCookie.serialize(cookiesToClear, {
+				maxAge: 0,
+			})
 			return json(
 				{
 					message: 'Cookies cleared due to mismatch with database',
 					clearedCookies,
+					isFirstTime,
 				},
 				{
 					headers: {
@@ -112,6 +157,7 @@ export const action: ActionFunction = async ({ request }) => {
 			return json(
 				{
 					message: 'Session and cookies are consistent',
+					isFirstTime,
 				},
 				{
 					headers: {
@@ -125,7 +171,10 @@ export const action: ActionFunction = async ({ request }) => {
 			console.error('An error occurred during checkout detail fetch:', error)
 			return json({ error: error.message }, { status: 500 })
 		} else {
-			console.error('[store.session.check.tsx] An unexpected error occurred:', error)
+			console.error(
+				'[store.session.check.tsx] An unexpected error occurred:',
+				error,
+			)
 			return json(
 				{ error: '[store.session.check.tsx] An unexpected error occurred' },
 				{ status: 500 },

@@ -16,7 +16,7 @@ export const PriceLabel = ({ isYearly }: { isYearly: boolean }) => {
 		<p
 			className={`${price.label} mt-2 ${isYearly ? `${price.label_change}` : ''}`}
 		>
-			{isYearly ? '$200/year' : '$20/month'}
+			{isYearly ? '$200/year - Coming soon!' : '$20/month'}
 		</p>
 	)
 }
