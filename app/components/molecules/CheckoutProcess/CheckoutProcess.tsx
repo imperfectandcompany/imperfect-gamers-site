@@ -1,10 +1,12 @@
-import { useFetcher, useLoaderData } from '@remix-run/react'
+import { useFetcher, useLoaderData, useRevalidator } from '@remix-run/react'
 import type React from 'react'
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { wait } from 'remix-utils/timers'
 import { CloseInterceptReason } from '~/components/organism/ModalWrapper/ModalWrapper'
 import type { LoaderData } from '~/routes/_index'
 import type { TebexCheckoutConfig } from '~/utils/tebex.interface'
 import { useCreateBasket, useAddPackageToBasket } from './BasketManager'
+import { useCheckStoreCookieSession } from './SessionCheck'
 
 interface CheckoutProcessProps {
 	isOpen?: boolean
@@ -40,6 +42,13 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 
 	const createBasket = useCreateBasket()
 	const addPackageToBasket = useAddPackageToBasket()
+	const revalidator = useRevalidator()
+
+	const checkStoreCookieSession = useCheckStoreCookieSession()
+
+	const callback = () => {
+		revalidator.revalidate()
+	}
 
 	useEffect(() => {
 		setBasketExists(!!basketId)
@@ -124,7 +133,25 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 
 		let localBasketId = basketId
 		let localPackages = packages
+		const sessionCheck = await checkStoreCookieSession()
+		if (!sessionCheck || sessionCheck.error) {
+			console.log(
+				'[Checkout Process] Pre-authorization: Store cookie session validation failed',
+			)
+			return
+		}
 
+		if (
+			sessionCheck.message === 'No relevant details found, cookies cleared' ||
+			sessionCheck.message === 'Cookies cleared due to mismatch with database'
+		) {
+			if (revalidator.state === 'idle') {
+				console.log('Data is being revalidated...')
+				revalidator.revalidate()
+				await wait(5000)
+				callback()
+			}
+		}
 		console.log('[Checkout Process] Step 1: Checking basket existence...')
 		if (!localBasketId) {
 			const result = await createBasket()
@@ -171,6 +198,7 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 		createBasket,
 		addPackageToBasket,
 		initiateCheckout,
+		checkStoreCookieSession,
 	])
 
 	useEffect(() => {
