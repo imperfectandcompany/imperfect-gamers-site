@@ -260,7 +260,6 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 			setAlreadyFetched(false)
 			setBasketIdCleared(false)
 			setPackagesCleared(false)
-			setCheckoutUrlCleared(false)
 			setBasketExists(false) // Reset on logout
 			return // Exit if user is not authenticated
 		}
