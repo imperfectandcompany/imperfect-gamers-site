@@ -83,13 +83,16 @@ export const action: ActionFunction = async ({ request }) => {
 			}
 
 			if (checkoutDetails.basket_id) {
-				console.log('checkoutDetails.basket_id:', checkoutDetails.basket_id);
+				console.log('checkoutDetails.basket_id:', checkoutDetails.basket_id)
 			}
 			if (checkoutDetails.package_id) {
-				console.log('checkoutDetails.package_id:', checkoutDetails.package_id);
+				console.log('checkoutDetails.package_id:', checkoutDetails.package_id)
 			}
 			if (checkoutDetails.checkout_url) {
-				console.log('checkoutDetails.checkout_url:', checkoutDetails.checkout_url);
+				console.log(
+					'checkoutDetails.checkout_url:',
+					checkoutDetails.checkout_url,
+				)
 			}
 			// if (checkoutDetails.basket_id !== basket_id) {
 			// 	await storeCookie.serialize(null, { expires: new Date(Date.now() - 1) });

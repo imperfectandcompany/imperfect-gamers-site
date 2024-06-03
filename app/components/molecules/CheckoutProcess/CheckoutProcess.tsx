@@ -1,14 +1,13 @@
 import { useFetcher, useLoaderData, useRevalidator } from '@remix-run/react'
 import type React from 'react'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { wait } from 'remix-utils/timers'
 import { CloseInterceptReason } from '~/components/organism/ModalWrapper/ModalWrapper'
 import type { LoaderData } from '~/routes/_index'
+import { useFetcherWithPromise } from '~/utils/general'
 import type { TebexCheckoutConfig } from '~/utils/tebex.interface'
 import { useCreateBasket, useAddPackageToBasket } from './BasketManager'
 import { useCheckStoreCookieSession } from './SessionCheck'
 import { useSaveStoreSession } from './SessionSave'
-import { useFetcherWithPromise } from '~/utils/general'
 
 interface CheckoutProcessProps {
 	isOpen?: boolean
@@ -54,7 +53,6 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 
 	const [basketIdCleared, setBasketIdCleared] = useState(false)
 	const [packagesCleared, setPackagesCleared] = useState(false)
-	const [checkoutUrlCleared, setCheckoutUrlCleared] = useState(false)
 	const [alreadyFetched, setAlreadyFetched] = useState(false)
 
 	useEffect(() => {
@@ -161,8 +159,7 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 
 		if (
 			sessionCheck.message === 'No relevant details found, cookies cleared' ||
-			(sessionCheck.message ===
-				'Cookies cleared due to mismatch with database')
+			sessionCheck.message === 'Cookies cleared due to mismatch with database'
 		) {
 			revalidator.revalidate()
 			console.log(
@@ -175,9 +172,8 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 			if (sessionCheck.clearedCookies.includes('packages')) {
 				setPackagesCleared(true)
 			}
-			if (sessionCheck.clearedCookies.includes('checkoutUrl')) {
-				setCheckoutUrlCleared(true)
-			}
+			// if (sessionCheck.clearedCookies.includes('checkoutUrl')) {
+			// }
 		}
 		console.log('[Checkout Process] Step 1: Checking basket existence...')
 		if (!localBasketId || basketIdCleared) {
@@ -193,16 +189,22 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 			console.log('[Checkout Process] Basket:', localBasketId)
 		}
 
-		console.log('[Checkout Process] Step 2: Checking package to basket existenece...')
+		console.log(
+			'[Checkout Process] Step 2: Checking package to basket existenece...',
+		)
 		if (
 			localBasketId &&
-			(!packages.some(pkg => pkg.id === 6288193) || packagesCleared || basketIdCleared)
+			(!packages.some(pkg => pkg.id === 6288193) ||
+				packagesCleared ||
+				basketIdCleared)
 		) {
 			console.log('[Checkout Process] Adding package to basket...')
 			const result = await addPackageToBasket(localBasketId)
 			console.log(result)
 			if (result) {
-			console.log('[Checkout Process] Result received from addPackageToBasket()...')
+				console.log(
+					'[Checkout Process] Result received from addPackageToBasket()...',
+				)
 				localPackages = result
 			}
 		} else {
@@ -213,7 +215,7 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 			console.log('[Checkout Process] Expected Package ID:', 6288193)
 		}
 		if (localBasketId && localPackages.some(pkg => pkg.id === 6288193)) {
-			if(!alreadyFetched){
+			if (!alreadyFetched) {
 				if (sessionCheck.isFirstTime) {
 					revalidator.revalidate()
 					if (checkoutUrl) {
@@ -222,7 +224,7 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 							package_id: localPackages[0].id,
 							checkout_url: checkoutUrl,
 						}
-	
+
 						fetcher.submit(data, {
 							method: 'post',
 							action: '/store/session/save',

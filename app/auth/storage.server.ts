@@ -45,7 +45,7 @@ const storeCookieSchema = z
 	.object({
 		basketId: z.string().optional().nullable(),
 		packages: z.array(basket).optional().nullable(),
-		checkoutUrl: z.string().url().optional().nullable()
+		checkoutUrl: z.string().url().optional().nullable(),
 	})
 	.default({})
 	.nullable()
