@@ -46,9 +46,9 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 
 	const checkStoreCookieSession = useCheckStoreCookieSession()
 
-	const callback = () => {
-		revalidator.revalidate()
-	}
+	const [basketIdCleared, setBasketIdCleared] = useState(false);
+	const [packagesCleared, setPackagesCleared] = useState(false);
+	const [checkoutUrlCleared, setCheckoutUrlCleared] = useState(false);
 
 	useEffect(() => {
 		setBasketExists(!!basketId)
@@ -145,15 +145,19 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 			sessionCheck.message === 'No relevant details found, cookies cleared' ||
 			sessionCheck.message === 'Cookies cleared due to mismatch with database'
 		) {
-			if (revalidator.state === 'idle') {
-				console.log('Data is being revalidated...')
-				revalidator.revalidate()
-				await wait(5000)
-				callback()
-			}
+			console.log('Cookies that have been cleared: ', sessionCheck.clearedCookies)
+			if (sessionCheck.clearedCookies.includes('basketId')) {
+				setBasketIdCleared(true);
+			  }
+			  if (sessionCheck.clearedCookies.includes('packages')) {
+				setPackagesCleared(true);
+			  }
+			  if (sessionCheck.clearedCookies.includes('checkoutUrl')) {
+				setCheckoutUrlCleared(true);
+			  }
 		}
 		console.log('[Checkout Process] Step 1: Checking basket existence...')
-		if (!localBasketId) {
+		if (!localBasketId || basketIdCleared) {
 			const result = await createBasket()
 			if (result) {
 				console.log('[Checkout Process] Result received from createBasket()')
@@ -166,7 +170,7 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 		}
 
 		console.log('[Checkout Process] Step 2: Adding package to basket...')
-		if (localBasketId && !packages.some(pkg => pkg.id === 6288193)) {
+		if (localBasketId && !packages.some(pkg => pkg.id === 6288193 || packagesCleared)) {
 			const result = await addPackageToBasket(localBasketId)
 			console.log(result)
 			if (result) {
