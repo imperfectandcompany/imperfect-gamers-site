@@ -1,10 +1,13 @@
-import { useFetcher, useLoaderData } from '@remix-run/react'
+import { useFetcher, useLoaderData, useRevalidator } from '@remix-run/react'
 import type React from 'react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { CloseInterceptReason } from '~/components/organism/ModalWrapper/ModalWrapper'
 import type { LoaderData } from '~/routes/_index'
+import { useFetcherWithPromise } from '~/utils/general'
 import type { TebexCheckoutConfig } from '~/utils/tebex.interface'
 import { useCreateBasket, useAddPackageToBasket } from './BasketManager'
+import { useCheckStoreCookieSession } from './SessionCheck'
+import { useSaveStoreSession } from './SessionSave'
 
 interface CheckoutProcessProps {
 	isOpen?: boolean
@@ -26,6 +29,7 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 		username,
 		basketId,
 		packages = [],
+		checkoutUrl,
 	} = useLoaderData<LoaderData>()
 
 	const [basketExists, setBasketExists] = useState(!!basketId)
@@ -40,6 +44,16 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 
 	const createBasket = useCreateBasket()
 	const addPackageToBasket = useAddPackageToBasket()
+	const revalidator = useRevalidator()
+
+	const checkStoreCookieSession = useCheckStoreCookieSession()
+	const saveStoreSession = useSaveStoreSession()
+
+	const { submit } = useFetcherWithPromise()
+
+	const [basketIdCleared, setBasketIdCleared] = useState(false)
+	const [packagesCleared, setPackagesCleared] = useState(false)
+	const [alreadyFetched, setAlreadyFetched] = useState(false)
 
 	useEffect(() => {
 		setBasketExists(!!basketId)
@@ -125,8 +139,45 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 		let localBasketId = basketId
 		let localPackages = packages
 
+		let data = {
+			basket_id: localBasketId,
+			package_id: 6288193,
+			checkout_url: checkoutUrl,
+		}
+
+		const sessionCheck = await submit(data, {
+			method: 'post',
+			action: '/store/session/check',
+		})
+
+		if (!sessionCheck || sessionCheck.error) {
+			console.log(
+				'[Checkout Process] Pre-authorization: Store cookie session validation failed',
+			)
+			return
+		}
+
+		if (
+			sessionCheck.message === 'No relevant details found, cookies cleared' ||
+			sessionCheck.message === 'Cookies cleared due to mismatch with database'
+		) {
+			revalidator.revalidate()
+			console.log(
+				'Cookies that have been cleared: ',
+				sessionCheck.clearedCookies,
+			)
+			if (sessionCheck.clearedCookies.includes('basketId')) {
+				setBasketIdCleared(true)
+			}
+			if (sessionCheck.clearedCookies.includes('packages')) {
+				setPackagesCleared(true)
+			}
+			// if (sessionCheck.clearedCookies.includes('checkoutUrl')) {
+			// }
+		}
 		console.log('[Checkout Process] Step 1: Checking basket existence...')
-		if (!localBasketId) {
+		if (!localBasketId || basketIdCleared) {
+			console.log('[Checkout Process] Creating basket...')
 			const result = await createBasket()
 			if (result) {
 				console.log('[Checkout Process] Result received from createBasket()')
@@ -138,11 +189,22 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 			console.log('[Checkout Process] Basket:', localBasketId)
 		}
 
-		console.log('[Checkout Process] Step 2: Adding package to basket...')
-		if (localBasketId && !packages.some(pkg => pkg.id === 6288193)) {
+		console.log(
+			'[Checkout Process] Step 2: Checking package to basket existenece...',
+		)
+		if (
+			localBasketId &&
+			(!packages.some(pkg => pkg.id === 6288193) ||
+				packagesCleared ||
+				basketIdCleared)
+		) {
+			console.log('[Checkout Process] Adding package to basket...')
 			const result = await addPackageToBasket(localBasketId)
 			console.log(result)
 			if (result) {
+				console.log(
+					'[Checkout Process] Result received from addPackageToBasket()...',
+				)
 				localPackages = result
 			}
 		} else {
@@ -152,8 +214,25 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 			console.log('[Checkout Process] Package:', packages)
 			console.log('[Checkout Process] Expected Package ID:', 6288193)
 		}
-
 		if (localBasketId && localPackages.some(pkg => pkg.id === 6288193)) {
+			if (!alreadyFetched) {
+				if (sessionCheck.isFirstTime) {
+					revalidator.revalidate()
+					if (checkoutUrl) {
+						let data = {
+							basket_id: localBasketId,
+							package_id: localPackages[0].id,
+							checkout_url: checkoutUrl,
+						}
+
+						fetcher.submit(data, {
+							method: 'post',
+							action: '/store/session/save',
+						})
+					}
+				}
+				setAlreadyFetched(true)
+			}
 			initiateCheckout(localBasketId)
 		} else {
 			console.log(
@@ -171,11 +250,16 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 		createBasket,
 		addPackageToBasket,
 		initiateCheckout,
+		checkStoreCookieSession,
+		saveStoreSession,
 	])
 
 	useEffect(() => {
 		if (!isAuthenticated && prevIsAuthenticated.current) {
 			storeRequestTriggeredRef.current = false
+			setAlreadyFetched(false)
+			setBasketIdCleared(false)
+			setPackagesCleared(false)
 			setBasketExists(false) // Reset on logout
 			return // Exit if user is not authenticated
 		}

@@ -43,11 +43,12 @@ const basket = baseItemSchema.extend({
 
 const storeCookieSchema = z
 	.object({
-		basketId: z.string().optional(),
-		packages: z.array(basket).optional(),
-		checkoutUrl: z.string().url().optional(),
+		basketId: z.string().optional().nullable(),
+		packages: z.array(basket).optional().nullable(),
+		checkoutUrl: z.string().url().optional().nullable(),
 	})
 	.default({})
+	.nullable()
 
 export const storeCookie = createTypedCookie({
 	cookie: createCookie('user-store', {
