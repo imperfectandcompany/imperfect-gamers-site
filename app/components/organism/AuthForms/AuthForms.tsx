@@ -28,8 +28,12 @@ enum PageTitle {
 }
 
 const AuthForms: React.FC = () => {
-	const { isAuthenticated, isSteamLinked, username } =
+	const { isAuthenticated, isSteamLinked, username, flashSuccess } =
 		useLoaderData<LoaderData>()
+
+	const shouldOpenModal =
+		flashSuccess && flashSuccess.type === 'steam_authorization_success'
+
 	const [isLoginForm, setIsLoginForm] = useState(true)
 	const { submit } = useFetcherWithPromiseAutoReset({
 		key: 'logout-submission',
@@ -211,6 +215,7 @@ const AuthForms: React.FC = () => {
 							<CheckoutProcess />
 						)
 					}
+					shouldOpen={shouldOpenModal}
 					footer={
 						<Footer
 							isAuthenticated={isAuthenticated}

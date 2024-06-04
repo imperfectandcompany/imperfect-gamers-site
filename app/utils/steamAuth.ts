@@ -8,7 +8,10 @@ import { getEnvVar } from './general'
  * @param returnURL - The URL to redirect the user to after authentication.
  * @returns The Steam login URL.
  */
-export function generateSteamLoginURL(returnURL: string): string {
+export function generateSteamLoginURL(
+	returnURL: string,
+	type: 'main' | 'fallback',
+): string {
 	const steamAuthUrl = getEnvVar(
 		'STEAM_AUTHORIZATION_URL',
 		'https://steamcommunity.com/openid/login',
@@ -17,7 +20,7 @@ export function generateSteamLoginURL(returnURL: string): string {
 	const params = new URLSearchParams({
 		'openid.ns': 'http://specs.openid.net/auth/2.0',
 		'openid.mode': 'checkid_setup',
-		'openid.return_to': returnURL,
+		'openid.return_to': `${returnURL}?type=${type}`,
 		'openid.realm': new URL(returnURL).origin,
 		'openid.identity': 'http://specs.openid.net/auth/2.0/identifier_select',
 		'openid.claimed_id': 'http://specs.openid.net/auth/2.0/identifier_select',

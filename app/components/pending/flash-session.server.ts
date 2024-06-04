@@ -1,35 +1,56 @@
 import { createCookieSessionStorage } from '@remix-run/node'
 
 // Name of the session
-const FLASH_SESSION = 'flash'
+const FLASH_SESSION = '__session'
 
-type SessionData = {
-	email: string
+interface SessionData {}
+
+interface SessionFlashData {
+	error?: {
+		message: string
+		status: string
+		type: string
+	}
+	success?: {
+		message: string
+		status: string
+		type: string
+	}
 }
 
-type SessionFlashData = {
-	error: string
+const storage = createCookieSessionStorage<SessionData & SessionFlashData>({
+	cookie: {
+		name: FLASH_SESSION,
+		httpOnly: true,
+		maxAge: 5,
+		path: '/',
+		sameSite: 'lax',
+		secrets: ['s3cret1'],
+		secure: process.env.NODE_ENV === 'production',
+	},
+})
+
+const { getSession, commitSession, destroySession } = storage
+
+// Utility function to get and clear the flash message from the session
+async function getFlashMessage(
+	request: Request,
+): Promise<{ message?: string; status?: string; type?: string } | undefined> {
+	const session = await getSession(request.headers.get('Cookie'))
+	const error = session.get('error')
+	const success = session.get('success')
+
+	if (error) {
+		session.unset('error')
+		await commitSession(session)
+		return error
+	} else if (success) {
+		session.unset('success')
+		await commitSession(session)
+		return success
+	}
+
+	return undefined
 }
 
-const { getSession, commitSession, destroySession } =
-	createCookieSessionStorage<SessionData, SessionFlashData>({
-		// a Cookie from `createCookie` or the CookieOptions to create one
-		cookie: {
-			name: FLASH_SESSION,
-
-			// all of these are optional
-			//domain: "dev.imperfectgamers.org",
-			// Expires can also be set (although maxAge overrides it when used in combination).
-			// Note that this method is NOT recommended as `new Date` creates only one date on each server deployment, not a dynamic date in the future!
-			//
-			// expires: new Date(Date.now() + 60_000),
-			httpOnly: true,
-			maxAge: 60,
-			path: '/',
-			sameSite: 'lax',
-			secrets: ['s3cret1'],
-			secure: process.env.NODE_ENV === 'production',
-		},
-	})
-
-export { getSession, commitSession, destroySession }
+export { getSession, commitSession, destroySession, getFlashMessage }
