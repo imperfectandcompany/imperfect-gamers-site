@@ -12,8 +12,9 @@ import { generateSteamLoginURL } from '~/utils/steamAuth'
 export const loader: LoaderFunction = ({ request }) => {
 	// The URL to which Steam should redirect the user after login
 	const returnURL = new URL('/authorize/steam/callback', request.url).toString()
-	const steamLoginURL = generateSteamLoginURL(returnURL)
+	const steamLoginURL = generateSteamLoginURL(returnURL, 'main')
+	const steamLoginURLFallBack = generateSteamLoginURL(returnURL, 'fallback')
 
 	// Redirect the user to Steam for authentication
-	return json({ url: steamLoginURL })
+	return json({ url: steamLoginURL, fallback: steamLoginURLFallBack })
 }

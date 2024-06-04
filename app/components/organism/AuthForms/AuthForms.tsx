@@ -1,6 +1,6 @@
 // components/organism/AuthForms/AuthForms.tsx
 
-import { useFetchers, useLoaderData } from '@remix-run/react'
+import { useFetchers, useLoaderData, useRevalidator } from '@remix-run/react'
 import type React from 'react'
 import { useEffect, useState, useCallback, useMemo } from 'react'
 import Button from '~/components/atoms/Button/Button'
@@ -30,9 +30,7 @@ enum PageTitle {
 const AuthForms: React.FC = () => {
 	const { isAuthenticated, isSteamLinked, username, flashSuccess } =
 		useLoaderData<LoaderData>()
-
-	const shouldOpenModal =
-		flashSuccess && flashSuccess.type === 'steam_authorization_success'
+	const [shouldOpenModal, setShouldOpenModal] = useState(true)
 
 	const [isLoginForm, setIsLoginForm] = useState(true)
 	const { submit } = useFetcherWithPromiseAutoReset({
@@ -80,6 +78,17 @@ const AuthForms: React.FC = () => {
 			console.error('An error occurred:', error)
 		}
 	}, [])
+
+useEffect(() => {
+  if (flashSuccess && flashSuccess.type === 'steam_authorization_success') {
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new Event('steam-auth-success'));
+    }
+    setShouldOpenModal(true);
+  }
+}, [flashSuccess]); // Ensure `flashSuccess` isn't changing too frequently
+
+
 
 	const [isInitial, setIsInitial] = useState(true)
 

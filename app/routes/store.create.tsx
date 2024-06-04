@@ -6,9 +6,9 @@ import { createTebexBasket } from '~/utils/tebex.server'
 
 const ERROR_MESSAGES = {
 	authentication: 'User must be authenticated',
-	username: 'User must have a username',
-	steamId: 'User must have a Steam ID',
-	basket: 'User already have a package added to a basket',
+	username: 'User must has a username',
+	steamId: 'User must has a Steam ID',
+	basket: 'User already has a package added to a basket',
 }
 
 export const action: ActionFunction = async ({ request }) => {
