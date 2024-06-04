@@ -54,6 +54,8 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 	const [basketIdCleared, setBasketIdCleared] = useState(false)
 	const [packagesCleared, setPackagesCleared] = useState(false)
 	const [alreadyFetched, setAlreadyFetched] = useState(false)
+	const [launchingCheckout, setLaunchingCheckout] = useState(false)
+	const [checkoutOpen, setCheckoutOpen] = useState(false)
 
 	useEffect(() => {
 		setBasketExists(!!basketId)
@@ -83,6 +85,8 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 				if (setCloseInterceptReason) {
 					setCloseInterceptReason(CloseInterceptReason.ActivePopup)
 				}
+				setLaunchingCheckout(false)
+				setCheckoutOpen(true)
 			})
 
 			Tebex.checkout.on(Tebex.events.CLOSE, () => {
@@ -90,6 +94,8 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 				if (setCloseInterceptReason) {
 					setCloseInterceptReason(CloseInterceptReason.None)
 				}
+				setCheckoutOpen(false)
+				setLaunchingCheckout(false)
 			})
 
 			Tebex.checkout.on('payment:complete', () => {
@@ -120,6 +126,7 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 	const initiateCheckout = useCallback(
 		(basketId: string) => {
 			console.log('[Checkout Process] Step 3: Initiating checkout...')
+			setLaunchingCheckout(true)
 			UseTebexCheckout(basketId, 'dark')
 		},
 		[UseTebexCheckout],
@@ -190,13 +197,11 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 		}
 
 		console.log(
-			'[Checkout Process] Step 2: Checking package to basket existenece...',
+			'[Checkout Process] Step 2: Checking package to basket existence...',
 		)
 		if (
 			localBasketId &&
-			(!packages.some(pkg => pkg.id === 6288193) ||
-				packagesCleared ||
-				basketIdCleared)
+			(!packages.some(pkg => pkg.id === 6288193) || packagesCleared)
 		) {
 			console.log('[Checkout Process] Adding package to basket...')
 			const result = await addPackageToBasket(localBasketId)
@@ -287,11 +292,21 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 	])
 
 	if (!basketId) {
-		return <div>Loading or creating your basket...</div>
+		return (
+			<>
+				<div id="primaryLoader" className="loader">
+					<div className="spinner"></div>
+					<p id="loaderText">Loading or creating your basket...</p>
+				</div>
+			</>
+		)
 	}
 
 	if (fetcher.state === 'loading') {
-		return <div>Processing...</div>
+		;<div id="primaryLoader" className="loader">
+			<div className="spinner"></div>
+			<p id="loaderText">Processing...</p>
+		</div>
 	}
 
 	if ((fetcher.data as { error: string })?.error) {
@@ -299,7 +314,12 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 	}
 
 	if (!packages.some(pkg => pkg.id === 6288193)) {
-		return <div>Loading or adding premium package to basket...</div>
+		return (
+			<div id="primaryLoader" className="loader">
+				<div className="spinner"></div>
+				<p id="loaderText">Loading or adding premium package to basket...</p>
+			</div>
+		)
 	}
 
 	if (isSteamLinked) {
@@ -327,6 +347,19 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 						Reach out to staff on discord: https://imperfectgamers.org/discord/
 					</div>
 				</>
+			)
+		} else if (launchingCheckout) {
+			return (
+				<div id="primaryLoader" className="loader">
+					<div className="spinner"></div>
+					<p id="loaderText">Launching checkout...</p>
+				</div>
+			)
+		} else if (checkoutOpen) {
+			return (
+				<div id="primaryLoader" className="loader">
+					<p id="loaderText">Checkout launched...</p>
+				</div>
 			)
 		} else {
 			return (

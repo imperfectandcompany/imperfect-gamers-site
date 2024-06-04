@@ -15,15 +15,17 @@ import { MembershipCard } from '~/components/organism/MembershipCard/MembershipC
 
 export default function StoreHeader() {
 	return (
-		<div>
-			<h1 className="title">Imperfect Gamers Club</h1>
-			<p className="subtitle">
-				Join now through the exclusive access member pass
-			</p>
-			<MembershipCard />
-			<div className="mt-8 flex justify-center">
-				<AuthForms />
+		<>
+			<div>
+				<h1 className="title">Imperfect Gamers Club</h1>
+				<p className="subtitle">
+					Join now through the exclusive access member pass
+				</p>
+				<MembershipCard />
+				<div className="mt-8 flex justify-center">
+					<AuthForms />
+				</div>
 			</div>
-		</div>
+		</>
 	)
 }

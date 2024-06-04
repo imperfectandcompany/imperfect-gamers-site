@@ -15,6 +15,7 @@ interface ModalWrapperProps {
 	backButtonTitle?: string
 	align?: 'left' | 'center' | 'right'
 	isResponsive?: boolean
+	shouldOpen?: boolean // Control initial state from outside
 }
 
 export enum CloseInterceptReason {
@@ -41,6 +42,7 @@ const ModalWrapper: React.FC<ModalWrapperProps> = ({
 	backButtonTitle,
 	align,
 	isResponsive = false,
+	shouldOpen = false,
 }: {
 	children: React.ReactElement
 	header?: React.ReactNode
@@ -51,8 +53,14 @@ const ModalWrapper: React.FC<ModalWrapperProps> = ({
 	backButtonTitle?: string
 	align?: 'left' | 'center' | 'right'
 	isResponsive?: boolean
+	shouldOpen?: boolean // Control initial state from outside
 }) => {
-	const [isOpen, setIsOpen] = useState(false)
+	const [isOpen, setIsOpen] = useState(shouldOpen)
+
+	useEffect(() => {
+		setIsOpen(shouldOpen)
+	}, [shouldOpen])
+
 	const [popupWindow, setPopupWindow] = useState<Window | null>(null)
 
 	/**

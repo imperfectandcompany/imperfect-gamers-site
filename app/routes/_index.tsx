@@ -4,9 +4,11 @@ import {
 	json,
 	type LoaderFunction,
 } from '@remix-run/node'
+import { useLoaderData } from '@remix-run/react'
 import type { ExternalScriptsHandle } from 'remix-utils/external-scripts'
-import { getSession, storeCookie } from '~/auth/storage.server' // Make sure this matches your file structure
+import { getSession, storeCookie } from '~/auth/storage.server'
 import CookieConsent from '~/components/pending/CookieConsent'
+import { getFlashMessage } from '~/components/pending/flash-session.server'
 import {
 	StoreContact,
 	StoreEvents,
@@ -33,6 +35,8 @@ export type LoaderData = {
 	basketId: string | null // Assuming basketId is a string, null if not present
 	packages: BasketPackage[] | []
 	checkoutUrl: string | null
+	flashError?: { message: string; status: string; type: string } // include the flash message
+	flashSuccess?: { message: string; status: string; type: string } // include the flash message
 }
 
 export const meta: MetaFunction = () => {
@@ -161,8 +165,14 @@ async function getData(cookieHeader: string | null): Promise<LoaderData> {
 export const loader: LoaderFunction = async ({ request }) => {
 	const cookieHeader = request.headers.get('Cookie')
 	const data = await getData(cookieHeader)
+	const flashError = await getFlashMessage(request)
+	const flashSuccess = await getFlashMessage(request)
 
-	return json(data) // Include basketId in the response
+	return json({
+		...data,
+		flashError,
+		flashSuccess,
+	}) // Include basketId in the response
 }
 
 /**
@@ -171,8 +181,16 @@ export const loader: LoaderFunction = async ({ request }) => {
  * @returns The rendered Store component.
  */
 export default function Index() {
+	const { flashError } = useLoaderData<LoaderData>()
+
 	return (
 		<>
+			{flashError && flashError.type === 'steam_authorization_error' ? (
+				<div className="error-bar w-full">
+					<strong>Error:</strong> {flashError.message} (Status:{' '}
+					{flashError.status})
+				</div>
+			) : null}
 			<CookieConsent />
 			<StoreHeader />
 			<StoreFeatured />
