@@ -56,6 +56,8 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 	const [alreadyFetched, setAlreadyFetched] = useState(false)
 	const [launchingCheckout, setLaunchingCheckout] = useState(false)
 	const [checkoutOpen, setCheckoutOpen] = useState(false)
+	const checkoutOpenRef = useRef(false);  // Use ref to track open state
+
 
 	useEffect(() => {
 		setBasketExists(!!basketId)
@@ -106,6 +108,7 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 				}
 				setLaunchingCheckout(false)
 				setCheckoutOpen(true)
+				checkoutOpenRef.current = true;  // Update ref
 			})
 
 			Tebex.checkout.on(Tebex.events.CLOSE, () => {
@@ -115,6 +118,7 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 				}
 				setCheckoutOpen(false)
 				setLaunchingCheckout(false)
+				checkoutOpenRef.current = false;  // Update ref
 			})
 
 			Tebex.checkout.on('payment:complete', () => {
@@ -147,6 +151,16 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 			console.log('[Checkout Process] Step 3: Initiating checkout...')
 			setLaunchingCheckout(true)
 			UseTebexCheckout(basketId, 'dark')
+			setTimeout(() => {
+				if (!checkoutOpenRef.current) {
+					console.error('[Checkout Sentry] Assuming popup was blocked, redirecting...');
+					if (checkoutUrl) {
+						window.location.href = checkoutUrl // Redirect as a fallback
+					}
+				} else {
+					console.log('[Checkout Sentry] Checkout open, no need to redirect');
+				}
+			}, 2000);
 		},
 		[UseTebexCheckout],
 	)

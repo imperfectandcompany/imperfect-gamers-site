@@ -22,7 +22,7 @@ const storage = createCookieSessionStorage<SessionData & SessionFlashData>({
 	cookie: {
 		name: FLASH_SESSION,
 		httpOnly: true,
-		maxAge: 5,
+        maxAge: 60,
 		path: '/',
 		sameSite: 'lax',
 		secrets: ['s3cret1'],

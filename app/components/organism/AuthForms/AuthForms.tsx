@@ -30,7 +30,7 @@ enum PageTitle {
 const AuthForms: React.FC = () => {
 	const { isAuthenticated, isSteamLinked, username, flashSuccess } =
 		useLoaderData<LoaderData>()
-	const [shouldOpenModal, setShouldOpenModal] = useState(true)
+	const [shouldOpenModal, setShouldOpenModal] = useState(false)
 
 	const [isLoginForm, setIsLoginForm] = useState(true)
 	const { submit } = useFetcherWithPromiseAutoReset({
