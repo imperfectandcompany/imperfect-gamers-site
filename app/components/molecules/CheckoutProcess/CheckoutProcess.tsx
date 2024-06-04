@@ -56,8 +56,8 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 	const [alreadyFetched, setAlreadyFetched] = useState(false)
 	const [launchingCheckout, setLaunchingCheckout] = useState(false)
 	const [checkoutOpen, setCheckoutOpen] = useState(false)
-	const checkoutOpenRef = useRef(false);  // Use ref to track open state
-
+	const checkoutOpenRef = useRef(false) // Use ref to track open state
+	const [showFallbackMessage, setShowFallbackMessage] = useState(false)
 
 	useEffect(() => {
 		setBasketExists(!!basketId)
@@ -108,7 +108,8 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 				}
 				setLaunchingCheckout(false)
 				setCheckoutOpen(true)
-				checkoutOpenRef.current = true;  // Update ref
+				checkoutOpenRef.current = true // Update ref
+				setShowFallbackMessage(false) // Ensure fallback message is not shown when checkout opens
 			})
 
 			Tebex.checkout.on(Tebex.events.CLOSE, () => {
@@ -118,7 +119,8 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 				}
 				setCheckoutOpen(false)
 				setLaunchingCheckout(false)
-				checkoutOpenRef.current = false;  // Update ref
+				checkoutOpenRef.current = false // Update ref
+				setShowFallbackMessage(false) // Ensure fallback message is not shown when checkout opens
 			})
 
 			Tebex.checkout.on('payment:complete', () => {
@@ -153,14 +155,18 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 			UseTebexCheckout(basketId, 'dark')
 			setTimeout(() => {
 				if (!checkoutOpenRef.current) {
-					console.error('[Checkout Sentry] Assuming popup was blocked, redirecting...');
-					if (checkoutUrl) {
-						window.location.href = checkoutUrl // Redirect as a fallback
-					}
+					console.error(
+						'[Checkout Sentry] Assuming popup was blocked, enabling fallback...',
+					)
+					setShowFallbackMessage(true) // Show message that the popup was blocked
+					setLaunchingCheckout(false) // disable 'is launchiing' state
+					// if (checkoutUrl) {
+					// 	window.location.href = checkoutUrl // Redirect as a fallback
+					// }
 				} else {
-					console.log('[Checkout Sentry] Checkout open, no need to redirect');
+					console.log('[Checkout Sentry] Checkout open, no need to redirect')
 				}
-			}, 2000);
+			}, 2000)
 		},
 		[UseTebexCheckout],
 	)
@@ -386,6 +392,22 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 				<div id="primaryLoader" className="loader">
 					<div className="spinner"></div>
 					<p id="loaderText">Launching checkout...</p>
+				</div>
+			)
+		} else if (showFallbackMessage && checkoutUrl) {
+			return (
+				<div className="fallbackMessage">
+					<p>
+						We detected that a popup blocker may have prevented the checkout
+						window from opening.
+					</p>
+					<p>
+						No worries, you can{' '}
+						<a href={checkoutUrl} target="_blank" rel="noopener noreferrer" className="text-red-500 no-underline hover:cursor-pointer hover:underline focus:cursor-default focus:opacity-80 transition-all">
+							click here
+						</a>{' '}
+						to proceed to checkout manually.
+					</p>
 				</div>
 			)
 		} else if (checkoutOpen) {
