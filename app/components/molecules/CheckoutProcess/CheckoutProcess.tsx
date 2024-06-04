@@ -61,6 +61,25 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 		setBasketExists(!!basketId)
 	}, [basketId])
 
+	const callback = () => {
+		revalidator.revalidate()
+	}
+
+	useEffect(() => {
+		const handleSteamAuthSuccess = (event: MessageEvent) => {
+			if (event.data.type === 'steam-auth-success') {
+				console.log('User has successfully integrated their steam.')
+				callback()
+			}
+		}
+
+		window.addEventListener('message', handleSteamAuthSuccess)
+
+		return () => {
+			window.removeEventListener('message', handleSteamAuthSuccess)
+		}
+	}, [])
+
 	/**
 	 * Initializes the Tebex checkout process.
 	 * @param {string} checkoutId - The ID for the Tebex checkout.

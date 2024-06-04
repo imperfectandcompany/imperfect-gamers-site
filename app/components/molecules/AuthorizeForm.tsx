@@ -159,26 +159,9 @@ const AuthorizeForm: React.FC<AuthorizeFormProps> = ({
 
 	return (
 		<div>
-			{showFallback ? (
-				<div id="fallback">
-					<p>
-						Click{' '}
-						<a
-							href={fallbackUrl}
-							target="_blank"
-							rel="noopener noreferrer"
-							className="text-red-700 transition hover:text-red-500 hover:underline"
-						>
-							here
-						</a>{' '}
-						if you&apos;re having trouble linking your Steam account.
-					</p>
-				</div>
-			) : null}
-
 			{!steamPopupOpened && !visible ? (
 				<div className="cta-container">
-					<div className="cta-text">Ready to link your Steam account?</div>
+					<div className="cta-text">Link your Steam account to continue?</div>
 					<button
 						className="steam-button button transition hover:border-none"
 						onClick={initiateSteamLinking}
@@ -206,18 +189,35 @@ const AuthorizeForm: React.FC<AuthorizeFormProps> = ({
 							transform: `translateY(${showAlternative ? '0px' : '20px'})`,
 						}}
 					>
-						Still having trouble? It&apos;s possible your browser blocked the
-						popup. No worries, you can
-						<a
-							href={fallbackUrl}
-							target="_blank"
-							rel="noopener noreferrer"
-							style={{ color: 'red', textDecoration: 'underline' }}
-						>
-							{' '}
-							click here{' '}
-						</a>
-						to sign in manually.
+						{showFallback ? (
+							<>
+								We believe your browser may have blocked the popup. No worries,
+								you can
+								<a
+									href={fallbackUrl}
+									rel="noopener noreferrer"
+									className="text-red-500"
+								>
+									{' '}
+									click here{' '}
+								</a>
+								to sign in manually.
+							</>
+						) : (
+							<>
+								Still having trouble? It&apos;s possible your browser blocked
+								the popup. No worries, you can
+								<a
+									href={fallbackUrl}
+									rel="noopener noreferrer"
+									className="text-red-500 no-underline hover:underline"
+								>
+									{' '}
+									click here{' '}
+								</a>
+								to sign in manually.
+							</>
+						)}
 					</p>
 				</div>
 			)}
