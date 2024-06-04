@@ -196,7 +196,7 @@ const AuthorizeForm: React.FC<AuthorizeFormProps> = ({
 								<a
 									href={fallbackUrl}
 									rel="noopener noreferrer"
-									className='text-red-500'
+									className="text-red-500"
 								>
 									{' '}
 									click here{' '}
@@ -210,7 +210,7 @@ const AuthorizeForm: React.FC<AuthorizeFormProps> = ({
 								<a
 									href={fallbackUrl}
 									rel="noopener noreferrer"
-									className='text-red-500 no-underline hover:underline'
+									className="text-red-500 no-underline hover:underline"
 								>
 									{' '}
 									click here{' '}

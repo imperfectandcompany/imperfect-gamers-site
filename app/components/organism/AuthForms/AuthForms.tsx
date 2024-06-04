@@ -1,6 +1,6 @@
 // components/organism/AuthForms/AuthForms.tsx
 
-import { useFetchers, useLoaderData, useRevalidator } from '@remix-run/react'
+import { useFetchers, useLoaderData } from '@remix-run/react'
 import type React from 'react'
 import { useEffect, useState, useCallback, useMemo } from 'react'
 import Button from '~/components/atoms/Button/Button'
@@ -79,16 +79,14 @@ const AuthForms: React.FC = () => {
 		}
 	}, [])
 
-useEffect(() => {
-  if (flashSuccess && flashSuccess.type === 'steam_authorization_success') {
-    if (typeof window !== "undefined") {
-      window.dispatchEvent(new Event('steam-auth-success'));
-    }
-    setShouldOpenModal(true);
-  }
-}, [flashSuccess]); // Ensure `flashSuccess` isn't changing too frequently
-
-
+	useEffect(() => {
+		if (flashSuccess && flashSuccess.type === 'steam_authorization_success') {
+			if (typeof window !== 'undefined') {
+				window.dispatchEvent(new Event('steam-auth-success'))
+			}
+			setShouldOpenModal(true)
+		}
+	}, [flashSuccess]) // Ensure `flashSuccess` isn't changing too frequently
 
 	const [isInitial, setIsInitial] = useState(true)
 

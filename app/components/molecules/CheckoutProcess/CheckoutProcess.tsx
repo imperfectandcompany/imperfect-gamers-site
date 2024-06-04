@@ -65,21 +65,20 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 		revalidator.revalidate()
 	}
 
-		useEffect(() => {
-			const handleSteamAuthSuccess = (event: MessageEvent) => {
-				if (event.data.type === 'steam-auth-success') {
-					console.log('User has successfully integrated their steam.')
-					callback()
-				}
+	useEffect(() => {
+		const handleSteamAuthSuccess = (event: MessageEvent) => {
+			if (event.data.type === 'steam-auth-success') {
+				console.log('User has successfully integrated their steam.')
+				callback()
 			}
-	  
-		  window.addEventListener('message', handleSteamAuthSuccess)
-	  
-		  return () => {
+		}
+
+		window.addEventListener('message', handleSteamAuthSuccess)
+
+		return () => {
 			window.removeEventListener('message', handleSteamAuthSuccess)
 		}
-		}, []);
-
+	}, [])
 
 	/**
 	 * Initializes the Tebex checkout process.
