@@ -36,8 +36,23 @@
 </p>
 <hr>
 
-demo:
+steam-integration demo (oauth implicit grant flow):
+
+pop-up flow:
+
 https://imperfectandcompany.sharepoint.com/:v:/s/ImperfectandCompany2/EZZLemtOjPhEqc62-dKh2qsBffsSDVRdt_qqg5w9OwOK-g
+
+redirect flow:
+
+https://imperfectandcompany.sharepoint.com/:v:/s/ImperfectandCompany2/ETVRdeR7YJlNpNgVznK0YLYBtR6wOd-Lu7sVEDRud5AYvA
+
+Currently living monetization model:
+
+![image](https://github.com/imperfectandcompany/Imperfect-Gamers-Site-Store/assets/3193289/188f0a40-859f-472c-88d7-a968bf54bd18)
+
+Our monetization model from two years ago (on old engine with stability):
+
+https://cdn.imperfectgamers.org/96VFCiW.png
 
 ## 🔗 Quick Links
 
