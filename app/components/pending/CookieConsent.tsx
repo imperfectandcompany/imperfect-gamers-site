@@ -1,10 +1,11 @@
 // CookieConsent.tsx
 
 import type { FunctionComponent, MouseEvent, KeyboardEvent } from 'react'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useContext, useEffect, useState } from 'react'
 
 import './CookieConsent.css'
 import CookieConsentModal from './CookieConsentModal'
+import ModalPositionContext from './ModalPositionContext'
 
 interface Settings {
 	essential: boolean
@@ -113,7 +114,11 @@ const CookieConsent: FunctionComponent = () => {
 			window.dispatchEvent(new Event('consentGranted'))
 		}
 		startExitAnimation() // Start animation when accepting all cookies
+		adjustModalPosition() // Adjust position for main modal when cookie-banner is triggered
 	}
+
+	const { adjustModalPosition } = useContext(ModalPositionContext) // Use the context
+
 	const acceptAllCookies = () => {
 		const allEnabledSettings = {
 			essential: true, // Essential cookies are always enabled
@@ -131,6 +136,7 @@ const CookieConsent: FunctionComponent = () => {
 			// If modal is open...
 			if (closeModalWithAnimation) closeModalWithAnimation() // Execute the function
 		}
+		adjustModalPosition() // Adjust position for main modal when cookie-banner is closing.
 	}
 
 	const resetSettings = () => {
@@ -575,7 +581,7 @@ const CookieConsent: FunctionComponent = () => {
 					</div>
 					<div
 						id="cookie-banner-accept-all-container"
-						className={`accept-button ${activeModal === 'settings' ? 'hidden' : ''}`}
+						className={`accept-button ${activeModal === ModalNames.Settings ? 'hidden-accept-all' : ''}`}
 					>
 						<button
 							id="cookie-banner-accept-all"

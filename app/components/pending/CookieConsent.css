@@ -159,6 +159,26 @@
 	color: #ffffff;
 }
 
+.hidden-accept-all {
+    opacity: 0;
+    height: 0 !important; /* Override any specific height to make it disappear */
+}
+
+/* CookieConsent.css */
+.accept-button {
+    transition: opacity 0.3s ease, height 0.3s ease, padding 0.3s ease;
+    height: auto; /* Ensure the height is auto to accommodate content */
+    opacity: 1;
+    padding: 10px; /* Adjust padding as needed */
+    overflow: hidden;
+}
+
+.hidden-accept-all {
+    opacity: 0;
+    height: 0 !important; /* Collapse the container */
+    padding: 0 !important; /* Remove padding during transition */
+}
+
 @media (max-width: 768px) {
 	.cookie-popup {
 		flex-direction: column;
