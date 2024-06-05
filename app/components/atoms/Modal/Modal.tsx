@@ -1,4 +1,5 @@
-import { useEffect, useRef } from 'react'
+import { useContext, useEffect, useRef } from 'react'
+import ModalPositionContext from '~/components/pending/ModalPositionContext'
 
 interface ModalProps {
 	isOpen: boolean
@@ -43,6 +44,27 @@ const Modal: React.FC<ModalProps> = ({
 			return target.classList.contains(selector)
 		})
 	}
+
+	const { adjustModalPosition } = useContext(ModalPositionContext) // Use the context
+
+	useEffect(() => {
+		const observer = new MutationObserver(() => {
+			adjustModalPosition()
+		})
+
+		if (modalRef.current) {
+			observer.observe(modalRef.current, {
+				childList: true,
+				subtree: true,
+				attributes: true,
+				characterData: true,
+			})
+		}
+
+		return () => {
+			observer.disconnect()
+		}
+	}, [adjustModalPosition])
 
 	useEffect(() => {
 		const handleKeydown = (event: KeyboardEvent) => {
@@ -89,6 +111,7 @@ const Modal: React.FC<ModalProps> = ({
 
 	return (
 		<div
+			id="modal"
 			className={`fixed inset-0 z-30 flex items-center justify-center overflow-auto bg-black/50 px-4 py-2 ${
 				isOpen ? 'opacity-100' : 'pointer-events-none opacity-0'
 			}`}

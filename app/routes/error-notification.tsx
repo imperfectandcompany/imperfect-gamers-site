@@ -8,18 +8,25 @@ import {
 
 export const loader: LoaderFunction = async ({ request }) => {
 	const url = new URL(request.url)
-	const message = url.searchParams.get('message') || 'Default error message' // Provide a default message
-	const status = url.searchParams.get('status') || '500' // Default status code
-	const type = url.searchParams.get('type') || 'general_error' // Default type
+	const message = url.searchParams.get('message') || 'Default error message'
+	const status = url.searchParams.get('status') || '500'
+	const type = url.searchParams.get('type') || 'general_error'
+
+	console.log(`Received error of type: ${type} with message: ${message}`)
 
 	const session = await getSession(request.headers.get('Cookie'))
 
-	// Store error details in session, ensure that both message and status are strings
 	session.flash('error', { message, status, type })
+	console.error(
+		`Logging error to session: ${message}, Status: ${status}, Type: ${type}`,
+	)
+
+	const cookieHeader = await commitSession(session)
+	console.log(`Session committed with cookie header: ${cookieHeader}`)
 
 	return redirect('/', {
 		headers: {
-			'Set-Cookie': await commitSession(session),
+			'Set-Cookie': cookieHeader,
 		},
 	})
 }

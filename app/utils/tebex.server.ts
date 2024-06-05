@@ -7,15 +7,17 @@ const TEBEX_WEBSTORE_IDENTIFIER = process.env.TEBEX_WEBSTORE_IDENTIFIER
 
 // Function to create a basket on Tebex
 export async function createTebexBasket(
+	complete_returnURL: string,
+	cancel_returnURL: string,
 	userId: number,
 	username: string,
 	steamId: number,
 	ipAddress: string,
 ): Promise<Basket> {
 	let requestBody: any = {
-		complete_url: 'http://localhost:5173/complete',
-		cancel_url: 'http://localhost:5173/cancel',
-		complete_auto_redirect: false,
+		complete_url: complete_returnURL,
+		cancel_url: cancel_returnURL,
+		complete_auto_redirect: true,
 		custom: {
 			user_id: userId,
 			username: username,

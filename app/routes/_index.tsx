@@ -5,10 +5,12 @@ import {
 	type LoaderFunction,
 } from '@remix-run/node'
 import { useLoaderData } from '@remix-run/react'
+import { useEffect, useRef } from 'react'
 import type { ExternalScriptsHandle } from 'remix-utils/external-scripts'
 import { getSession, storeCookie } from '~/auth/storage.server'
 import CookieConsent from '~/components/pending/CookieConsent'
 import { getFlashMessage } from '~/components/pending/flash-session.server'
+import ModalPositionContext from '~/components/pending/ModalPositionContext'
 import {
 	StoreContact,
 	StoreEvents,
@@ -164,15 +166,19 @@ async function getData(cookieHeader: string | null): Promise<LoaderData> {
  */
 export const loader: LoaderFunction = async ({ request }) => {
 	const cookieHeader = request.headers.get('Cookie')
-	const data = await getData(cookieHeader)
-	const flashError = await getFlashMessage(request)
-	const flashSuccess = await getFlashMessage(request)
+	try {
+		const data = await getData(cookieHeader)
+		const flashError = await getFlashMessage(request)
+		const flashSuccess = await getFlashMessage(request)
 
-	return json({
-		...data,
-		flashError,
-		flashSuccess,
-	}) // Include basketId in the response
+		return json({
+			...data,
+			flashError,
+			flashSuccess,
+		}) // Include basketId in the response
+	} catch (error) {
+		throw new Response('Data Not Found', { status: 404 })
+	}
 }
 
 /**
@@ -183,24 +189,83 @@ export const loader: LoaderFunction = async ({ request }) => {
 export default function Index() {
 	const { flashError } = useLoaderData<LoaderData>()
 
+	// Define the function to adjust modal position
+	const adjustModalPosition = () => {
+		const cookieBanner = document.querySelector('.cookie-popup') as HTMLElement
+		const modal = document.getElementById('modal') as HTMLElement
+		if (cookieBanner && modal) {
+			if (cookieBanner.offsetHeight > 0 && window.innerWidth <= 768) {
+				// Add some space above the cookie banner, for example, 20px less than the banner's height
+				const adjustment = cookieBanner.offsetHeight - 160 // Reduce 20px or adjust this value as needed
+				modal.style.transform = `translateY(-${adjustment}px)`
+			} else {
+				// Reset the modal position when the banner is not visible
+				modal.style.transform = 'translateY(0)'
+			}
+		}
+	}
+
+	const modalRef = useRef(null)
+
+	useEffect(() => {
+		const observer = new MutationObserver(() => {
+			adjustModalPosition()
+		})
+
+		if (modalRef.current) {
+			observer.observe(modalRef.current, {
+				childList: true,
+				subtree: true,
+				attributes: true,
+				characterData: true,
+			})
+		}
+
+		return () => {
+			observer.disconnect()
+		}
+	}, [adjustModalPosition])
+
+	// Use effect to bind event listeners
+	useEffect(() => {
+		// Adjust position on window resize
+		const handleResize = () => {
+			adjustModalPosition()
+		}
+		window.addEventListener('resize', handleResize)
+
+		// Cleanup function to remove event listener
+		return () => {
+			window.removeEventListener('resize', handleResize)
+		}
+	}, [])
+
 	return (
 		<>
-			{flashError && flashError.type === 'steam_authorization_error' ? (
-				<div className="error-bar w-full">
-					<strong>Error:</strong> {flashError.message} (Status:{' '}
-					{flashError.status})
+			<ModalPositionContext.Provider value={{ adjustModalPosition }}>
+				{flashError &&
+				(flashError.type === 'steam_authorization_error' ||
+					flashError.type === 'tebex_checkout_cancel') ? (
+					<div className="error-bar w-full">
+						<strong>Error:</strong> {flashError.message} (Status:{' '}
+						{flashError.status})
+					</div>
+				) : null}
+				<div>
+					<CookieConsent />
 				</div>
-			) : null}
-			<CookieConsent />
-			<StoreHeader />
-			<StoreFeatured />
-			<StoreTiers />
-			<StoreTestimonials />
-			<StoreFAQ />
-			<StoreEvents />
-			<StorePartnership />
-			<StoreContact />
-			<StoreFooter />
+				<div ref={modalRef}>
+					<StoreHeader />
+					<StoreFeatured />
+					<StoreTiers />
+					<StoreTestimonials />
+					<StoreFAQ />
+					<StoreEvents />
+					<StorePartnership />
+					<StoreContact />
+					<StoreFooter />
+				</div>
+			</ModalPositionContext.Provider>
 		</>
 	)
 }

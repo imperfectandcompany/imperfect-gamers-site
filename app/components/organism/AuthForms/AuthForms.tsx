@@ -28,9 +28,9 @@ enum PageTitle {
 }
 
 const AuthForms: React.FC = () => {
-	const { isAuthenticated, isSteamLinked, username, flashSuccess } =
+	const { isAuthenticated, isSteamLinked, username, flashSuccess, flashError } =
 		useLoaderData<LoaderData>()
-	const [shouldOpenModal, setShouldOpenModal] = useState(true)
+	const [shouldOpenModal, setShouldOpenModal] = useState(false)
 
 	const [isLoginForm, setIsLoginForm] = useState(true)
 	const { submit } = useFetcherWithPromiseAutoReset({
@@ -80,13 +80,30 @@ const AuthForms: React.FC = () => {
 	}, [])
 
 	useEffect(() => {
-		if (flashSuccess && flashSuccess.type === 'steam_authorization_success') {
+		if (
+			(flashSuccess &&
+				(flashSuccess.type === 'steam_authorization_success' ||
+					flashSuccess.type === 'tebex_checkout_success')) ||
+			(flashError && flashError.type == 'tebex_checkout_cancel')
+		) {
 			if (typeof window !== 'undefined') {
-				window.dispatchEvent(new Event('steam-auth-success'))
+				if (flashSuccess) {
+					if (flashSuccess.type === 'tebex_checkout_success') {
+						window.dispatchEvent(new Event('tebex-checkout-success'))
+						setShouldOpenModal(true)
+					} else if (flashSuccess.type === 'steam_authorization_success') {
+						window.dispatchEvent(new Event('steam-auth-success'))
+						setShouldOpenModal(true)
+					}
+				}
+				if (flashError) {
+					if (flashError.type === 'tebex_checkout_cancel') {
+						window.dispatchEvent(new Event('tebex-checkout-cancel'))
+					}
+				}
 			}
-			setShouldOpenModal(true)
 		}
-	}, [flashSuccess]) // Ensure `flashSuccess` isn't changing too frequently
+	}, [flashSuccess, flashError]) // Depend on `flashSuccess` to ensure this runs only when it changes
 
 	const [isInitial, setIsInitial] = useState(true)
 

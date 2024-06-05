@@ -31,7 +31,7 @@ const ModalContent: React.FC<ModalContentProps> = ({
 	align, // new prop for title alignment
 }) => {
 	return (
-		<div>
+		<div id="modal-content">
 			{header ? (
 				<div className="mb-4">{header}</div>
 			) : (

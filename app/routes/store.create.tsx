@@ -46,8 +46,19 @@ export const action: ActionFunction = async ({ request }) => {
 		)
 	}
 
+	const complete_returnURL = new URL(
+		`/success-notification?message=${encodeURIComponent('Tebex checkout processed successfully!')}&status=200&type=tebex_checkout_success`,
+		request.url,
+	).toString()
+	const cancel_returnURL = new URL(
+		`/error-notification?message=${encodeURIComponent('Tebex checkout successfully cancelled.')}&status=500&type=tebex_checkout_cancel`,
+		request.url,
+	).toString()
+
 	try {
 		const basketResponse = await createTebexBasket(
+			complete_returnURL,
+			cancel_returnURL,
 			uid,
 			username,
 			steamId,

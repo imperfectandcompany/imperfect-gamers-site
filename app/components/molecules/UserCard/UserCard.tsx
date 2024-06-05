@@ -43,7 +43,7 @@ const UserCard: React.FC<UserCardProps> = ({
 
 	return (
 		<div
-			className="relative  cursor-pointer border-2 border-white transition duration-300 ease-in-out hover:-translate-y-1 hover:border-red-500"
+			className="relative cursor-pointer border-2 border-white transition duration-300 ease-in-out hover:-translate-y-1 hover:border-red-500"
 			onClick={onClick}
 			onMouseEnter={handleMouseEnter}
 			onMouseLeave={handleMouseLeave}
@@ -60,13 +60,12 @@ const UserCard: React.FC<UserCardProps> = ({
 				<LottieAnimation
 					animationUrl={isHovered ? hoverAnimationUrl : animationUrl}
 					loop={!isHovered}
-					style={{ width: '200px', height: '200px' }} // Set fixed width and height
 				/>
 				<div className="absolute inset-x-0 bottom-0 select-none bg-gradient-to-t from-black to-transparent p-4">
-					<h2 className="text-xl font-bold text-white md:text-4xl">
+					<h2 className="font-bold text-white md:text-xl lg:text-4xl">
 						{formattedTitle}
 					</h2>
-					<p className="text-lg font-semibold text-red-500 md:text-xl">
+					<p className="font-semibold text-red-500 md:text-lg lg:text-xl">
 						{subtitle}
 					</p>
 					{/* <p className="text-white">{description}</p>

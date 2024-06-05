@@ -1,7 +1,8 @@
 // components/organism/ModalWrapper/ModalWrapper.tsx
 import type { ReactElement } from 'react'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import ModalContent from '~/components/molecules/ModalContent/ModalContent'
+import ModalPositionContext from '~/components/pending/ModalPositionContext'
 import Modal from '../../atoms/Modal/Modal'
 import modal from './ModalWrapper.module.css'
 
@@ -63,10 +64,15 @@ const ModalWrapper: React.FC<ModalWrapperProps> = ({
 
 	const [popupWindow, setPopupWindow] = useState<Window | null>(null)
 
+	const { adjustModalPosition } = useContext(ModalPositionContext) // Use the context
+
 	/**
 	 * Opens the modal dialog by setting the isOpen state to true.
 	 */
-	const openModal = () => setIsOpen(true)
+	const openModal = () => {
+		setIsOpen(true)
+		adjustModalPosition() // Adjust position when the modal is triggered
+	}
 
 	const [closeInterceptReason, setCloseInterceptReason] =
 		useState<CloseInterceptReason>(CloseInterceptReason.None)
@@ -158,23 +164,23 @@ const ModalWrapper: React.FC<ModalWrapperProps> = ({
 					backButtonTitle={backButtonTitle}
 					align={align}
 				/>
-				{/** Escape modal button **/}
-				{allowClose ? (
-					<div
-						className={modal.close__button}
-						role="button"
-						tabIndex={0}
-						onClick={closeModal}
-						onKeyDown={e => {
-							if (e.key === 'Enter' || e.key === ' ') {
-								closeModal()
-							}
-						}}
-					>
-						&times;
-					</div>
-				) : null}
 			</Modal>
+			{/** Escape modal button **/}
+			{allowClose && isOpen ? (
+				<div
+					className={modal.close__button}
+					role="button"
+					tabIndex={0}
+					onClick={closeModal}
+					onKeyDown={e => {
+						if (e.key === 'Enter' || e.key === ' ') {
+							closeModal()
+						}
+					}}
+				>
+					&times;
+				</div>
+			) : null}
 		</>
 	)
 }
