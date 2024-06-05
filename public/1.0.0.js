@@ -6850,6 +6850,20 @@
         launch() {
             this.component || this.#e(), this.#n() ? this.#t(!0) : (this.lightbox || this.#r(), this.#o())
         }
+
+        closePopup() {
+            if (this.zoid && this.zoid.close) {
+                this.zoid.close().then(() => {
+                    console.log('Mobile popup closed successfully');
+                    this.lightbox && this.lightbox.close()
+                }).catch(err => {
+                    console.error('Failed to close the mobile popup:', err);
+                });
+            } else {
+                console.log('No mobile popup instance available to close');
+            }
+        }
+        
         #e(e = "800px", t = "760px") {
             this.component = se.create({
                 tag: "tebex-js-checkout-component",

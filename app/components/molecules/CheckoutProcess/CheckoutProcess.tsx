@@ -58,6 +58,8 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 	const [checkoutOpen, setCheckoutOpen] = useState(false)
 	const checkoutOpenRef = useRef(false) // Use ref to track open state
 	const [showFallbackMessage, setShowFallbackMessage] = useState(false)
+	const [tebexPopup, setTebexPopup] = useState<Window | null>(null)
+
 	const [showClosedCheckoutMessage, setShowClosedCheckoutMessage] =
 		useState(false)
 
@@ -125,6 +127,14 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 
 			Tebex.checkout.init(config)
 
+			// Intercept window.open temporarily
+			const originalWindowOpen = window.open
+			window.open = (...args) => {
+				const popup = originalWindowOpen.apply(window, args)
+				setTebexPopup(popup)
+				return popup
+			}
+
 			// Listen for Tebex checkout events and set modal close intercept reasons accordingly
 			Tebex.checkout.on(Tebex.events.OPEN, () => {
 				console.log('[Checkout Process] Tebex Checkout Opened')
@@ -170,6 +180,8 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 			})
 
 			Tebex.checkout.launch()
+			// Restore original window.open after launch
+			window.open = originalWindowOpen
 		},
 		[setCloseInterceptReason],
 	)
@@ -207,6 +219,24 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 		},
 		[UseTebexCheckout, launchingCheckout],
 	)
+
+	const handleFallbackRedirect = () => {
+		const { Tebex } = window
+		if (Tebex) {
+			Tebex.checkout.closePopup()
+		}
+		
+		// Fallback to close the popup if the Tebex checkout close fails
+		if (tebexPopup && !tebexPopup.closed) {
+			tebexPopup.close()
+			console.log('closed')
+		}
+
+
+		if (window && checkoutUrl) {
+			window.location.href = checkoutUrl // Redirect to the fallback URL
+		}
+	}
 
 	/**
 	 * Handles store interactions including basket creation and package addition.
@@ -496,17 +526,14 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 						We detected that a popup blocker may have prevented the checkout
 						window from opening.
 					</p>
-					<p className="mb-4  text-lg text-white/95">
-						No worries, you can{' '}
-						<a
-							href={checkoutUrl}
-							rel="noopener noreferrer"
-							className="text-red-500 underline hover:text-red-700"
-						>
-							click here
-						</a>{' '}
-						to proceed to checkout manually.
-					</p>
+					<p className="mb-4  text-lg text-white/95">No worries, you can</p>
+					<button
+						onClick={handleFallbackRedirect}
+						className="text-red-500 underline hover:text-red-700"
+					>
+						Click here
+					</button>
+					<p>to proceed to checkout manually.</p>
 					<p className="mb-4  text-lg text-white/95">
 						Alternatively, you can try to start the checkout process manually
 						from here:
