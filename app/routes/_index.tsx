@@ -5,9 +5,11 @@ import {
 	type LoaderFunction,
 } from '@remix-run/node'
 import { useLoaderData } from '@remix-run/react'
+import { useEffect } from 'react'
 import type { ExternalScriptsHandle } from 'remix-utils/external-scripts'
 import { getSession, storeCookie } from '~/auth/storage.server'
 import CookieConsent from '~/components/pending/CookieConsent'
+import ModalPositionContext from '~/components/pending/ModalPositionContext'
 import { getFlashMessage } from '~/components/pending/flash-session.server'
 import {
 	StoreContact,
@@ -164,15 +166,19 @@ async function getData(cookieHeader: string | null): Promise<LoaderData> {
  */
 export const loader: LoaderFunction = async ({ request }) => {
 	const cookieHeader = request.headers.get('Cookie')
-	const data = await getData(cookieHeader)
-	const flashError = await getFlashMessage(request)
-	const flashSuccess = await getFlashMessage(request)
+	try {
+		const data = await getData(cookieHeader)
+		const flashError = await getFlashMessage(request)
+		const flashSuccess = await getFlashMessage(request)
 
-	return json({
-		...data,
-		flashError,
-		flashSuccess,
-	}) // Include basketId in the response
+		return json({
+			...data,
+			flashError,
+			flashSuccess,
+		}) // Include basketId in the response
+	} catch (error) {
+		throw new Response('Data Not Found', { status: 404 })
+	}
 }
 
 /**
@@ -185,7 +191,9 @@ export default function Index() {
 
 	return (
 		<>
-			{flashError && flashError.type === 'steam_authorization_error' ? (
+			{flashError &&
+			(flashError.type === 'steam_authorization_error' ||
+				flashError.type === 'tebex_checkout_cancel') ? (
 				<div className="error-bar w-full">
 					<strong>Error:</strong> {flashError.message} (Status:{' '}
 					{flashError.status})

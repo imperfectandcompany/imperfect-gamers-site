@@ -30,6 +30,8 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 		basketId,
 		packages = [],
 		checkoutUrl,
+		flashSuccess,
+		flashError,
 	} = useLoaderData<LoaderData>()
 
 	const [basketExists, setBasketExists] = useState(!!basketId)
@@ -58,6 +60,8 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 	const [checkoutOpen, setCheckoutOpen] = useState(false)
 	const checkoutOpenRef = useRef(false) // Use ref to track open state
 	const [showFallbackMessage, setShowFallbackMessage] = useState(false)
+	const [showClosedCheckoutMessage, setShowClosedCheckoutMessage] =
+		useState(false)
 
 	useEffect(() => {
 		setBasketExists(!!basketId)
@@ -68,17 +72,30 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 	}
 
 	useEffect(() => {
-		const handleSteamAuthSuccess = (event: MessageEvent) => {
-			if (event.data.type === 'steam-auth-success') {
-				console.log('User has successfully integrated their steam.')
+		const handleMessage = (event: MessageEvent) => {
+			if (
+				event.data.type === 'steam-auth-success' ||
+				event.data.type === 'tebex-checkout-success' ||
+				event.data.type === 'tebex-checkout-cancel'
+			) {
+				console.log('Received event:', event.data) // Check what is actually received
+				if (event.data.type === 'steam-auth-success') {
+					console.log('User has successfully integrated their steam.')
+				} else if (event.data.type === 'tebex-checkout-success') {
+					console.log('User has successfully completed checkout.')
+					setSuccessfulPayment(true) // Set the checkout complete flag true
+				} else if (event.data.type === 'tebex-checkout-cancel') {
+					console.log('User has cancelled the checkout.')
+					setShowClosedCheckoutMessage(true)
+				}
 				callback()
 			}
 		}
 
-		window.addEventListener('message', handleSteamAuthSuccess)
+		window.addEventListener('message', handleMessage)
 
 		return () => {
-			window.removeEventListener('message', handleSteamAuthSuccess)
+			window.removeEventListener('message', handleMessage)
 		}
 	}, [])
 
@@ -96,6 +113,16 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 			const config: TebexCheckoutConfig = {
 				ident: checkoutId,
 				theme: theme,
+				colors: [
+					{
+						name: 'primary',
+						color: '#910f0f',
+					},
+					{
+						name: 'secondary',
+						color: '#25c235',
+					},
+				],
 			}
 
 			Tebex.checkout.init(config)
@@ -110,6 +137,7 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 				setCheckoutOpen(true)
 				checkoutOpenRef.current = true // Update ref
 				setShowFallbackMessage(false) // Ensure fallback message is not shown when checkout opens
+				setShowClosedCheckoutMessage(false) // Use this flag to hide resume checkout
 			})
 
 			Tebex.checkout.on(Tebex.events.CLOSE, () => {
@@ -121,9 +149,13 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 				setLaunchingCheckout(false)
 				checkoutOpenRef.current = false // Update ref
 				setShowFallbackMessage(false) // Ensure fallback message is not shown when checkout opens
+				// Here, check if the payment was not successful and the checkout was indeed closed by the user
+				if (!successfulPayment || !failedPayment) {
+					setShowClosedCheckoutMessage(true) // Use this flag to show resume checkout
+				}
 			})
 
-			Tebex.checkout.on('payment:complete', () => {
+			Tebex.checkout.on(Tebex.events.PAYMENT_COMPLETE, () => {
 				console.log('[Checkout Process] Payment Complete')
 				if (setCloseInterceptReason) {
 					setCloseInterceptReason(CloseInterceptReason.None)
@@ -131,7 +163,7 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 				setSuccessfulPayment(true)
 			})
 
-			Tebex.checkout.on('payment:error', () => {
+			Tebex.checkout.on(Tebex.events.PAYMENT_ERROR, () => {
 				console.log('[Checkout Process] Payment Error')
 				if (setCloseInterceptReason) {
 					setCloseInterceptReason(CloseInterceptReason.None)
@@ -152,23 +184,26 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 		(basketId: string) => {
 			console.log('[Checkout Process] Step 3: Initiating checkout...')
 			setLaunchingCheckout(true)
-			UseTebexCheckout(basketId, 'dark')
-			setTimeout(() => {
-				if (!checkoutOpenRef.current) {
-					console.error(
-						'[Checkout Sentry] Assuming popup was blocked, enabling fallback...',
-					)
-					setShowFallbackMessage(true) // Show message that the popup was blocked
-					setLaunchingCheckout(false) // disable 'is launchiing' state
-					// if (checkoutUrl) {
-					// 	window.location.href = checkoutUrl // Redirect as a fallback
-					// }
-				} else {
-					console.log('[Checkout Sentry] Checkout open, no need to redirect')
-				}
-			}, 2000)
+			if (!launchingCheckout) {
+				UseTebexCheckout(basketId, 'dark')
+				const timeoutId = setTimeout(() => {
+					if (!checkoutOpenRef.current) {
+						console.error(
+							'[Checkout Sentry] Assuming popup was blocked, enabling fallback...',
+						)
+						setShowFallbackMessage(true) // Show message that the popup was blocked
+						setLaunchingCheckout(false) // disable 'is launchiing' state
+						// if (checkoutUrl) {
+						// 	window.location.href = checkoutUrl // Redirect as a fallback
+						// }
+					} else {
+						console.log('[Checkout Sentry] Checkout open, no need to redirect')
+					}
+				}, 1000)
+				return () => clearTimeout(timeoutId)
+			}
 		},
-		[UseTebexCheckout],
+		[UseTebexCheckout, launchingCheckout],
 	)
 
 	/**
@@ -362,28 +397,61 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 	}
 
 	if (isSteamLinked) {
-		if (successfulPayment) {
+		if (
+			successfulPayment &&
+			!launchingCheckout &&
+			!checkoutOpen &&
+			!showFallbackMessage
+		) {
 			return (
 				<>
-					<div>Payment Successful!</div>
-					<div>
-						Our background process will deliver perks to your account in-game!
-					</div>
-					<div>
-						If you are already online, please wait for the next map-change or
-						rejoin.
-					</div>
-					<div>
-						Questions? Reach our Discord: https://imperfectgamers.org/discord/
+					<div className="mx-auto mt-4 pb-4 text-center text-green-500/95">
+						<div>
+							<i className="fas fa-check-circle mr-2 "></i>
+							<strong>Payment Successful!</strong> <br />
+							<span className="margin-left-5 text-white/90">
+								Our background process will deliver perks to your account
+								in-game!
+							</span>
+							<div>
+								If you are already online, please wait for the next map-change
+								or rejoin.
+							</div>
+						</div>
+						<div className="items-align mt-2">
+							Questions? Reach our Discord:{' '}
+							<a
+								href="https://imperfectgamers.org/discord/"
+								className="button mx-auto mt-2 inline-flex items-center px-4 py-2 text-center text-white transition-all hover:bg-red-700 focus:bg-red-900"
+							>
+								<i className="fab fa-discord mr-2"></i>Join Discord
+							</a>
+						</div>
 					</div>
 				</>
 			)
-		} else if (failedPayment) {
+		} else if (
+			failedPayment &&
+			!launchingCheckout &&
+			!checkoutOpen &&
+			!showFallbackMessage
+		) {
 			return (
 				<>
-					<div>Payment Failed!</div>
-					<div>
-						Reach out to staff on discord: https://imperfectgamers.org/discord/
+					<div className="mt-4 pb-4 text-center text-red-500/95">
+						<div>
+							<i className="fas fa-exclamation-triangle mr-2 "></i>
+							<strong>Payment Failed!</strong> <br />
+							<span className="margin-left-5 text-white/90">
+								Please reach out to staff on discord.
+							</span>
+						</div>
+						<a
+							href="https://imperfectgamers.org/discord/"
+							className="button mx-auto mt-2 inline-flex items-center px-4 py-2 text-center text-white transition-all hover:bg-red-700 focus:bg-red-900"
+						>
+							<i className="fab fa-discord mr-2"></i>Join Discord
+						</a>
 					</div>
 				</>
 			)
@@ -394,23 +462,62 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 					<p id="loaderText">Launching checkout...</p>
 				</div>
 			)
+		} else if (
+			showClosedCheckoutMessage &&
+			!failedPayment &&
+			!successfulPayment &&
+			!launchingCheckout &&
+			!checkoutOpen &&
+			!showFallbackMessage
+		) {
+			// Case where checkout was closed without completing the payment
+			return (
+				<div className="cta-container mt-4 pb-6 text-center">
+					<h3 className="cta-text text-lg text-stone-300">
+						Ready to Complete Your Membership?
+					</h3>
+					<button
+						onClick={() => initiateCheckout(basketId)}
+						className="steam-button button mt-3 rounded px-4 py-2 font-bold text-stone-50"
+					>
+						Click here to resume
+					</button>
+					<p id="alternativeText" className="loader mt-2 text-sm text-gray-400">
+						It seems like you closed the checkout window.
+					</p>
+				</div>
+			)
 		} else if (showFallbackMessage && checkoutUrl) {
 			return (
-				<div className="fallbackMessage">
-					<p>
+				<div className="fallbackMessage p-6 ">
+					<p className="mb-4 text-lg text-white/95">
 						We detected that a popup blocker may have prevented the checkout
 						window from opening.
 					</p>
-					<p>
+					<p className="mb-4  text-lg text-white/95">
 						No worries, you can{' '}
-						<a href={checkoutUrl} target="_blank" rel="noopener noreferrer" className="text-red-500 no-underline hover:cursor-pointer hover:underline focus:cursor-default focus:opacity-80 transition-all">
+						<a
+							href={checkoutUrl}
+							rel="noopener noreferrer"
+							className="text-red-500 underline hover:text-red-700"
+						>
 							click here
 						</a>{' '}
 						to proceed to checkout manually.
 					</p>
+					<p className="mb-4  text-lg text-white/95">
+						Alternatively, you can try to start the checkout process manually
+						from here:
+					</p>
+					<button
+						onClick={() => initiateCheckout(basketId)}
+						className="steam-button button mt-3 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700"
+					>
+						Attempt checkout
+					</button>
 				</div>
 			)
-		} else if (checkoutOpen) {
+		} else if (checkoutOpen && !launchingCheckout && !showFallbackMessage) {
 			return (
 				<div id="primaryLoader" className="loader">
 					<p id="loaderText">Checkout launched...</p>
@@ -419,8 +526,25 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 		} else {
 			return (
 				<>
-					<div>Steam Linked with ID: {steamId}</div>
-					<div>Onboarded as: {username}</div>
+					<div className="mb-8 px-4 sm:px-6 lg:px-8">
+						<div className="text-md mb-4 text-white sm:text-lg lg:text-xl">
+							Steam Linked with ID: {steamId}
+						</div>
+						<div className="text-md mb-4 text-white sm:text-lg lg:text-xl">
+							Onboarded as: {username}
+						</div>
+
+						{basketExists &&
+							basketId &&
+							packages.some(pkg => pkg.id === 6288193) && (
+								<button
+									onClick={() => initiateCheckout(basketId)}
+									className="steam-button button sm:text-md mt-3 rounded px-4 py-2 font-medium text-white lg:text-lg"
+								>
+									Click here to continue
+								</button>
+							)}
+					</div>
 				</>
 			)
 		}

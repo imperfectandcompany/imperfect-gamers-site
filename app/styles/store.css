@@ -380,12 +380,22 @@ input::placeholder {
   color: #ff5555; /* Example hover color */
 }
 
-    .form-header {
-      z-index: 20; /* This needs to be higher than the title's z-index */
-        padding: 1rem;
+.form-header {
+  z-index: 20; /* This needs to be higher than the title's z-index */
+  padding: 0rem;
   color: #E0E0E0 !important;
-  font-size: 17px;
-    }
+  font-size: 1rem; /* Use rem for scalable font size */
+  text-align: center; /* Center text on mobile */
+}
+
+/* On screens that are 600px or wider */
+@media (min-width: 600px) {
+  .form-header {
+    font-size: 1.0625rem; /* Increase font size on desktop */
+    text-align: left; /* Align text to the left on desktop */
+  padding: 1rem;
+  }
+}
 
     .form-header button {
         fill: currentColor;

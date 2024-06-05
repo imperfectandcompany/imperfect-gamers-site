@@ -2,6 +2,12 @@
 export interface TebexCheckoutConfig {
 	ident: string
 	theme: 'light' | 'dark'
+	colors?: Color[]
+}
+
+export interface Color {
+	name: string
+	color: string
 }
 
 export interface TebexCheckout {

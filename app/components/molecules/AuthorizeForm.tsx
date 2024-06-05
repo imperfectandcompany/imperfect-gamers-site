@@ -68,18 +68,6 @@ const AuthorizeForm: React.FC<AuthorizeFormProps> = ({
 		}
 	}
 
-	const handleExternalCancel = () => {
-		if (steamPopup && !steamPopup.closed) {
-			steamPopup.close();
-			setSteamPopup(null);
-			setSteamPopupOpened(false);
-			setPopupWindow?.(null);
-			setShowFallback(false);
-			setCloseInterceptReason?.(CloseInterceptReason.None);
-		}
-	};
-	
-
 	useEffect(() => {
 		if (setCloseInterceptReason) {
 			setCloseInterceptReason(CloseInterceptReason.None)
@@ -123,7 +111,9 @@ const AuthorizeForm: React.FC<AuthorizeFormProps> = ({
 				)
 				setFallbackUrl(data.fallback)
 				if (!popup) {
-					console.error('Popup failed to open, likely blocked by popup blocker.');
+					console.error(
+						'Popup failed to open, likely blocked by popup blocker.',
+					)
 					setShowFallback(true)
 					setSteamPopupOpened(false)
 					setPopupWindow?.(null)
@@ -170,21 +160,25 @@ const AuthorizeForm: React.FC<AuthorizeFormProps> = ({
 		}
 	}, [steamPopupOpened, steamPopup, setCloseInterceptReason, setPopupWindow])
 
-	const handleFallbackClick = (e: { preventDefault: () => void }) => {
+	const handleFallbackClick = (
+		e:
+			| React.MouseEvent<HTMLButtonElement>
+			| React.KeyboardEvent<HTMLButtonElement>,
+	) => {
 		e.preventDefault()
 		// Close the popup if it's open
 		if (steamPopup && !steamPopup.closed) {
-			steamPopup.close();
-			setSteamPopup(null);
-			setSteamPopupOpened(false);
-			setPopupWindow?.(null);
-			setShowFallback(false);
-			setCloseInterceptReason?.(CloseInterceptReason.None);
+			steamPopup.close()
+			setSteamPopup(null)
+			setSteamPopupOpened(false)
+			setPopupWindow?.(null)
+			setShowFallback(false)
+			setCloseInterceptReason?.(CloseInterceptReason.None)
 		}
-	
-		// Redirect the parent window to steam openid url after potential popupcleanup.
-		window.location.href = fallbackUrl;
-	};
+
+		// Redirect the parent window to steam openid url after potential popup cleanup.
+		window.location.href = fallbackUrl
+	}
 
 	return (
 		<div>
@@ -221,30 +215,29 @@ const AuthorizeForm: React.FC<AuthorizeFormProps> = ({
 						{showFallback ? (
 							<>
 								We believe your browser may have blocked the popup. No worries,
-								you can
-								<a
-									onClick={(e)=>handleFallbackClick(e)}
+								you can{' '}
+								<button
+									onClick={e => handleFallbackClick(e)}
+									onKeyDown={e => handleFallbackClick(e)}
 									rel="noopener noreferrer"
-									className="text-red-500"
+									className="text-red-500 no-underline hover:cursor-pointer hover:underline focus:cursor-default"
 								>
-									{' '}
-									click here{' '}
-								</a>
+									click Here
+								</button>{' '}
 								to sign in manually.
 							</>
 						) : (
 							<>
 								Still having trouble? It&apos;s possible your browser blocked
-								the popup. No worries, you can
-								{' '}
-								<a
-									onClick={(e)=>handleFallbackClick(e)}
+								the popup. No worries, you can{' '}
+								<button
+									onClick={e => handleFallbackClick(e)}
+									onKeyDown={e => handleFallbackClick(e)}
 									rel="noopener noreferrer"
 									className="text-red-500 no-underline hover:cursor-pointer hover:underline focus:cursor-default"
 								>
-									click here
-								</a>
-								{' '}
+									click Here
+								</button>{' '}
 								to sign in manually.
 							</>
 						)}
