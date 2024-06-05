@@ -365,7 +365,7 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 		basketExists,
 	])
 
-	if (!basketId) {
+	if (!basketId && !checkoutOpen) {
 		return (
 			<>
 				<div id="primaryLoader" className="loader">

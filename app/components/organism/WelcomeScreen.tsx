@@ -27,12 +27,12 @@ const WelcomeScreen: React.FC<
 	}, [setCloseInterceptReason])
 
 	return (
-		<div className="flex flex-col items-center justify-center bg-black px-4 pb-8">
+		<div className="flex flex-col items-center justify-center bg-black px-4 pb-8 mt-8">
 			<div className="w-full max-w-4xl">
 				<h1 className="mb-8 select-none text-center text-4xl font-bold text-white">
 					Who&apos;s joining?
 				</h1>
-				<div className="flex flex-col items-center justify-center space-y-4 md:flex-row md:space-x-4 md:space-y-0">
+				<div className="flex items-center justify-center space-x-4 flex-row md:space-x-4 md:space-y-0">
 					<div>
 						<UserCard
 							onClick={onNewUser}

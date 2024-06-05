@@ -15,6 +15,7 @@ const LottieAnimation: React.FC<LottieAnimationProps> = ({
 	<Player
 		autoplay
 		loop={loop}
+		className='w-28 h-28 md:h-48 md:w-48'
 		src={animationUrl}
 		rendererSettings={{ preserveAspectRatio: 'xMidYMid slice' }}
 		style={{ ...style }} // Use the provided style and set width and height to 100%

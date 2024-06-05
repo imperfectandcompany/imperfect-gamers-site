@@ -1,3 +1,7 @@
+.modal {
+	transition: transform 0.3s ease; /* Smooth transition for moving the modal */
+}
+
 .modal-content {
 	padding: 24px;
 	border-radius: 8px;
