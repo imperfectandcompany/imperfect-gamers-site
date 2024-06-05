@@ -182,25 +182,29 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 	 */
 	const initiateCheckout = useCallback(
 		(basketId: string) => {
-			console.log('[Checkout Process] Step 3: Initiating checkout...')
-			setLaunchingCheckout(true)
-			if (!launchingCheckout) {
-				UseTebexCheckout(basketId, 'dark')
-				const timeoutId = setTimeout(() => {
-					if (!checkoutOpenRef.current) {
-						console.error(
-							'[Checkout Sentry] Assuming popup was blocked, enabling fallback...',
-						)
-						setShowFallbackMessage(true) // Show message that the popup was blocked
-						setLaunchingCheckout(false) // disable 'is launchiing' state
-						// if (checkoutUrl) {
-						// 	window.location.href = checkoutUrl // Redirect as a fallback
-						// }
-					} else {
-						console.log('[Checkout Sentry] Checkout open, no need to redirect')
-					}
-				}, 1000)
-				return () => clearTimeout(timeoutId)
+			if (basketId !== '') {
+				console.log('[Checkout Process] Step 3: Initiating checkout...')
+				setLaunchingCheckout(true)
+				if (!launchingCheckout) {
+					UseTebexCheckout(basketId, 'dark')
+					const timeoutId = setTimeout(() => {
+						if (!checkoutOpenRef.current) {
+							console.error(
+								'[Checkout Sentry] Assuming popup was blocked, enabling fallback...',
+							)
+							setShowFallbackMessage(true) // Show message that the popup was blocked
+							setLaunchingCheckout(false) // disable 'is launching' state
+							// if (checkoutUrl) {
+							// 	window.location.href = checkoutUrl // Redirect as a fallback
+							// }
+						} else {
+							console.log(
+								'[Checkout Sentry] Checkout open, no need to redirect',
+							)
+						}
+					}, 1000)
+					return () => clearTimeout(timeoutId)
+				}
 			}
 		},
 		[UseTebexCheckout, launchingCheckout],
@@ -477,7 +481,7 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 						Ready to Complete Your Membership?
 					</h3>
 					<button
-						onClick={() => initiateCheckout(basketId)}
+						onClick={() => initiateCheckout(basketId ? basketId : '')}
 						className="steam-button button mt-3 rounded px-4 py-2 font-bold text-stone-50"
 					>
 						Click here to resume
@@ -510,7 +514,7 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 						from here:
 					</p>
 					<button
-						onClick={() => initiateCheckout(basketId)}
+						onClick={() => initiateCheckout(basketId ?? '')}
 						className="steam-button button mt-3 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700"
 					>
 						Attempt checkout

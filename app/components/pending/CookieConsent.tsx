@@ -61,7 +61,7 @@ const CookieConsent: FunctionComponent = () => {
 		if (!storedSettings) {
 			const timer = setTimeout(() => {
 				setIsVisible(true)
-			}, 2000) // Delay the banner display by 2000 milliseconds
+			}, 2500) // Delay the banner display by 2000 milliseconds
 
 			return () => clearTimeout(timer)
 		}
@@ -506,6 +506,26 @@ const CookieConsent: FunctionComponent = () => {
 
 	return (
 		<>
+			
+			{activeModal ? (
+				<CookieConsentModal
+					title={
+						activeModal === ModalNames.Settings
+							? 'Cookie Settings'
+							: `${activeModal[0].toUpperCase() + activeModal.slice(1)} Policy`
+					}
+					onClose={closeModal}
+					exposeCloseAnimationFunc={handleExposeCloseFunc}
+					content={''}
+				>
+					{activeModal === 'settings' ? (
+						<SettingsPanel />
+					) : (
+						<p>{`Read our ${activeModal} policy here. This policy provides detailed information about how we use cookies and how you can manage them.`}</p>
+					)}
+				</CookieConsentModal>
+			) : null}
+
 			{isVisible ? (
 				<div
 					className={`cookie-popup z-50 ${isExiting ? 'exiting' : ''}`}
@@ -569,24 +589,6 @@ const CookieConsent: FunctionComponent = () => {
 				</div>
 			) : null}
 
-			{activeModal ? (
-				<CookieConsentModal
-					title={
-						activeModal === ModalNames.Settings
-							? 'Cookie Settings'
-							: `${activeModal[0].toUpperCase() + activeModal.slice(1)} Policy`
-					}
-					onClose={closeModal}
-					exposeCloseAnimationFunc={handleExposeCloseFunc}
-					content={''}
-				>
-					{activeModal === 'settings' ? (
-						<SettingsPanel />
-					) : (
-						<p>{`Read our ${activeModal} policy here. This policy provides detailed information about how we use cookies and how you can manage them.`}</p>
-					)}
-				</CookieConsentModal>
-			) : null}
 		</>
 	)
 }

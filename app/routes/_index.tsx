@@ -5,7 +5,7 @@ import {
 	type LoaderFunction,
 } from '@remix-run/node'
 import { useLoaderData } from '@remix-run/react'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { ExternalScriptsHandle } from 'remix-utils/external-scripts'
 import { getSession, storeCookie } from '~/auth/storage.server'
 import CookieConsent from '~/components/pending/CookieConsent'
@@ -253,7 +253,10 @@ export default function Index() {
 					{flashError.status})
 				</div>
 			) : null}
+			<div 					
+					>
 			<CookieConsent />
+					</div>
 			<div ref-={modalRef}>
 			<StoreHeader />
 			<StoreFeatured />

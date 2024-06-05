@@ -167,7 +167,7 @@ const ModalWrapper: React.FC<ModalWrapperProps> = ({
 				/>
 			</Modal>
 				{/** Escape modal button **/}
-				{isOpen && (
+				{(allowClose && isOpen) && (
 					<div
 						className={modal.close__button}
 						role="button"
