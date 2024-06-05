@@ -45,28 +45,26 @@ const Modal: React.FC<ModalProps> = ({
 		})
 	}
 
-	const { adjustModalPosition } = useContext(ModalPositionContext); // Use the context
+	const { adjustModalPosition } = useContext(ModalPositionContext) // Use the context
 
+	useEffect(() => {
+		const observer = new MutationObserver(() => {
+			adjustModalPosition()
+		})
 
-    useEffect(() => {
-        const observer = new MutationObserver(() => {
-            adjustModalPosition();
-        });
+		if (modalRef.current) {
+			observer.observe(modalRef.current, {
+				childList: true,
+				subtree: true,
+				attributes: true,
+				characterData: true,
+			})
+		}
 
-        if (modalRef.current) {
-            observer.observe(modalRef.current, {
-                childList: true,
-                subtree: true,
-                attributes: true,
-                characterData: true,
-            });
-        }
-
-        return () => {
-            observer.disconnect();
-        };
-    }, [adjustModalPosition]);
-
+		return () => {
+			observer.disconnect()
+		}
+	}, [adjustModalPosition])
 
 	useEffect(() => {
 		const handleKeydown = (event: KeyboardEvent) => {
@@ -82,10 +80,6 @@ const Modal: React.FC<ModalProps> = ({
 			}
 		}
 
-
-		
-
-		
 		const handleClickOutside = (event: MouseEvent) => {
 			if (
 				isOpen &&
@@ -117,7 +111,7 @@ const Modal: React.FC<ModalProps> = ({
 
 	return (
 		<div
-		id='modal'
+			id="modal"
 			className={`fixed inset-0 z-30 flex items-center justify-center overflow-auto bg-black/50 px-4 py-2 ${
 				isOpen ? 'opacity-100' : 'pointer-events-none opacity-0'
 			}`}

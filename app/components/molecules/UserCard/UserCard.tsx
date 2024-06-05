@@ -62,10 +62,10 @@ const UserCard: React.FC<UserCardProps> = ({
 					loop={!isHovered}
 				/>
 				<div className="absolute inset-x-0 bottom-0 select-none bg-gradient-to-t from-black to-transparent p-4">
-					<h2 className="md:text-xl font-bold text-white lg:text-4xl">
+					<h2 className="font-bold text-white md:text-xl lg:text-4xl">
 						{formattedTitle}
 					</h2>
-					<p className="md:text-lg font-semibold text-red-500 lg:text-xl">
+					<p className="font-semibold text-red-500 md:text-lg lg:text-xl">
 						{subtitle}
 					</p>
 					{/* <p className="text-white">{description}</p>

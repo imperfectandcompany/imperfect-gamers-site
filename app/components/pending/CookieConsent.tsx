@@ -506,7 +506,6 @@ const CookieConsent: FunctionComponent = () => {
 
 	return (
 		<>
-			
 			{activeModal ? (
 				<CookieConsentModal
 					title={
@@ -588,7 +587,6 @@ const CookieConsent: FunctionComponent = () => {
 					</div>
 				</div>
 			) : null}
-
 		</>
 	)
 }

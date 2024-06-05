@@ -2,9 +2,9 @@
 import type { ReactElement } from 'react'
 import React, { useState, useEffect, useContext } from 'react'
 import ModalContent from '~/components/molecules/ModalContent/ModalContent'
+import ModalPositionContext from '~/components/pending/ModalPositionContext'
 import Modal from '../../atoms/Modal/Modal'
 import modal from './ModalWrapper.module.css'
-import ModalPositionContext from '~/components/pending/ModalPositionContext'
 
 interface ModalWrapperProps {
 	title: string
@@ -64,15 +64,15 @@ const ModalWrapper: React.FC<ModalWrapperProps> = ({
 
 	const [popupWindow, setPopupWindow] = useState<Window | null>(null)
 
-	const { adjustModalPosition } = useContext(ModalPositionContext); // Use the context
+	const { adjustModalPosition } = useContext(ModalPositionContext) // Use the context
 
 	/**
 	 * Opens the modal dialog by setting the isOpen state to true.
 	 */
-    const openModal = () => {
-        setIsOpen(true);
-        adjustModalPosition(); // Adjust position when the modal is triggered
-    };
+	const openModal = () => {
+		setIsOpen(true)
+		adjustModalPosition() // Adjust position when the modal is triggered
+	}
 
 	const [closeInterceptReason, setCloseInterceptReason] =
 		useState<CloseInterceptReason>(CloseInterceptReason.None)
@@ -134,7 +134,6 @@ const ModalWrapper: React.FC<ModalWrapperProps> = ({
 
 	return (
 		<>
-		
 			{React.cloneElement(children, { onClick: openModal })}
 			{/**
 			 * Modal component that displays a modal dialog.
@@ -166,22 +165,22 @@ const ModalWrapper: React.FC<ModalWrapperProps> = ({
 					align={align}
 				/>
 			</Modal>
-				{/** Escape modal button **/}
-				{(allowClose && isOpen) && (
-					<div
-						className={modal.close__button}
-						role="button"
-						tabIndex={0}
-						onClick={closeModal}
-						onKeyDown={e => {
-							if (e.key === 'Enter' || e.key === ' ') {
-								closeModal()
-							}
-						}}
-					>
-						&times;
-					</div>
-				)}
+			{/** Escape modal button **/}
+			{allowClose && isOpen ? (
+				<div
+					className={modal.close__button}
+					role="button"
+					tabIndex={0}
+					onClick={closeModal}
+					onKeyDown={e => {
+						if (e.key === 'Enter' || e.key === ' ') {
+							closeModal()
+						}
+					}}
+				>
+					&times;
+				</div>
+			) : null}
 		</>
 	)
 }

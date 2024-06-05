@@ -30,8 +30,6 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 		basketId,
 		packages = [],
 		checkoutUrl,
-		flashSuccess,
-		flashError,
 	} = useLoaderData<LoaderData>()
 
 	const [basketExists, setBasketExists] = useState(!!basketId)
@@ -539,15 +537,15 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 						</div>
 
 						{basketExists &&
-							basketId &&
-							packages.some(pkg => pkg.id === 6288193) && (
-								<button
-									onClick={() => initiateCheckout(basketId)}
-									className="steam-button button sm:text-md mt-3 rounded px-4 py-2 font-medium text-white lg:text-lg"
-								>
-									Click here to continue
-								</button>
-							)}
+						basketId &&
+						packages.some(pkg => pkg.id === 6288193) ? (
+							<button
+								onClick={() => initiateCheckout(basketId)}
+								className="steam-button button sm:text-md mt-3 rounded px-4 py-2 font-medium text-white lg:text-lg"
+							>
+								Click here to continue
+							</button>
+						) : null}
 					</div>
 				</>
 			)
