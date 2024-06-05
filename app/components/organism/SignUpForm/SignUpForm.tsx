@@ -420,7 +420,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({
 								name="confirmPassword"
 								autocomplete="new-password"
 								type="password"
-								placeholder="Confirms Password"
+								placeholder="Confirm Password"
 								{...confirmPasswordInput}
 								tooltipMessage="Show Confirm Password"
 							/>
