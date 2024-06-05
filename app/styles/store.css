@@ -891,13 +891,13 @@ input::placeholder {
 	align-items: center;
 	transform: translateY(0);
 	transform-origin: top; /* This ensures the sliding is anchored correctly */
-	animation: slideDown 0.5s ease-out forwards; /* Apply initial animation */
+	animation: slideDownError 0.5s ease-out forwards; /* Apply initial animation */
 	transition:
 		transform 0.5s ease-in,
 		opacity 0.5s ease-in;
 }
 
-@keyframes slideDown {
+@keyframes slideDownError {
 	from {
 		transform: translateY(100%);
 		opacity: 1 !important;
