@@ -75,23 +75,63 @@ const AuthorizeForm: React.FC<AuthorizeFormProps> = ({
 
 		const handleMessage = (event: MessageEvent) => {
 			if (event.data.type === 'steam-auth-success') {
-				console.log('User has successfully integrated their steam.')
+				console.log(
+					'[AuthorizeForm.tsx] User has successfully integrated their steam.',
+				)
+				console.log('[AuthorizeForm.tsx] Steam Authentication Flow: Popup')
 				callback()
 			} else if (event.data.type === 'steam-auth-error') {
-				console.error('Error during Steam authentication:', event.data.message)
+				console.error(
+					'[AuthorizeForm.tsx] Error during Steam authentication:',
+					event.data.message,
+				)
+				console.log('[AuthorizeForm.tsx] Steam Authentication Flow: Popup')
 				// TODO: implement toast in future during ui/ux enhancement related tasks
 				// alert(`Steam authentication error: ${event.data.message}`)
 				setSteamPopup(null)
 				setSteamPopupOpened(false)
 
 				setCloseInterceptReason?.(CloseInterceptReason.None)
+			} else {
+				if (event.data.type) {
+					console.log('[AuthorizeForm.tsx] Event was unknown:', event.data.type) // To see exactly which unknown event was received
+				}
+			}
+		}
+
+		// This might be skipped and not needed. Confirmed that event "steamAuthSuccess" was caught in CheckProcess.tsx.
+		const handleEvent = (event: Event) => {
+			console.log('[AuthorizeForm.tsx] Received event:', event.type) // To see exactly which event was received
+			if (event.type === 'steamAuthSuccess') {
+				console.log(
+					'[AuthorizeForm.tsx] User has successfully integrated their Steam account.',
+				)
+				console.log('[AuthorizeForm.tsx] Steam Authentication Flow: Redirect')
+				callback()
+			} else if (event.type === 'steamAuthError') {
+				console.error(
+					'[AuthorizeForm.tsx] Error during Steam authentication from redirect.',
+				)
+				console.log('[AuthorizeForm.tsx] Steam Authentication Flow: Popup')
+
+				// console.error('[AuthorizeForm.tsx] Error during Steam authentication:', event.data.message)
+				// TODO: implement toast in future during ui/ux enhancement related tasks
+				// TODO: Update redirect flash to include error message from callback
+				// alert(`Steam authentication error: ${event.data.message}`)
+				setSteamPopup(null)
+				setSteamPopupOpened(false)
+				setCloseInterceptReason?.(CloseInterceptReason.None)
+			} else {
+				console.log('[AuthorizeForm.tsx] Event was unknown:', event.type) // To see exactly which unknown event was received
 			}
 		}
 
 		window.addEventListener('message', handleMessage)
+		window.addEventListener('event', handleEvent)
 
 		return () => {
 			window.removeEventListener('message', handleMessage)
+			window.removeEventListener('event', handleEvent)
 		}
 	}, [])
 

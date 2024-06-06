@@ -71,31 +71,43 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 		revalidator.revalidate()
 	}
 
+	// REFER TO LINE 49 OF STORE.CREATE.TSX FOR INSIGHT ON MISSING TEBEX CHECKOUT ERROR REDIRECT HANDLING
 	useEffect(() => {
-		const handleMessage = (event: MessageEvent) => {
-			if (
-				event.data.type === 'steam-auth-success' ||
-				event.data.type === 'tebex-checkout-success' ||
-				event.data.type === 'tebex-checkout-cancel'
-			) {
-				console.log('Received event:', event.data) // Check what is actually received
-				if (event.data.type === 'steam-auth-success') {
-					console.log('User has successfully integrated their steam.')
-				} else if (event.data.type === 'tebex-checkout-success') {
-					console.log('User has successfully completed checkout.')
-					setSuccessfulPayment(true) // Set the checkout complete flag true
-				} else if (event.data.type === 'tebex-checkout-cancel') {
-					console.log('User has cancelled the checkout.')
+		const handleEvent = (event: Event) => {
+			console.log('[CheckoutProcess.tsx] Received event:', event.type)
+			switch (event.type) {
+				case 'steamAuthSuccess':
+					console.log(
+						'[CheckoutProcess.tsx] User has successfully integrated their Steam account.',
+					)
+					callback()
+					break
+				case 'tebexCheckoutSuccess':
+					console.log(
+						'[CheckoutProcess.tsx] User has successfully completed checkout.',
+					)
+					setSuccessfulPayment(true)
+					callback()
+					break
+				case 'tebexCheckoutCancel':
+					console.log('[CheckoutProcess.tsx] User has cancelled the checkout.')
 					setShowClosedCheckoutMessage(true)
-				}
-				callback()
+					callback()
+					break
+				default:
+					console.log('[CheckoutProcess.tsx] Unhandled event type:', event.type)
+					break
 			}
 		}
 
-		window.addEventListener('message', handleMessage)
+		window.addEventListener('steamAuthSuccess', handleEvent)
+		window.addEventListener('tebexCheckoutSuccess', handleEvent)
+		window.addEventListener('tebexCheckoutCancel', handleEvent)
 
 		return () => {
-			window.removeEventListener('message', handleMessage)
+			window.removeEventListener('steamAuthSuccess', handleEvent)
+			window.removeEventListener('tebexCheckoutSuccess', handleEvent)
+			window.removeEventListener('tebexCheckoutCancel', handleEvent)
 		}
 	}, [])
 
@@ -192,6 +204,12 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 	 */
 	const initiateCheckout = useCallback(
 		(basketId: string) => {
+			// Fallback to close the popup if the Tebex checkout close fails
+			if (tebexPopup && !tebexPopup.closed) {
+				tebexPopup.close()
+				console.log('[Checkout Process] Popup closed through fallback')
+			}
+
 			if (basketId !== '') {
 				console.log('[Checkout Process] Step 3: Initiating checkout...')
 				setLaunchingCheckout(true)
@@ -203,13 +221,17 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 								'[Checkout Sentry] Assuming popup was blocked, enabling fallback...',
 							)
 							setShowFallbackMessage(true) // Show message that the popup was blocked
+							if (setCloseInterceptReason) {
+								// add support for redirect in future
+								setCloseInterceptReason(CloseInterceptReason.AlertDialogOpen)
+							}
 							setLaunchingCheckout(false) // disable 'is launching' state
 							// if (checkoutUrl) {
 							// 	window.location.href = checkoutUrl // Redirect as a fallback
 							// }
 						} else {
 							console.log(
-								'[Checkout Sentry] Checkout open, no need to redirect',
+								'[Checkout Sentry] Checkout open, no need to show fallback option',
 							)
 						}
 					}, 1000)
@@ -220,23 +242,67 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 		[UseTebexCheckout, launchingCheckout],
 	)
 
+	const [redirecting, setRedirecting] = useState(false)
+	const [countdown, setCountdown] = useState(3)
+
 	const handleFallbackRedirect = () => {
 		const { Tebex } = window
 		if (Tebex) {
 			Tebex.checkout.closePopup()
 		}
-		
+
 		// Fallback to close the popup if the Tebex checkout close fails
 		if (tebexPopup && !tebexPopup.closed) {
 			tebexPopup.close()
-			console.log('closed')
+			console.log('[Checkout Process] Popup closed through fallback')
 		}
 
+		if (setCloseInterceptReason) {
+			// add support for redirect in future
+			setCloseInterceptReason(CloseInterceptReason.RequestInProgress)
+		}
 
-		if (window && checkoutUrl) {
-			window.location.href = checkoutUrl // Redirect to the fallback URL
+		console.log('Checkout initiated with basketId:', basketId)
+		setRedirecting(true) // Begin the redirect process
+		setShowFallbackMessage(false) // Hide the fallback message
+	}
+
+	const cancelRedirect = () => {
+		setRedirecting(false) // Stop the redirect process
+		setShowFallbackMessage(true) // Show the fallback message
+		setCountdown(3) // Reset the countdown
+		console.log('[Checkout Process] Redirect cancelled')
+		if (setCloseInterceptReason) {
+			// add support for redirect in future
+			setCloseInterceptReason(CloseInterceptReason.AlertDialogOpen)
 		}
 	}
+
+	// Handle the countdown and redirect logic
+	useEffect(() => {
+		let intervalId: string | number | NodeJS.Timeout | undefined
+		if (redirecting) {
+			intervalId = setInterval(() => {
+				setCountdown(prevCountdown => {
+					const newCountdown = prevCountdown - 1
+					if (newCountdown < 1) {
+						clearInterval(intervalId) // Clear interval
+						if (checkoutUrl) {
+							window.location.href = checkoutUrl // Redirect
+						}
+					}
+					return newCountdown
+				})
+			}, 1000)
+		}
+
+		// Cleanup function to clear the interval when component unmounts or redirecting changes
+		return () => {
+			if (intervalId) {
+				clearInterval(intervalId)
+			}
+		}
+	}, [redirecting, checkoutUrl])
 
 	/**
 	 * Handles store interactions including basket creation and package addition.
@@ -500,11 +566,12 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 			!successfulPayment &&
 			!launchingCheckout &&
 			!checkoutOpen &&
-			!showFallbackMessage
+			!showFallbackMessage &&
+			!redirecting
 		) {
 			// Case where checkout was closed without completing the payment
 			return (
-				<div className="cta-container mt-4 pb-6 text-center">
+				<div className="cta-container mt-8 pb-6 text-center">
 					<h3 className="cta-text text-lg text-stone-300">
 						Ready to Complete Your Membership?
 					</h3>
@@ -515,35 +582,55 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 						Click here to resume
 					</button>
 					<p id="alternativeText" className="loader mt-2 text-sm text-gray-400">
-						It seems like you closed the checkout window.
+						It seems like you closed the checkout.
+					</p>
+				</div>
+			)
+		} else if (redirecting) {
+			return (
+				<div className="cta-container mt-8 pb-6 text-center">
+					<h3 className="cta-text animate animate-pulse text-lg text-stone-300">
+						Redirecting you to checkout...
+					</h3>
+					<button
+						onClick={cancelRedirect}
+						className="steam-button button mt-3 rounded px-4 py-2 font-bold text-stone-50"
+					>
+						Click here to cancel
+					</button>
+					<p id="alternativeText" className="loader mt-2 text-sm text-gray-400">
+						{countdown} seconds to redirect...
 					</p>
 				</div>
 			)
 		} else if (showFallbackMessage && checkoutUrl) {
 			return (
-				<div className="fallbackMessage p-6 ">
-					<p className="mb-4 text-lg text-white/95">
-						We detected that a popup blocker may have prevented the checkout
-						window from opening.
+				<div className="fallbackMessage rounded-lg bg-black/90 p-6 shadow-xl transition-all duration-300 ease-in-out">
+					<p className="mb-4 text-lg font-semibold leading-relaxed text-white/95 md:text-xl">
+						Oops! It seems a popup blocker has interfered with opening the
+						checkout window.
 					</p>
-					<p className="mb-4  text-lg text-white/95">No worries, you can</p>
-					<button
-						onClick={handleFallbackRedirect}
-						className="text-red-500 underline hover:text-red-700"
-					>
-						Click here
-					</button>
-					<p>to proceed to checkout manually.</p>
-					<p className="mb-4  text-lg text-white/95">
-						Alternatively, you can try to start the checkout process manually
-						from here:
+					<p className="text-lg italic text-white/90 md:text-xl">
+						No worries, you can still
+						<button
+							onClick={handleFallbackRedirect}
+							className="md:ml-2 text-red-500 underline transition-colors duration-300 ease-in-out hover:text-red-700"
+						>
+							proceed manually
+						</button>
+						.
 					</p>
-					<button
-						onClick={() => initiateCheckout(basketId ?? '')}
-						className="steam-button button mt-3 rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700"
-					>
-						Attempt checkout
-					</button>
+					<div className="mt-6">
+						<p className="mb-4 text-lg text-white/95 md:text-xl">
+							Alternatively, try to start the checkout process again here:
+						</p>
+						<button
+							onClick={() => initiateCheckout(basketId ?? '')}
+							className="steam-button button rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-3 font-bold text-white shadow transition-all duration-300 ease-in-out hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-500 focus:ring-opacity-50"
+						>
+							Attempt Checkout
+						</button>
+					</div>
 				</div>
 			)
 		} else if (checkoutOpen && !launchingCheckout && !showFallbackMessage) {
@@ -560,7 +647,7 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 							Steam Linked with ID: {steamId}
 						</div>
 						<div className="text-md mb-4 text-white sm:text-lg lg:text-xl">
-							Onboarded as: {username}
+							Username: {username}
 						</div>
 
 						{basketExists &&

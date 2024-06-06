@@ -46,6 +46,33 @@ export const action: ActionFunction = async ({ request }) => {
 		)
 	}
 
+	// TODO: Discuss with Tebex the potential need for an error_returnURL option in cases where the basket has already been paid.
+	// Currently shows "{Title: Something went wrong, Subtitle: The basket with that identifier has already been paid for"} to the customer on external checkout.
+	// Refer to: https://docs.tebex.io/developers/checkout-api/endpoints#baskets
+	// complete_auto_redirect: boolean - If true, the user will be redirected to the complete_returnURL if the basket has been paid for.
+	// Current complete_auto_redirect support: return_url, complete_url
+
+	// Proposed: error_url
+	// e.g., body = {complete_auto_redirect: true, error_url: "https://store.imperfectgamers.org/error-notification"}
+	// error_url: string - The URL to redirect to if the basket has already been paid for.
+
+	// Flow:
+	// If the basket was created with complete_auto_redirect set to true...
+	// 1. Check if the basket has already been paid for.
+	// 2. If not, redirect to the complete_returnURL.
+	// 3. If yes, redirect to the error_url to handle the situation on customer's store.
+
+	// Additional comments:
+	// Confirm if cancel_url is missed or undocumented within developer documentation.
+	// Discovery confirmed that the cancel_url is settable in the body of the request.
+	// Confirmed that the cancel_url is returned in the response with the complete_auto_redirect set to true (documented in developer docs).
+	// Refer to: https://docs.tebex.io/developers/checkout-api/endpoints#baskets-ident-packages
+
+	// Pending investigation:
+	// IG team-member provided feedback: "I assume 404 at the end of payment is okay?" > "on the tebex page".
+	// Context: Tebex page referred: checkout.tebex.io. (Appears to be Laravel's default 404 error page)
+	// Confirm if this is reproducible and, if so, determine the impact on the user experience and the cause of the error.
+
 	const complete_returnURL = new URL(
 		`/success-notification?message=${encodeURIComponent('Tebex checkout processed successfully!')}&status=200&type=tebex_checkout_success`,
 		request.url,

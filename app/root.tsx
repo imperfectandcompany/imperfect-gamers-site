@@ -1,5 +1,6 @@
 // ~/root.tsx
-import { MetaFunction, json, type LinksFunction } from '@remix-run/node'
+import { json, type LinksFunction } from '@remix-run/node'
+import type { MetaFunction } from '@remix-run/react'
 import {
 	Link,
 	Links,

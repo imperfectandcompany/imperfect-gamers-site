@@ -43,7 +43,7 @@ export type LoaderData = {
 
 export const meta: MetaFunction = () => {
 	return [
-		{title: "Store - Imperfect Gamers Club"},
+		{ title: 'Store - Imperfect Gamers Club' },
 		{ name: 'title', content: 'Premium Membership - Imperfect Gamers Club' },
 		{
 			name: 'description',
