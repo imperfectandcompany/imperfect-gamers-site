@@ -614,7 +614,7 @@ const CheckoutProcess: React.FC<CheckoutProcessProps> = ({
 						No worries, you can still
 						<button
 							onClick={handleFallbackRedirect}
-							className="md:ml-2 text-red-500 underline transition-colors duration-300 ease-in-out hover:text-red-700"
+							className="text-red-500 underline transition-colors duration-300 ease-in-out hover:text-red-700 md:ml-2"
 						>
 							proceed manually
 						</button>
