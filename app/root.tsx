@@ -1,5 +1,6 @@
 // ~/root.tsx
 import { json, type LinksFunction } from '@remix-run/node'
+import type { MetaFunction } from '@remix-run/react'
 import {
 	Link,
 	Links,
@@ -18,9 +19,57 @@ import * as gtag from '~/utils/gtags.client'
 
 import MsClarity from './utils/msclarity.client'
 
-export const links: LinksFunction = () => [
-	{ rel: 'stylesheet', href: stylesheet },
-]
+export const links: LinksFunction = () => {
+	return [
+		{ rel: 'stylesheet', href: stylesheet },
+		{
+			rel: 'apple-touch-icon',
+			sizes: '180x180',
+			href: '/apple-touch-icon.png',
+		},
+		{
+			rel: 'icon',
+			type: 'image/png',
+			sizes: '32x32',
+			href: '/favicon-32x32.png',
+		},
+		{
+			rel: 'icon',
+			type: 'image/png',
+			sizes: '194x194',
+			href: '/favicon-194x194.png',
+		},
+		{
+			rel: 'icon',
+			type: 'image/png',
+			sizes: '192x192',
+			href: '/android-chrome-192x192.png',
+		},
+		{
+			rel: 'icon',
+			type: 'image/png',
+			sizes: '16x16',
+			href: '/favicon-16x16.png',
+		},
+		{ rel: 'manifest', href: '/site.webmanifest' },
+		{ rel: 'mask-icon', href: '/safari-pinned-tab.svg', color: '#e50f0f' },
+	]
+}
+
+export const meta: MetaFunction = () => {
+	return [
+		{
+			'msapplication-TileColor': '#b91d47',
+			'theme-color': '#333333',
+			'script:ld+json': {
+				'@context': 'https://schema.org',
+				'@type': 'Imperfect and Company',
+				name: 'Imperfect and Company',
+				url: 'https://imperfectandcompany.com',
+			},
+		},
+	]
+}
 
 // Load the GA tracking id from the .env
 export const loader = async () => {

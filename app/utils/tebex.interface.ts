@@ -13,6 +13,7 @@ export interface Color {
 export interface TebexCheckout {
 	init: (config: TebexCheckoutConfig) => void
 	launch: () => void
+	closePopup: () => void
 	on: (event: string, callback: (event?: any) => void) => void
 }
 

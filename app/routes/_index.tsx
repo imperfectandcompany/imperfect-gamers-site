@@ -43,7 +43,8 @@ export type LoaderData = {
 
 export const meta: MetaFunction = () => {
 	return [
-		{ name: 'title', content: 'Membership Club - Imperfect Gamers' },
+		{ title: 'Store - Imperfect Gamers Club' },
+		{ name: 'title', content: 'Premium Membership - Imperfect Gamers Club' },
 		{
 			name: 'description',
 			content:
@@ -202,6 +203,8 @@ export default function Index() {
 				// Reset the modal position when the banner is not visible
 				modal.style.transform = 'translateY(0)'
 			}
+		} else {
+			modal.style.transform = 'translateY(0)'
 		}
 	}
 

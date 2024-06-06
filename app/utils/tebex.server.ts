@@ -23,7 +23,26 @@ export async function createTebexBasket(
 			username: username,
 			steam_id: steamId,
 		},
+		// Discuss with Tebex regarding the necessity of an error_returnURL for cases where the basket is already paid.
+		// Current process lacks clarity on handling already paid baskets which could lead to poor user experience.
 	}
+
+	// No 'username' support for the main body (per developer docs). As a workaround,
+	// 'username' is included within the 'custom' object. Need clarification from Tebex on this API behavior.
+	// Including 'username' (and other custom fields) is essential for our internal tracking and customer support functions.
+
+	// Proposed solution:
+	// let requestBody: any = {
+	// 	complete_url: complete_returnURL,
+	// 	cancel_url: cancel_returnURL,
+	// 		username: username,
+	// 	error_url: "https://store.yoursite.com/error", // Redirect to custom error handling page
+	// 	complete_auto_redirect: true,
+	// 	custom: {
+	// 		user_id: userId,
+	// 		steam_id: st	eamId,
+	// 	},
+	// };
 
 	if (process.env.NODE_ENV !== 'development') {
 		requestBody.ip_address = ipAddress
@@ -51,7 +70,15 @@ export async function createTebexBasket(
 			Error Code: ${errorData?.error_code}
 			Field Details: ${errorData.field_details?.length > 0 ? errorData.field_details.join(', ') : 'None'}
 			Meta: ${errorData.meta?.length > 0 ? errorData.meta.join(', ') : 'None'}`)
-			throw new Error(`Tebex basket creation failed: ${response.statusText}`)
+			if (errorData.status === 404) {
+				// Verify the endpoint and parameters. TODO: adding error logging or notifications for monitoring.
+				throw new Error(
+					`Tebex basket creation failed - Endpoint or resource not found: ${errorData.detail}`,
+				)
+			} else {
+				// Handle other errors based on the status codes defined in Tebex documentation.
+				throw new Error(`Tebex basket creation failed: ${response.statusText}`)
+			}
 		} else {
 			throw new Error(`Tebex basket creation failed: ${response.statusText}`)
 		}

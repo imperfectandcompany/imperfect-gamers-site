@@ -1,6 +1,6 @@
 // components/organism/AuthForms/AuthForms.tsx
 
-import { useFetchers, useLoaderData } from '@remix-run/react'
+import { useFetchers, useLoaderData, useRevalidator } from '@remix-run/react'
 import type React from 'react'
 import { useEffect, useState, useCallback, useMemo } from 'react'
 import Button from '~/components/atoms/Button/Button'
@@ -31,12 +31,17 @@ const AuthForms: React.FC = () => {
 	const { isAuthenticated, isSteamLinked, username, flashSuccess, flashError } =
 		useLoaderData<LoaderData>()
 	const [shouldOpenModal, setShouldOpenModal] = useState(false)
-
+	const revalidator = useRevalidator()
+	const [shouldRenderCheckoutProcess, setShouldRenderCheckoutProcess] =
+		useState(false)
 	const [isLoginForm, setIsLoginForm] = useState(true)
 	const { submit } = useFetcherWithPromiseAutoReset({
 		key: 'logout-submission',
 	})
 	const fetchers = useFetchers()
+	const callback = () => {
+		revalidator.revalidate()
+	}
 
 	const relevantFetchers = fetchers.filter(fetcher => {
 		return [
@@ -73,37 +78,87 @@ const AuthForms: React.FC = () => {
 			setIsLoginForm(true)
 			setTitle(PageTitle.Login) // Update the title immediately
 			setPageHistory([PageTitle.Welcome, PageTitle.Login])
+			const { Tebex } = window
+			if (Tebex) {
+				Tebex.checkout.closePopup()
+			}
 		} catch (error) {
 			// Handle the error
 			console.error('An error occurred:', error)
 		}
 	}, [])
 
+	// Attempt to open the modal and determine if CheckoutProcess or AuthorizeForm should be rendered
+	// REFER TO LINE 49 OF STORE.CREATE.TSX FOR INSIGHT ON MISSING TEBEX CHECKOUT ERROR REDIRECT HANDLING
 	useEffect(() => {
 		if (
-			(flashSuccess &&
+			((flashSuccess &&
 				(flashSuccess.type === 'steam_authorization_success' ||
 					flashSuccess.type === 'tebex_checkout_success')) ||
-			(flashError && flashError.type == 'tebex_checkout_cancel')
+				(flashError &&
+					(flashError.type === 'tebex_checkout_cancel' ||
+						flashError.type === 'steam_authorization_error'))) &&
+			!shouldOpenModal
 		) {
-			if (typeof window !== 'undefined') {
+			if (isAuthenticated && username && isSteamLinked) {
+				setShouldRenderCheckoutProcess(true)
+				console.log('[AuthForms.tsx] shouldRenderCheckoutProcess:', true)
+			} else {
+				console.log('[AuthForms.tsx] shouldRenderCheckoutProcess:', false)
+			}
+			console.log('[AuthForms.tsx] flashSuccess or flashError: Opening modal')
+			setShouldOpenModal(true)
+		}
+	}, [flashSuccess, flashError, isAuthenticated, username, isSteamLinked])
+
+	// Dispatch events when CheckoutProcess is rendered
+	useEffect(() => {
+		if (
+			((flashSuccess &&
+				(flashSuccess.type === 'steam_authorization_success' ||
+					flashSuccess.type === 'tebex_checkout_success')) ||
+				(flashError &&
+					(flashError.type === 'tebex_checkout_cancel' ||
+						flashError.type === 'steam_authorization_error'))) &&
+			shouldOpenModal
+		) {
+			if (shouldOpenModal && shouldRenderCheckoutProcess) {
 				if (flashSuccess) {
-					if (flashSuccess.type === 'tebex_checkout_success') {
-						window.dispatchEvent(new Event('tebex-checkout-success'))
-						setShouldOpenModal(true)
-					} else if (flashSuccess.type === 'steam_authorization_success') {
-						window.dispatchEvent(new Event('steam-auth-success'))
-						setShouldOpenModal(true)
+					if (
+						flashSuccess.type === 'tebex_checkout_success' &&
+						shouldRenderCheckoutProcess
+					) {
+						window.dispatchEvent(new Event('tebexCheckoutSuccess'))
+						console.log(
+							'[AuthForms.tsx] Event Dispatched: tebexCheckoutSuccess',
+						)
+					} else if (
+						flashSuccess.type === 'steam_authorization_success' &&
+						shouldRenderCheckoutProcess
+					) {
+						window.dispatchEvent(new Event('steamAuthSuccess'))
+						console.log('[AuthForms.tsx] Event Dispatched: steamAuthSuccess')
+						callback()
 					}
 				}
 				if (flashError) {
-					if (flashError.type === 'tebex_checkout_cancel') {
-						window.dispatchEvent(new Event('tebex-checkout-cancel'))
+					if (
+						flashError.type === 'tebex_checkout_cancel' &&
+						shouldRenderCheckoutProcess
+					) {
+						window.dispatchEvent(new Event('tebexCheckoutCancel'))
+						console.log('[AuthForms.tsx] Event Dispatched: tebexCheckoutCancel')
+					} else if (
+						flashError.type === 'steam_authorization_error' &&
+						shouldRenderCheckoutProcess
+					) {
+						window.dispatchEvent(new Event('steamAuthError'))
+						console.log('[AuthForms.tsx] Event Dispatched: steamAuthError')
 					}
 				}
 			}
 		}
-	}, [flashSuccess, flashError]) // Depend on `flashSuccess` to ensure this runs only when it changes
+	}, [shouldOpenModal])
 
 	const [isInitial, setIsInitial] = useState(true)
 
