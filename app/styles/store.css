@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
+
 /**
  * 
  * This CSS file contains styles for the store section of the website.
@@ -145,14 +147,55 @@ body {
   color: #fff;
   margin-bottom: 2rem;
   text-transform: uppercase;
-  letter-spacing: 5px;
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+  letter-spacing: -2px;
   animation: fadeInDown 1s ease-in-out;
+
+}
+
+@font-face {
+  font-family: 'CriticalMass';
+  src: url('https://cdn.imperfectgamers.org/inc/assets/font/critical-mass-ldr.woff2') format('woff2'),
+       url('https://cdn.imperfectgamers.org/inc/assets/font/critical-mass-ldr.woff') format('woff'),
+       url('https://cdn.imperfectgamers.org/inc/assets/font/critical-mass-ldr.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+
+.title .lato {
+  font-family: 'Lato', sans-serif;
+  font-weight: 900;
+  background-clip: text; /* Standard property */
+  -webkit-background-clip: text; /* WebKit-specific property */
+  -webkit-text-fill-color: transparent;
+}
+
+.title .redgradient {
+  background: -webkit-linear-gradient(left, rgba(255,100,100,0.5), rgba(255,100,100,0.85), rgba(255,100,100,0.5));
+  font-weight: 900;
+  background-clip: text;
+  -webkit-background-clip: text; /* WebKit-specific property */
+  -webkit-text-fill-color: transparent;
+}
+.title .whitegradient {
+  background: -webkit-linear-gradient(left, rgba(255,255,255,0.5), rgba(255,255,255,0.85), rgba(255,255,255,0.5));
+  font-weight: 900;
+  background-clip: text;
+  -webkit-background-clip: text; /* WebKit-specific property */
+  -webkit-text-fill-color: transparent;
+}
+
+.critical {
+  font-family: 'CriticalMass', sans-serif;
+  -webkit-background-clip: text;
+  background-clip: text;
 }
 
 .subtitle {
+  font-family: 'Lato', sans-serif;
   font-size: 1.25rem;
   color: #aaa;
+  letter-spacing: 4px;
   margin-bottom: 3rem;
   animation: fadeInUp 1s ease-in-out;
 }
@@ -808,12 +851,18 @@ input::placeholder {
 }
 
 
+input,
+textarea,
+select {
+  font-size: 16px; /* Minimum size to avoid iOS zoom */
+  width: 100%; /* Responsive width */
+}
 
-
-
-
-
-
+/* Prevent layout shifts when keyboard appears */
+body {
+  position: fixed;
+  width: 100%;
+}
 
 .cta-container {
   text-align: center;
@@ -947,4 +996,6 @@ input::placeholder {
 		opacity: 0 !important;
 	}
 }
+
+
 

@@ -1,4 +1,5 @@
 // Atoms/PriceLabel/PriceLabel.tsx
+import { useEffect, useState } from 'react'
 import price from './PriceLabel.module.css'
 
 /**
@@ -12,11 +13,25 @@ import price from './PriceLabel.module.css'
  * @returns {JSX.Element} The rendered price label component.
  */
 export const PriceLabel = ({ isYearly }: { isYearly: boolean }) => {
-	return (
-		<p
-			className={`${price.label} mt-2 ${isYearly ? `${price.label_change}` : ''}`}
-		>
-			{isYearly ? '$200/year - Coming soon!' : '$20/month'}
-		</p>
+	const [animationClass, setAnimationClass] = useState('')
+	const [priceText, setPriceText] = useState(
+		isYearly ? '$200/year - Coming soon!' : '$12/month',
 	)
+
+	useEffect(() => {
+		setAnimationClass(price.label_change); // Trigger the animation
+		const textTimer = setTimeout(() => {
+			// Update the text in the middle of the animation
+			setPriceText(isYearly ? '$200/year - Coming soon!' : '$12/month');
+		}, 300); // Half the duration of your CSS animation
+		const animationTimer = setTimeout(() => {
+			setAnimationClass(''); // Reset animation class after it completes
+		}, 600);
+		return () => {
+			clearTimeout(textTimer);
+			clearTimeout(animationTimer);
+		};
+	}, [isYearly]);
+
+	return <p className={`${price.label} mt-2 ${animationClass}`}>{priceText}</p>
 }

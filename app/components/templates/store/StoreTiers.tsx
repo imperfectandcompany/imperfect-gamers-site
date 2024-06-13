@@ -24,7 +24,7 @@ const premiumFeatures = [
  * @component
  */
 const StoreTiers: React.FC = () => (
-	<div className="relative">
+	<div className="relative" id="membershipTiers">
 		{/* SVG icon */}
 		<svg
 			xmlns="http://www.w3.org/2000/svg"

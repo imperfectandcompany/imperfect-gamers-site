@@ -74,9 +74,25 @@
 	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
 	opacity: 0;
 	visibility: hidden;
-	transition:
-		opacity 0.5s ease,
-		transform 0.5s ease;
+    transition: opacity 0.5s ease, box-shadow 0.3s ease;
+}
+
+@media (max-width: 768px) {
+    .membership-card__tooltip {
+        bottom: 80px; /* Adjust position for better visibility on smaller screens */
+        left: 50%; /* Center the tooltip */
+        transform: translateX(-50%);
+        font-size: 12px; /* Smaller font size for smaller screens */
+    }
+}
+
+.membership-card__tooltip:hover {
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.7);
+}
+
+.membership-card__tooltip:focus {
+    transform: scale(1.1); /* Slightly larger scale for focus */
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.8); /* More pronounced shadow for focus */
 }
 
 /**

@@ -257,7 +257,7 @@ export default function Index() {
 				<div>
 					<CookieConsent />
 				</div>
-				<div ref={modalRef}>
+				<div ref={modalRef} className="flex flex-col space-y-8">
 					<StoreHeader />
 					<StoreFeatured />
 					<StoreTiers />

@@ -90,12 +90,12 @@ const MembershipTier: React.FC<MembershipTierProps> = ({
 						className="group flex cursor-pointer items-center gap-2 transition duration-150 ease-in-out"
 					>
 						<i
-							className={`fas ${feature.included ? 'fa-check' : 'fa-times'} ${planType === 'Basic' ? 'text-gray-400' : 'text-red-400'} transition group-hover:brightness-150 group-hover:drop-shadow-[0_0_4px_rgba(255,255,255,0.5)]`}
+							className={`fas ${feature.included ? 'fa-check' : 'fa-times'} ${planType === 'Basic' ? 'text-gray-400' : 'text-red-400'} tra:brightness-150 group-hover:drop-shadow-[0_0_4px_rgba(255,255,255,0.5)]`}
 						></i>
 						{feature.tooltip ? (
 							<Tooltip content={feature.tooltip}>
 								<span
-									className={`text-white/50 ${!feature.included && 'line-through'} group-hover:text-${planType === 'Basic' ? 'gray-400' : 'red-400'}`}
+									className={`text-white/50 ${!feature.included && 'line-through'} group-xt-${planType === 'Basic' ? 'g0' : 'r0'}`}
 								>
 									{feature.name}
 								</span>

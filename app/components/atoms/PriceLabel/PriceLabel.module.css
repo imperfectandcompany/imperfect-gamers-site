@@ -3,9 +3,22 @@
 	color: #aaa;
 }
 
-/*
-TODO: FIX LABEL CHANGE ANIMATION
-*/
 .label_change {
-	animation: fadeOutIn 0.8s ease foxrwards;
+    animation: fadeOutIn 0.6s ease forwards;
+}
+
+@keyframes fadeOutIn {
+	0% {
+		opacity: 1;
+	}
+
+	50% {
+		opacity: 0;
+		transform: scale(0.95);
+	}
+
+	100% {
+		opacity: 1;
+		transform: scale(1);
+	}
 }
