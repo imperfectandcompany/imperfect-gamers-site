@@ -1,11 +1,13 @@
 import { useContext, useEffect, useRef } from 'react'
 import ModalPositionContext from '~/components/pending/ModalPositionContext'
+import modal from './Modal.module.css'
 
 interface ModalProps {
 	isOpen: boolean
 	onClose: () => void
 	children: React.ReactNode
 	isResponsive?: boolean
+	isShaking?: boolean;
 }
 
 const Modal: React.FC<ModalProps> = ({
@@ -13,6 +15,7 @@ const Modal: React.FC<ModalProps> = ({
 	onClose,
 	children,
 	isResponsive = false,
+	isShaking = false,
 }) => {
 	const modalRef = useRef<HTMLDivElement>(null)
 
@@ -112,7 +115,9 @@ const Modal: React.FC<ModalProps> = ({
 	return (
 		<div
 			id="modal"
-			className={`fixed inset-0 z-30 flex items-center justify-center overflow-auto bg-black/50 px-4 py-2 ${
+			className={`fixed inset-0 z-30 flex items-center justify-center overflow-auto bg-black/50 px-4 py-2
+			 ${isShaking ? modal.shake__animation : ' '}
+				${
 				isOpen ? 'opacity-100' : 'pointer-events-none opacity-0'
 			}`}
 		>

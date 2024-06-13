@@ -66,6 +66,8 @@ const ModalWrapper: React.FC<ModalWrapperProps> = ({
 
 	const { adjustModalPosition } = useContext(ModalPositionContext) // Use the context
 
+	const [isShaking, setIsShaking] = useState(false);
+
 	/**
 	 * Opens the modal dialog by setting the isOpen state to true.
 	 */
@@ -119,10 +121,13 @@ const ModalWrapper: React.FC<ModalWrapperProps> = ({
 	}, [])
 	const closeModal = () => {
 		if (!handlePopupWindow() && shouldClose()) {
-			const consentModalOpen = localStorage.getItem('consentModalOpen')
+			const consentModalOpen = localStorage.getItem('consentModalOpen');
 			if (consentModalOpen !== 'true') {
-				setIsOpen(false)
+				setIsOpen(false);
 			}
+		} else {
+			setIsShaking(true);
+			setTimeout(() => setIsShaking(false), 820); // Animation duration
 		}
 		// TODO: Implement UI/UX enhancements for when the modal close attempt is intercepted
 		// due to unsaved changes or an active popup window. Consider adding a confirmation
@@ -151,7 +156,7 @@ const ModalWrapper: React.FC<ModalWrapperProps> = ({
 			 * @param {boolean} [props.isResponsive=false] - Enables responsive behavior, adjusting the modal size based on the viewport.
 			 * @returns {JSX.Element} The rendered Modal component.
 			 */}
-			<Modal isOpen={isOpen} isResponsive={isResponsive} onClose={closeModal}>
+			<Modal isOpen={isOpen} isResponsive={isResponsive} onClose={closeModal} isShaking={isShaking}>
 				<ModalContent
 					header={header}
 					title={title}
