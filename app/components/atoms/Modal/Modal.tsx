@@ -123,25 +123,29 @@ const Modal: React.FC<ModalProps> = ({
 		}
 	}
 
-	const debounce = (func: (...args: any[]) => void, wait: number, immediate: boolean = false): (() => void) => {
-		let timeout: ReturnType<typeof setTimeout> | undefined = undefined;
-		return function(this: any, ...args: any[]): void {
+	const debounce = (
+		func: (...args: any[]) => void,
+		wait: number,
+		immediate: boolean = false,
+	): (() => void) => {
+		let timeout: ReturnType<typeof setTimeout> | undefined = undefined
+		return function (this: any, ...args: any[]): void {
 			const later = () => {
-				timeout = undefined;
-				if (!immediate) func.apply(this, args);
-			};
-			const callNow = immediate && !timeout;
-			clearTimeout(timeout);
-			timeout = setTimeout(later, wait);
-			if (callNow) func.apply(this, args);
-		};
-	};
-	
+				timeout = undefined
+				if (!immediate) func.apply(this, args)
+			}
+			const callNow = immediate && !timeout
+			clearTimeout(timeout)
+			timeout = setTimeout(later, wait)
+			if (callNow) func.apply(this, args)
+		}
+	}
+
 	// Debounce the resize event to improve performance
-	if (typeof window !== "undefined") {
+	if (typeof window !== 'undefined') {
 		// Debounce the resize event to improve performance
-		window.addEventListener('resize', debounce(adjustModalHeight, 100, false));
-		document.addEventListener('DOMContentLoaded', adjustModalHeight);
+		window.addEventListener('resize', debounce(adjustModalHeight, 100, false))
+		document.addEventListener('DOMContentLoaded', adjustModalHeight)
 	}
 
 	return (
