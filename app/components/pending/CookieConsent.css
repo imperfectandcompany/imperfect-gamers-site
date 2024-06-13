@@ -348,3 +348,86 @@ input:checked + .slider:before {
 .sub-settings.active {
 	display: block;
 }
+
+.intro-text {
+	font-size: 1rem; /* Slightly larger font size for introductory text */
+	margin-bottom: 15px; /* Spacing below the introductory text */
+}
+
+h2,
+h3 {
+	color: #e2e2e2; /* Lighter grey for headers */
+}
+
+.modal-background {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	background-color: rgba(0, 0, 0, 0.75);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	padding: 50px 10px;
+}
+.modal-content {
+	padding: 20px;
+	width: 100%;
+	max-width: 500px;
+	border-radius: 8px;
+	max-height: 70vh;
+}
+
+.accordion {
+	color: #ccc;
+	cursor: pointer;
+	padding: 18px;
+	width: 100%;
+	border: none;
+	text-align: left;
+	outline: none;
+	font-size: 15px;
+	transition:
+		background-color 0.4s,
+		color 0.4s;
+	border-bottom: 1px solid #232323;
+}
+.accordion:hover {
+	background-color: #252525; /* Darker background on hover */
+	color: #fff; /* Brighter text on hover */
+}
+.active {
+	background-color: #141414; /* Darker background on hover */
+	color: #fff; /* Brighter text on hover */
+}
+.panel {
+	padding: 0 18px;
+	max-height: 0;
+	overflow: hidden;
+	transition:
+		max-height 0.5s ease-out,
+		padding-top 0.5s ease-out,
+		padding-bottom 0.5s ease-out;
+	transition-delay: 0s, 0.5s, 0.5s; /* Delay padding transitions to after max-height starts collapsing */
+}
+.panel.open {
+	padding-top: 10px; /* Spacing between header and text inside panel only when open */
+	padding-bottom: 10px; /* Spacing after expanded section */
+	border-left: 3px solid #101010; /* Visual cue for collapsed content */
+	border-bottom: 3px solid #101010; /* Visual cue for collapsed content */
+	transition-delay: 0s, 0.5s, 0.5s; /* Delay padding transitions to after max-height starts collapsing */
+}
+
+ul,
+ol {
+	padding-left: 20px;
+}
+li {
+	margin-bottom: 5px;
+}
+p,
+li {
+	font-size: 0.9rem; /* Smaller font size for readability */
+	line-height: 1.6; /* Increased line height for better readability */
+}
