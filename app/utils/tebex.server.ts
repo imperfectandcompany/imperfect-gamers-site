@@ -11,6 +11,7 @@ export async function createTebexBasket(
 	cancel_returnURL: string,
 	userId: number,
 	username: string,
+	email: string,
 	steamId: number,
 	ipAddress: string,
 ): Promise<Basket> {
@@ -21,6 +22,7 @@ export async function createTebexBasket(
 		custom: {
 			user_id: userId,
 			username: username,
+			email: email,
 			steam_id: steamId,
 		},
 		// Discuss with Tebex regarding the necessity of an error_returnURL for cases where the basket is already paid.

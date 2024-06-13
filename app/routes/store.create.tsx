@@ -19,6 +19,7 @@ export const action: ActionFunction = async ({ request }) => {
 	const session = await getSession(cookieHeader)
 	const uid = session.get('uid')
 	const username = session.get('username')
+	const email = session.get('email')
 	const steamId = session.get('steamId')
 
 	if (!uid) {
@@ -88,6 +89,7 @@ export const action: ActionFunction = async ({ request }) => {
 			cancel_returnURL,
 			uid,
 			username,
+			email,
 			steamId,
 			ipAddress,
 		)

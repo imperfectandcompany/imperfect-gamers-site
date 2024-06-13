@@ -226,7 +226,7 @@ const InputField: React.FC<InputProps> = ({
 					: !error && value.length > 0 && isFocused
 						? inputBorderStyles.valid
 						: inputBorderStyles.neutral
-	} border border-white/5 bg-white/5 p-2 text-white transition-all duration-300 ease-in-out placeholder:text-white/35 focus:border-white/30 focus:outline-none ${className || ''}`
+	} border border-white/5 bg-white/5 p-2 text-white transition-all duration-300 ease-in-out placeholder:text-white/35 focu focus:outline-none ${className || ''}`
 
 	const hoverClassName = `${
 		error
