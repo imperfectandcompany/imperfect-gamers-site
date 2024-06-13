@@ -7,7 +7,8 @@ interface ModalProps {
 	onClose: () => void
 	children: React.ReactNode
 	isResponsive?: boolean
-	isShaking?: boolean;
+	isShaking?: boolean
+	isClosing?: boolean
 }
 
 const Modal: React.FC<ModalProps> = ({
@@ -16,6 +17,7 @@ const Modal: React.FC<ModalProps> = ({
 	children,
 	isResponsive = false,
 	isShaking = false,
+	isClosing = false,
 }) => {
 	const modalRef = useRef<HTMLDivElement>(null)
 
@@ -109,17 +111,48 @@ const Modal: React.FC<ModalProps> = ({
 	}, [isOpen, onClose])
 
 	const modalClass = isResponsive
-		? 'mx-4 w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl xl:rounded-lg border border-stone-800 bg-black p-5 shadow-lg md:shadow-xl md:mx-0'
-		: 'mx-4 w-full max-w-md rounded-lg border border-stone-800 bg-black p-5 shadow-xl md:mx-0'
+		? `mx-4 w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl xl:rounded-lg border border-stone-800 bg-black p-5 shadow-lg md:shadow-xl md:mx-0 ${isShaking ? modal.shake__animation : ''}`
+		: `mx-4 w-full max-w-md rounded-lg border border-stone-800 bg-black p-5 shadow-xl md:mx-0 ${isShaking ? modal.shake__animation : modal.modal__class}`
+
+	function adjustModalHeight(): void {
+		const cookieBanner = document.getElementById('cookieBanner')
+		const modal = document.getElementById('modal') as HTMLElement | null
+		if (modal && cookieBanner) {
+			const cookieBannerHeight = cookieBanner.offsetHeight
+			modal.style.maxHeight = `calc(100vh - ${cookieBannerHeight}px)`
+		}
+	}
+
+	const debounce = (func: (...args: any[]) => void, wait: number, immediate: boolean = false): (() => void) => {
+		let timeout: ReturnType<typeof setTimeout> | undefined = undefined;
+		return function(this: any, ...args: any[]): void {
+			const later = () => {
+				timeout = undefined;
+				if (!immediate) func.apply(this, args);
+			};
+			const callNow = immediate && !timeout;
+			clearTimeout(timeout);
+			timeout = setTimeout(later, wait);
+			if (callNow) func.apply(this, args);
+		};
+	};
+	
+	// Debounce the resize event to improve performance
+	if (typeof window !== "undefined") {
+		// Debounce the resize event to improve performance
+		window.addEventListener('resize', debounce(adjustModalHeight, 100, false));
+		document.addEventListener('DOMContentLoaded', adjustModalHeight);
+	}
 
 	return (
 		<div
 			id="modal"
 			className={`fixed inset-0 z-30 flex items-center justify-center overflow-auto bg-black/50 px-4 py-2
-			 ${isShaking ? modal.shake__animation : ' '}
 				${
-				isOpen ? 'opacity-100' : 'pointer-events-none opacity-0'
-			}`}
+					isOpen
+						? `opacity-100 ${isClosing ? modal.fade__out : modal.fade__in}`
+						: 'pointer-events-none opacity-0'
+				}`}
 		>
 			<div ref={modalRef} className={modalClass}>
 				{children}

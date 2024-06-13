@@ -21,7 +21,6 @@ export const action: ActionFunction = async ({ request }) => {
 	const username = session.get('username')
 	const email = session.get('email')
 	const steamId = session.get('steamId')
-	
 
 	if (!uid) {
 		return json({ error: ERROR_MESSAGES.authentication }, { status: 401 })
