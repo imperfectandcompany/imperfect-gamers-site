@@ -12,7 +12,7 @@ import {
 	useLoaderData,
 	useRouteError,
 } from '@remix-run/react'
-import { useEffect, type ReactNode } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { ExternalScripts } from 'remix-utils/external-scripts'
 import stylesheet from '~/tailwind.css?url'
 import * as gtag from '~/utils/gtags.client'
@@ -83,9 +83,40 @@ const gTagMsClarityFlag = true
 
 declare global {
 	interface Window {
-		clarity: (type: string, value?: boolean) => void
+		clarity: (command: string) => void;
+	  }
+}
+
+
+
+function loadClarityScript() {
+	const msClarityId = process.env.MS_CLARITY_ID;
+	if (!msClarityId) return;
+
+	const clarityScript = document.createElement('script');
+	clarityScript.src = `https://www.clarity.ms/tag/${msClarityId}`;
+	clarityScript.async = true;
+	clarityScript.onload = () => {
+		console.log('Clarity script loaded successfully.');
+		// Check for consent immediately after loading
+		checkAndApplyConsent();
+	};
+	clarityScript.onerror = () => {
+		console.error('Failed to load the Clarity script');
+	};
+	document.head.appendChild(clarityScript);
+}
+
+function checkAndApplyConsent() {
+	const storedSettings = localStorage.getItem('cookieSettings');
+	if (storedSettings) {
+		const settings = JSON.parse(storedSettings);
+		if (settings.analytics.microsoftClarity) {
+			window.clarity('consent');
+		}
 	}
 }
+
 
 export function Layout({ children }: { children: React.ReactNode }) {
 	const { gaTrackingId, msClarityId } = useLoaderData<typeof loader>()
@@ -99,12 +130,13 @@ export function Layout({ children }: { children: React.ReactNode }) {
 					console.warn(
 						'window.clarity is not defined. This could mean the Microsoft Clarity script has not loaded on the page yet.',
 					)
-					return
+				} else {
+					window.clarity('consent')
 				}
-				window.clarity('consent')
 			}
 
 			if (settings.analytics.googleAnalytics && gaTrackingId) {
+				console.info('Consent Granted for GA4.');
 				gtag.consent({
 					action: 'default',
 					ad_storage: 'granted',
@@ -114,20 +146,51 @@ export function Layout({ children }: { children: React.ReactNode }) {
 					// Our consent banner comes up after 500ms
 					w4update: 550, // milliseconds
 				})
+			} else {
+				console.info('Consent Not Granted for GA4.');
 			}
 		}
 	}
-
 	useEffect(() => {
-		if (process.env.NODE_ENV !== 'development' && gTagMsClarityFlag) {
+		if (gTagMsClarityFlag) {
 			if (gaTrackingId) {
 				gtag.pageview(window.location.pathname, gaTrackingId)
 			}
 
-			if (msClarityId) {
-				// Loads MsClarity - session cookies disabled - requires consent
-				MsClarity({ id: msClarityId, enableInDevMode: false })
+
+			const storedSettings = localStorage.getItem('cookieSettings')
+			if (storedSettings) {
+				const settings = JSON.parse(storedSettings)
+				if (settings.analytics.microsoftClarity && msClarityId) {
+					if (!window.clarity) {
+						console.warn(
+							'window.clarity is not defined. This could mean the Microsoft Clarity script has not loaded on the page yet.',
+						)
+					} else {
+						window.clarity('consent')
+					}
+				}
+	
+				if (settings.analytics.googleAnalytics && gaTrackingId) {
+					console.info('Consent Granted for GA4.');
+					gtag.consent({
+						action: 'default',
+						ad_storage: 'granted',
+						user_data: 'granted',
+						personalization: 'granted',
+						analytics_storage: 'granted',
+						// Our consent banner comes up after 500ms
+						w4update: 550, // milliseconds
+					})
+				} else {
+					console.warn('Consent Not Granted for GA4.');
+				}
 			}
+
+			// if (msClarityId) {
+			// 	// Loads MsClarity - session cookies disabled - requires consent
+			// 	MsClarity({ id: msClarityId, enableInDevMode: true })
+			// }
 
 			window.addEventListener('consentGranted', consentListener)
 
@@ -137,6 +200,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
 			}
 		}
 	}, [gaTrackingId, msClarityId])
+
+
 
 	return (
 		<html lang="en">
@@ -173,6 +238,28 @@ export function Layout({ children }: { children: React.ReactNode }) {
 						/>
 					</>
 				)}
+				{process.env.NODE_ENV === 'development' || !msClarityId ? null : (
+    <>
+        <script
+            async
+            src={`https://www.clarity.ms/tag/${msClarityId}`}
+        />
+        <script
+            async
+            id="clarity-init"
+            dangerouslySetInnerHTML={{
+                __html: `
+                    (function(c,l,a,r,i,t,y){
+                        c[a] = c[a] || function() {(c[a].q = c[a].q || []).push(arguments)};
+                        t = l.createElement(r); t.async = 1; t.src = "https://www.clarity.ms/tag/"+i;
+                        y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y);
+                    })(window, document, "clarity", "script", "${msClarityId}");
+                `
+            }}
+        />
+    </>
+)}
+
 				<main>{children}</main>
 				<ScrollRestoration />
 				<Scripts />

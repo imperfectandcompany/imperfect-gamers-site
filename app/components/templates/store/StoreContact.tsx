@@ -13,7 +13,7 @@ const StoreContact: React.FC = () => {
 	}
 
 	const handleSignInClick = () => {
-		window.location.href = 'https://imperfectgamers.org/login'
+		window.location.href = 'https://imperfectgamers.org/discord'
 	}
 
 	const [showContactUs] = useState(false)
@@ -23,19 +23,17 @@ const StoreContact: React.FC = () => {
 			<div className="flex justify-center md:justify-end">
 				{!showContactForm ? (
 					<div className="contact-section contact-section-transition">
-						<h2>Contact Us {showContactUs ? <>or Sign In</> : null}</h2>
-						<p>
-							For exclusive access to premium membership inquiries, please sign
-							in to create a ticket or contact us for assistance from email
-							joinclub@imperfectgamers.org.
-						</p>
-						<Button
-							onClick={() => {
-								handleSignInClick()
-							}}
-						>
-							Sign In
-						</Button>
+    <h2>Get Premium Support on Discord</h2>
+    <p>
+        Our ticket creation system is currently in progress. In the meantime, for exclusive access to premium support, please join our Discord server.
+    </p>
+    <Button
+        onClick={() => {
+            handleSignInClick()
+        }}
+    >
+        Join Discord
+    </Button>
 						{showContactUs ? (
 							<Button
 								onClick={() => {

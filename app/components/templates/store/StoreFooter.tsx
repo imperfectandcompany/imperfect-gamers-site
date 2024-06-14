@@ -37,9 +37,9 @@ const StoreFooter: React.FC = () => {
 				<div className="flex flex-col items-center justify-between md:flex-row">
 					<FooterLink href="#" external>
 						<img
-							src="https://example.tebex.io/assets/img/tebex.png"
+							src="https://cdn.imperfectgamers.org/inc/assets/img/tebex/tebex.png"
 							alt="Tebex logo"
-							className=""
+							className="h-6"
 						/>
 					</FooterLink>
 					<p className="text-center text-xs text-gray-400 md:text-left">

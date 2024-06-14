@@ -9,7 +9,6 @@ import { useEffect, useRef } from 'react'
 import type { ExternalScriptsHandle } from 'remix-utils/external-scripts'
 import { getSession, storeCookie } from '~/auth/storage.server'
 import CookieConsent from '~/components/pending/CookieConsent'
-import CrateWidget from '~/components/pending/CrateWidget'
 import { getFlashMessage } from '~/components/pending/flash-session.server'
 import ModalPositionContext from '~/components/pending/ModalPositionContext'
 import {
@@ -75,11 +74,11 @@ export let handle: ExternalScriptsHandle = {
 			crossOrigin: 'anonymous',
 			preload: true,
 		},
-		{
-			src: 'https://cdn.imperfectgamers.org/inc/assets/npm/widget/crate.js',
-			crossOrigin: 'anonymous',
-			preload: true,
-		},
+		// {
+		// 	src: 'https://cdn.imperfectgamers.org/inc/assets/npm/widget/crate.js',
+		// 	crossOrigin: 'anonymous',
+		// 	preload: true,
+		// },
 		// {
 		// 	src: "https://www.clarity.ms/tag/mcqzfowzo2",
 		//   }
@@ -280,7 +279,6 @@ export default function Index() {
 				</div>
 				<StoreFooter />
 			</ModalPositionContext.Provider>
-			<CrateWidget />
 		</>
 	)
 }

@@ -131,6 +131,7 @@ const CookieConsent: FunctionComponent = () => {
 		}
 		setSettings(allEnabledSettings)
 		localStorage.setItem('cookieSettings', JSON.stringify(allEnabledSettings))
+		window.dispatchEvent(new Event('consentGranted'))
 		startExitAnimation() // Start animation when accepting all cookies
 		if (activeModal) {
 			// If modal is open...
