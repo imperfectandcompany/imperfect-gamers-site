@@ -6,7 +6,7 @@ import EventItem from '~/components/molecules/EventItem'
  */
 const StoreEvents: React.FC = () => {
 	return (
-		<section className="bg-opacity/50 bg-black py-12">
+		<section className="bg-opacity/50 bg-black py-12 my-12 mb-16">
 			<div className="container mx-auto px-4">
 				<h2 className="mb-8 text-center text-3xl font-bold text-white/90">
 					<span className="bg-opacity/50 inline-block rounded-full bg-black p-2 transition duration-500 hover:scale-110">

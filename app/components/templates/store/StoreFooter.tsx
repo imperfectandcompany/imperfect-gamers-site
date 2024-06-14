@@ -39,7 +39,7 @@ const StoreFooter: React.FC = () => {
 						<img
 							src="https://example.tebex.io/assets/img/tebex.png"
 							alt="Tebex logo"
-							className="hidden h-5 md:block"
+							className=""
 						/>
 					</FooterLink>
 					<p className="text-center text-xs text-gray-400 md:text-left">

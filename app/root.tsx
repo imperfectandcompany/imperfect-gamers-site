@@ -18,6 +18,7 @@ import stylesheet from '~/tailwind.css?url'
 import * as gtag from '~/utils/gtags.client'
 
 import MsClarity from './utils/msclarity.client'
+import CrateWidget from './components/pending/CrateWidget'
 
 export const links: LinksFunction = () => {
 	return [
@@ -74,10 +75,10 @@ export const meta: MetaFunction = () => {
 // Load the GA tracking id from the .env
 export const loader = async () => {
 	return json({
-		gaTrackingId: process.env.GA_TRACKING_ID,
-		msClarityId: process.env.MS_CLARITY_ID,
-	})
-}
+	  gaTrackingId: process.env.GA_TRACKING_ID,
+	  msClarityId: process.env.MS_CLARITY_ID,
+	});
+  }
 
 const gTagMsClarityFlag = true
 
@@ -88,7 +89,13 @@ declare global {
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {
-	const { gaTrackingId, msClarityId } = useLoaderData<typeof loader>()
+
+	const data = useLoaderData<typeof loader>();
+	if (!data) {
+	  console.error('Loader data is undefined');
+	  return;
+	}
+	const { gaTrackingId, msClarityId } = data;
 
 	const consentListener = () => {
 		const storedSettings = localStorage.getItem('cookieSettings')
@@ -146,7 +153,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 				<Meta />
 				<Links />
 			</head>
-			<body className="background-svg relative flex flex-col bg-black px-4 text-white sm:px-8 md:px-12">
+			<body className="background-svg relative flex flex-col bg-black ">
 				{process.env.NODE_ENV === 'development' || !gaTrackingId ? null : (
 					<>
 						<script
@@ -168,12 +175,13 @@ export function Layout({ children }: { children: React.ReactNode }) {
               `,
 							}}
 						/>
+
 					</>
 				)}
-				<main className="space-y-24 md:mx-72 md:space-y-12">{children}</main>
+				<main className="">{children}</main>
 				<ScrollRestoration />
-				<Scripts />
 				<ExternalScripts />
+				<Scripts />
 			</body>
 		</html>
 	)
@@ -230,6 +238,7 @@ function Document(props: { children: ReactNode; title?: string }) {
 				<ScrollRestoration />
 				<Scripts />
 			</body>
+
 		</html>
 	)
 }

@@ -9,6 +9,7 @@ import { useEffect, useRef } from 'react'
 import type { ExternalScriptsHandle } from 'remix-utils/external-scripts'
 import { getSession, storeCookie } from '~/auth/storage.server'
 import CookieConsent from '~/components/pending/CookieConsent'
+import CrateWidget from '~/components/pending/CrateWidget'
 import { getFlashMessage } from '~/components/pending/flash-session.server'
 import ModalPositionContext from '~/components/pending/ModalPositionContext'
 import {
@@ -22,6 +23,7 @@ import {
 	StoreTiers,
 } from '~/components/templates/store'
 import StoreFeatured from '~/components/templates/store/StoreFeatured'
+import StoreNavbar from '~/components/templates/StoreNavbar'
 import '~/styles/store.css'
 import type { BasketPackage } from '~/utils/tebex.interface'
 
@@ -73,11 +75,18 @@ export let handle: ExternalScriptsHandle = {
 			crossOrigin: 'anonymous',
 			preload: true,
 		},
+		{
+			src: 'https://cdn.imperfectgamers.org/inc/assets/npm/widget/crate.js',
+			crossOrigin: 'anonymous',
+			preload: true,
+		},
 		// {
 		// 	src: "https://www.clarity.ms/tag/mcqzfowzo2",
 		//   }
 	],
 }
+
+
 
 // Function to load the basket ID from the cookie
 async function loadBasketId(
@@ -245,6 +254,7 @@ export default function Index() {
 
 	return (
 		<>
+				<StoreNavbar />
 			<ModalPositionContext.Provider value={{ adjustModalPosition }}>
 				{flashError &&
 				(flashError.type === 'steam_authorization_error' ||
@@ -257,7 +267,7 @@ export default function Index() {
 				<div>
 					<CookieConsent />
 				</div>
-				<div ref={modalRef} className="flex flex-col space-y-8">
+				<div ref={modalRef} className="flex flex-col px-4 text-white sm:px-8 md:px-12 space-y-24 md:mx-72 md:space-y-12">
 					<StoreHeader />
 					<StoreFeatured />
 					<StoreTiers />
@@ -266,8 +276,8 @@ export default function Index() {
 					<StoreEvents />
 					<StorePartnership />
 					<StoreContact />
-					<StoreFooter />
 				</div>
+				<StoreFooter />
 			</ModalPositionContext.Provider>
 		</>
 	)

@@ -19,7 +19,7 @@ const StoreContact: React.FC = () => {
 	const [showContactUs] = useState(false)
 
 	return (
-		<section className="mb-12">
+		<section className="my-12">
 			<div className="flex justify-center md:justify-end">
 				{!showContactForm ? (
 					<div className="contact-section contact-section-transition">
