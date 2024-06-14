@@ -23,7 +23,7 @@ const FeaturedItem: React.FC<FeaturedItemProps> = ({
 	imageUrl,
 	imageAlt,
 }) => (
-	<div className="flex justify-end">
+	<div className="mt-16 flex justify-end">
 		<div className="flex justify-end">
 			<div className="flex-col text-white">
 				<div>

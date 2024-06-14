@@ -377,6 +377,7 @@ h3 {
 	max-width: 500px;
 	border-radius: 8px;
 	max-height: 70vh;
+	z-index: 250;
 }
 
 .accordion {

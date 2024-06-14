@@ -16,8 +16,28 @@ import { MembershipCard } from '~/components/organism/MembershipCard/MembershipC
 export default function StoreHeader() {
 	return (
 		<>
-			<div>
-				<h1 className="title">Imperfect Gamers Club</h1>
+			<div className="mt-10">
+				<h1 className="title">
+					<span className="whitegradient">
+						<span className="critical">I</span>
+						<span className="lato">MPERFECT</span>
+					</span>{' '}
+					<span className="redgradient">
+						<span className="critical">G</span>
+						<span className="lato">AMERS</span>
+					</span>{' '}
+					<span className="whitegradient">
+						<span className="critical">C</span>
+						<span className="lato">LUB</span>
+					</span>
+				</h1>
+
+				<div className="gradient-line"></div>
+				<p className="tagline">
+					Join now through the exclusive access member pass,
+				</p>
+				<p className="tagline2">powered by Imperfect and Company LLC.</p>
+
 				<p className="subtitle">
 					Join now through the exclusive access member pass
 				</p>

@@ -142,11 +142,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
 		<html lang="en">
 			<head>
 				<meta charSet="utf-8" />
-				<meta name="viewport" content="width=device-width, initial-scale=1" />
+				<meta
+					name="viewport"
+					content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+				/>
 				<Meta />
 				<Links />
 			</head>
-			<body className="background-svg relative flex flex-col bg-black px-4 text-white sm:px-8 md:px-12">
+			<body className="background-svg relative flex flex-col bg-black">
 				{process.env.NODE_ENV === 'development' || !gaTrackingId ? null : (
 					<>
 						<script
@@ -170,7 +173,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 						/>
 					</>
 				)}
-				<main className="space-y-24 md:mx-72 md:space-y-12">{children}</main>
+				<main>{children}</main>
 				<ScrollRestoration />
 				<Scripts />
 				<ExternalScripts />

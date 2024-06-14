@@ -24,7 +24,7 @@ const premiumFeatures = [
  * @component
  */
 const StoreTiers: React.FC = () => (
-	<div className="relative">
+	<div className="relative mt-10" id="membershipTiers">
 		{/* SVG icon */}
 		<svg
 			xmlns="http://www.w3.org/2000/svg"
@@ -48,12 +48,19 @@ const StoreTiers: React.FC = () => (
 				Premium is currently in <span className="text-white/65">BETA</span>
 			</p>
 		</div>
-		<div className="relative flex flex-col justify-center space-y-4 md:flex-row md:space-x-4 md:space-y-0">
+		<div
+			className="
+		
+		flex flex-col justify-center space-y-4 md:flex-row md:space-x-4 md:space-y-0
+		"
+		>
 			{/* Basic Membership Tier */}
 			<MembershipTier
 				planType="Basic"
 				planName="Basic"
 				features={basicFeatures}
+				trialInfo="Free plan with limitations"
+				trialPrimary={true}
 				additionalInfo="Imperfect Basic membership offers limited access to community servers. Upgrade to Premium for full benefits."
 			/>
 			{/* Premium Membership Tier */}
@@ -61,7 +68,8 @@ const StoreTiers: React.FC = () => (
 				planType="Premium"
 				planName="Premium"
 				features={premiumFeatures}
-				trialInfo="BETA"
+				trialInfo="20% off. It's our launch, not a sale!"
+				trialPrimary={false}
 				additionalInfo="Enjoy an elegant experience with Premium membership. Full access to all servers and additional perks."
 			/>
 		</div>

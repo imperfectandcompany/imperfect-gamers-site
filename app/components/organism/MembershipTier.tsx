@@ -11,6 +11,7 @@ type MembershipTierProps = {
 	planName: string
 	features: Feature[]
 	trialInfo?: string
+	trialPrimary?: boolean
 	additionalInfo?: string
 }
 
@@ -67,52 +68,64 @@ const MembershipTier: React.FC<MembershipTierProps> = ({
 	planName,
 	features,
 	trialInfo,
+	trialPrimary = false,
 	additionalInfo,
 }) => (
-	<div className="bg-opacity/50 flex w-full max-w-md flex-col rounded-md border border-gray-700/50 bg-black px-8 py-10">
-		{trialInfo ? (
-			<div className="mb-3">
-				<span className="bg-opacity/20 rounded bg-red-200 p-1.5 text-xs text-red-400">
-					{trialInfo}
-				</span>
-			</div>
-		) : null}
-		<h3
-			className={`bg-gradient-to-br bg-clip-text text-2xl font-bold text-transparent ${planType === 'Basic' ? 'from-gray-200 via-gray-200 to-gray-300' : 'from-gray-200 via-red-200 to-red-300'}`}
-		>
-			{planName}
-		</h3>
-		<div className="mt-6 flex flex-1 flex-col justify-between">
-			<div className="space-y-4">
-				{features.map((feature, index) => (
-					<div
-						key={index}
-						className="group flex cursor-pointer items-center gap-2 transition duration-150 ease-in-out"
+	<>
+		{trialPrimary ? null : (
+			<div className="relative flex h-px w-full flex-row bg-gradient-to-r from-transparent via-rose-300 to-transparent sm:hidden"></div>
+		)}
+		<div className="flex w-full max-w-md flex-col rounded-md border border-gray-700/50 bg-black bg-opacity-50 px-8 py-10">
+			{trialInfo ? (
+				<div className="mb-3">
+					<span
+						className={
+							trialPrimary
+								? 'white rounded bg-gray-400 bg-opacity-35 p-1.5 text-xs'
+								: 'rounded bg-red-200 bg-opacity-20 p-1.5 text-xs text-red-400'
+						}
 					>
-						<i
-							className={`fas ${feature.included ? 'fa-check' : 'fa-times'} ${planType === 'Basic' ? 'text-gray-400' : 'text-red-400'} transition group-hover:brightness-150 group-hover:drop-shadow-[0_0_4px_rgba(255,255,255,0.5)]`}
-						></i>
-						{feature.tooltip ? (
-							<Tooltip content={feature.tooltip}>
+						{trialInfo}
+					</span>
+				</div>
+			) : null}
+			<h3
+				className={`bg-gradient-to-br bg-clip-text text-2xl font-bold text-transparent ${planType === 'Basic' ? 'from-gray-200 via-gray-200 to-gray-300' : 'from-gray-200 via-red-200 to-red-300'}`}
+			>
+				{planName}
+			</h3>
+			<div className="mt-6 flex flex-1 flex-col justify-between">
+				<div className="space-y-4">
+					{features.map((feature, index) => (
+						<div
+							key={index}
+							className="group flex cursor-pointer items-center gap-2 transition duration-150 ease-in-out"
+						>
+							<i
+								className={`fas ${feature.included ? 'fa-check' : 'fa-times'} ${planType === 'Basic' ? 'text-gray-400' : 'text-red-400'} transition group-hover:brightness-150 group-hover:drop-shadow-[0_0_4px_rgba(255,255,255,0.5)]`}
+							></i>
+							{feature.tooltip ? (
+								<Tooltip content={feature.tooltip}>
+									<span
+										className={`text-white/50 ${!feature.included && 'line-through'} group-hover:text-${planType === 'Basic' ? 'gray-400' : 'red-400'}`}
+									>
+										{feature.name}
+									</span>
+								</Tooltip>
+							) : (
 								<span
-									className={`text-white/50 ${!feature.included && 'line-through'} group-hover:text-${planType === 'Basic' ? 'gray-400' : 'red-400'}`}
+									className={`text-white ${!feature.included && 'line-through'} group-hover:text-${planType === 'Basic' ? 'gray-400' : 'red-400'}`}
 								>
 									{feature.name}
 								</span>
-							</Tooltip>
-						) : (
-							<span
-								className={`text-white ${!feature.included && 'line-through'} group-hover:text-${planType === 'Basic' ? 'gray-400' : 'red-400'}`}
-							>
-								{feature.name}
-							</span>
-						)}
-					</div>
-				))}
+							)}
+						</div>
+					))}
+				</div>
+				<div className="mt-10 text-xs text-gray-500">{additionalInfo}</div>
 			</div>
-			<div className="mt-10 text-xs text-gray-500">{additionalInfo}</div>
 		</div>
-	</div>
+	</>
 )
 
 export default MembershipTier
