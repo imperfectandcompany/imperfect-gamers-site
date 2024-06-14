@@ -4,22 +4,22 @@ import { remixDevTools } from 'remix-development-tools'
 import { loadEnv } from 'vite'
 import tsconfigPaths from 'vite-tsconfig-paths'
 import { defineConfig } from 'vitest/config'
-import MsClarity from './app/utils/msclarity.client';
+import MsClarity from './app/utils/msclarity.client'
 
 installGlobals()
 
 export default defineConfig({
 	resolve: {
 		alias: {
-		  '~/': `${__dirname}/app/`
-		}
-	  },
-    plugins: [
-        remixDevTools(),
-        !process.env.VITEST && remix(),
-        tsconfigPaths(),
-        MsClarity({ id: process.env.MS_CLARITY_ID, enableInDevMode: true }) // Configure as needed
-    ],	
+			'~/': `${__dirname}/app/`,
+		},
+	},
+	plugins: [
+		remixDevTools(),
+		!process.env.VITEST && remix(),
+		tsconfigPaths(),
+		MsClarity({ id: process.env.MS_CLARITY_ID, enableInDevMode: true }), // Configure as needed
+	],
 	ssr: {
 		noExternal: ['remix-utils', 'is-ip'],
 	},

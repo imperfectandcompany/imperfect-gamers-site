@@ -23,17 +23,19 @@ const StoreContact: React.FC = () => {
 			<div className="flex justify-center md:justify-end">
 				{!showContactForm ? (
 					<div className="contact-section contact-section-transition">
-    <h2>Get Premium Support on Discord</h2>
-    <p>
-        Our ticket creation system is currently in progress. In the meantime, for exclusive access to premium support, please join our Discord server.
-    </p>
-    <Button
-        onClick={() => {
-            handleSignInClick()
-        }}
-    >
-        Join Discord
-    </Button>
+						<h2>Get Premium Support on Discord</h2>
+						<p>
+							Our ticket creation system is currently in progress. In the
+							meantime, for exclusive access to premium support, please join our
+							Discord server.
+						</p>
+						<Button
+							onClick={() => {
+								handleSignInClick()
+							}}
+						>
+							Join Discord
+						</Button>
 						{showContactUs ? (
 							<Button
 								onClick={() => {
