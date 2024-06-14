@@ -230,7 +230,7 @@ body {
 
 @font-face {
   font-family: 'CriticalMass';
-  src: url('https://cdn.imperfectgamers.org/inc/assets/font/critical-mass-ldr.woff2') format('woff2'),
+  src: url('https://cdn.imperfectgamers.org/inc/assets/font/critical-mass-ldr.eot') format('eot'),
        url('https://cdn.imperfectgamers.org/inc/assets/font/critical-mass-ldr.woff') format('woff'),
        url('https://cdn.imperfectgamers.org/inc/assets/font/critical-mass-ldr.ttf') format('truetype');
   font-weight: normal;
