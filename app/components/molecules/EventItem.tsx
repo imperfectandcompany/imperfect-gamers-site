@@ -8,8 +8,6 @@ type EventItemProps = {
 	link: string
 }
 
-
-
 /**
  * Renders a tooltip component that displays additional content when hovered over.
  *
@@ -38,16 +36,13 @@ function Tooltip({
 		>
 			{children}
 			{show ? (
-				<div className="absolute bottom-full z-10 mb-2 rounded bg-black px-3 py-1 select-none text-xs text-white shadow-lg">
+				<div className="absolute bottom-full z-10 mb-2 select-none rounded bg-black px-3 py-1 text-xs text-white shadow-lg">
 					{content}
 				</div>
 			) : null}
 		</div>
 	)
 }
-
-
-
 
 /**
  * Renders an event item component.
@@ -65,7 +60,7 @@ const EventItem: React.FC<EventItemProps> = ({ title, description, link }) => {
 			<h3 className="mb-3 text-xl font-bold">{title}</h3>
 			<p className="mb-4 text-gray-400">{description}</p>
 			<Tooltip content="Related content coming soon">
-				<span className="text-rose-600 hover:text-rose-400 cursor-not-allowed select-none ">
+				<span className="cursor-not-allowed select-none text-rose-600 hover:text-rose-400 ">
 					Learn More
 				</span>
 			</Tooltip>

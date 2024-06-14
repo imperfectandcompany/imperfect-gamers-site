@@ -72,10 +72,10 @@ const MembershipTier: React.FC<MembershipTierProps> = ({
 	additionalInfo,
 }) => (
 	<>
-		{trialPrimary ? null : <div className="sm:hidden h-px w-full bg-gradient-to-r flex flex-row relative from-transparent via-rose-300 to-transparent"></div>}
-		<div
-			className="w-full max-w-md py-10 px-8 bg-black bg-opacity-50 rounded-md border border-gray-700/50 flex flex-col"
-		>
+		{trialPrimary ? null : (
+			<div className="relative flex h-px w-full flex-row bg-gradient-to-r from-transparent via-rose-300 to-transparent sm:hidden"></div>
+		)}
+		<div className="flex w-full max-w-md flex-col rounded-md border border-gray-700/50 bg-black bg-opacity-50 px-8 py-10">
 			{trialInfo ? (
 				<div className="mb-3">
 					<span

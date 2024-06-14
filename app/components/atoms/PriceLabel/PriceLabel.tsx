@@ -19,19 +19,19 @@ export const PriceLabel = ({ isYearly }: { isYearly: boolean }) => {
 	)
 
 	useEffect(() => {
-		setAnimationClass(price.label_change); // Trigger the animation
+		setAnimationClass(price.label_change) // Trigger the animation
 		const textTimer = setTimeout(() => {
 			// Update the text in the middle of the animation
-			setPriceText(isYearly ? '$200/year - Coming soon!' : '$12/month');
-		}, 300); // Half the duration of your CSS animation
+			setPriceText(isYearly ? '$200/year - Coming soon!' : '$12/month')
+		}, 300) // Half the duration of your CSS animation
 		const animationTimer = setTimeout(() => {
-			setAnimationClass(''); // Reset animation class after it completes
-		}, 600);
+			setAnimationClass('') // Reset animation class after it completes
+		}, 600)
 		return () => {
-			clearTimeout(textTimer);
-			clearTimeout(animationTimer);
-		};
-	}, [isYearly]);
+			clearTimeout(textTimer)
+			clearTimeout(animationTimer)
+		}
+	}, [isYearly])
 
 	return <p className={`${price.label} mt-2 ${animationClass}`}>{priceText}</p>
 }

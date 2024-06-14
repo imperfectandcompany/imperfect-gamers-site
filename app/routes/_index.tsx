@@ -86,8 +86,6 @@ export let handle: ExternalScriptsHandle = {
 	],
 }
 
-
-
 // Function to load the basket ID from the cookie
 async function loadBasketId(
 	cookieHeader: string | null,
@@ -254,7 +252,7 @@ export default function Index() {
 
 	return (
 		<>
-				<StoreNavbar />
+			<StoreNavbar />
 			<ModalPositionContext.Provider value={{ adjustModalPosition }}>
 				{flashError &&
 				(flashError.type === 'steam_authorization_error' ||
@@ -267,7 +265,10 @@ export default function Index() {
 				<div>
 					<CookieConsent />
 				</div>
-				<div ref={modalRef} className="flex flex-col px-4 text-white sm:px-8 md:px-12 space-y-24 md:mx-72 md:space-y-12">
+				<div
+					ref={modalRef}
+					className="flex flex-col space-y-24 px-4 text-white sm:px-8 md:mx-72 md:space-y-12 md:px-12"
+				>
 					<StoreHeader />
 					<StoreFeatured />
 					<StoreTiers />
@@ -279,6 +280,7 @@ export default function Index() {
 				</div>
 				<StoreFooter />
 			</ModalPositionContext.Provider>
+			<CrateWidget />
 		</>
 	)
 }

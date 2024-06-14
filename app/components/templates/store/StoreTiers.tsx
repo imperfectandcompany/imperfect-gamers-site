@@ -48,10 +48,12 @@ const StoreTiers: React.FC = () => (
 				Premium is currently in <span className="text-white/65">BETA</span>
 			</p>
 		</div>
-		<div className="
+		<div
+			className="
 		
-		flex flex-col md:flex-row md:space-x-4 space-y-4 md:space-y-0 justify-center
-		">
+		flex flex-col justify-center space-y-4 md:flex-row md:space-x-4 md:space-y-0
+		"
+		>
 			{/* Basic Membership Tier */}
 			<MembershipTier
 				planType="Basic"

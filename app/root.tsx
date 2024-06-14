@@ -18,7 +18,6 @@ import stylesheet from '~/tailwind.css?url'
 import * as gtag from '~/utils/gtags.client'
 
 import MsClarity from './utils/msclarity.client'
-import CrateWidget from './components/pending/CrateWidget'
 
 export const links: LinksFunction = () => {
 	return [
@@ -75,10 +74,10 @@ export const meta: MetaFunction = () => {
 // Load the GA tracking id from the .env
 export const loader = async () => {
 	return json({
-	  gaTrackingId: process.env.GA_TRACKING_ID,
-	  msClarityId: process.env.MS_CLARITY_ID,
-	});
-  }
+		gaTrackingId: process.env.GA_TRACKING_ID,
+		msClarityId: process.env.MS_CLARITY_ID,
+	})
+}
 
 const gTagMsClarityFlag = true
 
@@ -89,13 +88,7 @@ declare global {
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {
-
-	const data = useLoaderData<typeof loader>();
-	if (!data) {
-	  console.error('Loader data is undefined');
-	  return;
-	}
-	const { gaTrackingId, msClarityId } = data;
+	const { gaTrackingId, msClarityId } = useLoaderData<typeof loader>()
 
 	const consentListener = () => {
 		const storedSettings = localStorage.getItem('cookieSettings')
@@ -149,11 +142,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
 		<html lang="en">
 			<head>
 				<meta charSet="utf-8" />
-				<meta name="viewport" content="width=device-width, initial-scale=1" />
+				<meta
+					name="viewport"
+					content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+				/>
 				<Meta />
 				<Links />
 			</head>
-			<body className="background-svg relative flex flex-col bg-black ">
+			<body className="background-svg relative flex flex-col bg-black">
 				{process.env.NODE_ENV === 'development' || !gaTrackingId ? null : (
 					<>
 						<script
@@ -175,13 +171,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
               `,
 							}}
 						/>
-
 					</>
 				)}
-				<main className="">{children}</main>
+				<main>{children}</main>
 				<ScrollRestoration />
-				<ExternalScripts />
 				<Scripts />
+				<ExternalScripts />
 			</body>
 		</html>
 	)
@@ -226,10 +221,7 @@ function Document(props: { children: ReactNode; title?: string }) {
 			<head>
 				{props.title ? <title>{props.title}</title> : null}
 				<meta charSet="utf-8" />
-				<meta
-					name="viewport"
-					content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
-				/>
+				<meta name="viewport" content="width=device-width, initial-scale=1" />
 				<Meta />
 				<Links />
 			</head>
@@ -238,7 +230,6 @@ function Document(props: { children: ReactNode; title?: string }) {
 				<ScrollRestoration />
 				<Scripts />
 			</body>
-
 		</html>
 	)
 }

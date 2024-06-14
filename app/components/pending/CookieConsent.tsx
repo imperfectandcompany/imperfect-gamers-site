@@ -620,7 +620,7 @@ const CookieConsent: FunctionComponent = () => {
 		},
 		{
 			title:
-				'Children&apos;s Privacy, Links to Other Websites, and Changes to this Privacy Policy',
+				"Children's Privacy, Links to Other Websites, and Changes to this Privacy Policy",
 			content: (
 				<>
 					<h2>Children&apos;s Privacy</h2>

@@ -47,14 +47,31 @@ export const MembershipCard: React.FC<MembershipCardProps> = () => {
 			<div
 				className={`${styles['membership-card']} mx-auto hover:cursor-pointer`}
 			>
-				<div className={styles['membership-card__tooltip']} onClick={() => {
-					const membershipTiersElement = document.getElementById('membershipTiers');
-					if (membershipTiersElement) {
-						membershipTiersElement.scrollIntoView({
-							behavior: 'smooth'
-						});
-					}
-				}}>
+				<div
+					className={styles['membership-card__tooltip']}
+					onClick={() => {
+						const membershipTiersElement =
+							document.getElementById('membershipTiers')
+						if (membershipTiersElement) {
+							membershipTiersElement.scrollIntoView({
+								behavior: 'smooth',
+							})
+						}
+					}}
+					onKeyUp={event => {
+						if (event.key === 'Enter') {
+							const membershipTiersElement =
+								document.getElementById('membershipTiers')
+							if (membershipTiersElement) {
+								membershipTiersElement.scrollIntoView({
+									behavior: 'smooth',
+								})
+							}
+						}
+					}}
+					role="button"
+					tabIndex={0}
+				>
 					Click to view membership benefits
 				</div>
 				<div className="flex h-full flex-col items-start justify-between">
