@@ -5,6 +5,8 @@ import { useEffect, useState } from 'react'
 import { PriceLabel } from '~/components/atoms/PriceLabel/PriceLabel'
 import { PriceToggle } from '~/components/molecules/PriceToggle/PriceToggle'
 import styles from './MembershipCard.module.css'
+import { useLoaderData } from '@remix-run/react'
+import { LoaderData } from '~/routes/_index'
 
 /**
  * Props for the MembershipCard component.
@@ -27,6 +29,15 @@ export let filterIdCounter = 0
  * ```
  */
 export const MembershipCard: React.FC<MembershipCardProps> = () => {
+	const {
+		isPremium,
+		isAuthenticated,
+		isSteamLinked,
+		username
+	} = useLoaderData<LoaderData>()
+
+	const isMember = isAuthenticated && username && isSteamLinked && isPremium
+	
 	const [isYearly, setIsYearly] = useState(false)
 	const [uniqueFilterId, setUniqueFilterId] = useState(
 		`gooey-${filterIdCounter}`,
@@ -45,7 +56,7 @@ export const MembershipCard: React.FC<MembershipCardProps> = () => {
 	return (
 		<>
 			<div
-				className={`${styles['membership-card']} mx-auto hover:cursor-pointer`}
+				className={`${styles['membership-card']} mx-auto`}
 			>
 				<div
 					className={styles['membership-card__tooltip']}
@@ -137,7 +148,7 @@ export const MembershipCard: React.FC<MembershipCardProps> = () => {
 				</div>
 				<div className={`${styles['membership-card__spinback-effect']}`}></div>
 			</div>
-			<PriceToggle isYearly={isYearly} onToggle={handleToggle} />
+			{!isMember && <PriceToggle isYearly={isYearly} onToggle={handleToggle} />}
 		</>
 	)
 }

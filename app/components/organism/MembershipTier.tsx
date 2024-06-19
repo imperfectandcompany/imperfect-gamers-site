@@ -77,7 +77,7 @@ const MembershipTier: React.FC<MembershipTierProps> = ({
 		)}
 		<div className="flex w-full max-w-md flex-col rounded-md border border-gray-700/50 bg-black bg-opacity-50 px-8 py-10">
 			{trialInfo ? (
-				<div className="mb-3">
+				<div className="mb-3 select-none">
 					<span
 						className={
 							trialPrimary
@@ -90,7 +90,7 @@ const MembershipTier: React.FC<MembershipTierProps> = ({
 				</div>
 			) : null}
 			<h3
-				className={`bg-gradient-to-br bg-clip-text text-2xl font-bold text-transparent ${planType === 'Basic' ? 'from-gray-200 via-gray-200 to-gray-300' : 'from-gray-200 via-red-200 to-red-300'}`}
+				className={`bg-gradient-to-br bg-clip-text text-2xl font-bold select-none text-transparent ${planType === 'Basic' ? 'from-gray-200 via-gray-200 to-gray-300' : 'from-gray-200 via-red-200 to-red-300'}`}
 			>
 				{planName}
 			</h3>
@@ -99,30 +99,24 @@ const MembershipTier: React.FC<MembershipTierProps> = ({
 					{features.map((feature, index) => (
 						<div
 							key={index}
-							className="group flex cursor-pointer items-center gap-2 transition duration-150 ease-in-out"
+							className="group flex items-center gap-2 transition duration-150 ease-in-out"
 						>
-							<i
-								className={`fas ${feature.included ? 'fa-check' : 'fa-times'} ${planType === 'Basic' ? 'text-gray-400' : 'text-red-400'} transition group-hover:brightness-150 group-hover:drop-shadow-[0_0_4px_rgba(255,255,255,0.5)]`}
-							></i>
-							{feature.tooltip ? (
-								<Tooltip content={feature.tooltip}>
+							<Tooltip content={feature.tooltip || ''}>
+								<div className="flex items-center">
+									<i
+										className={`fas ${feature.included ? 'fa-check' : 'fa-times'} ${feature.included ? (planType === 'Basic' ? 'text-gray-400' : 'text-red-400') : 'text-gray-500'} transition group-hover:brightness-150 group-hover:drop-shadow-[0_0_4px_rgba(255,255,255,0.5)] ${feature.tooltip ? 'cursor-help' : ''}`}
+									></i>
 									<span
-										className={`text-white/50 ${!feature.included && 'line-through'} group-hover:text-${planType === 'Basic' ? 'gray-400' : 'red-400'}`}
+										className={`ml-2 select-all ${feature.included ? 'text-white' : 'text-white/50'} ${!feature.included && 'line-through'} group-hover:text-${planType === 'Basic' ? 'gray-400' : 'red-400'} ${feature.tooltip ? 'cursor-help' : ''}`}
 									>
 										{feature.name}
 									</span>
-								</Tooltip>
-							) : (
-								<span
-									className={`text-white ${!feature.included && 'line-through'} group-hover:text-${planType === 'Basic' ? 'gray-400' : 'red-400'}`}
-								>
-									{feature.name}
-								</span>
-							)}
+								</div>
+							</Tooltip>
 						</div>
 					))}
 				</div>
-				<div className="mt-10 text-xs text-gray-500">{additionalInfo}</div>
+				<div className="mt-10 select-none text-xs text-gray-500">{additionalInfo}</div>
 			</div>
 		</div>
 	</>

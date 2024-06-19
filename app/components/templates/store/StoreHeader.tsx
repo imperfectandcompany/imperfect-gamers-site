@@ -1,6 +1,8 @@
 // components/templates/store/StoreHeader.tsx
+import { useLoaderData } from '@remix-run/react'
 import AuthForms from '~/components/organism/AuthForms/AuthForms'
 import { MembershipCard } from '~/components/organism/MembershipCard/MembershipCard'
+import { LoaderData } from '~/routes/_index'
 
 /**
  * Renders the header component for the store page.
@@ -14,6 +16,15 @@ import { MembershipCard } from '~/components/organism/MembershipCard/MembershipC
  */
 
 export default function StoreHeader() {
+	const {
+		isPremium,
+		isAuthenticated,
+		isSteamLinked,
+		username
+	} = useLoaderData<LoaderData>()
+
+	const isMember = isAuthenticated && username && isSteamLinked && isPremium
+
 	return (
 		<>
 			<div className="mt-10">
@@ -34,13 +45,9 @@ export default function StoreHeader() {
 
 				<div className="gradient-line"></div>
 				<p className="tagline">
-					Join now through the exclusive access member pass,
+					{isMember ? 'Welcome to the club, '+ username+ ',' : 'Join now through the exclusive access member pass,'}
 				</p>
 				<p className="tagline2">powered by Imperfect and Company LLC.</p>
-
-				<p className="subtitle">
-					Join now through the exclusive access member pass
-				</p>
 				<MembershipCard />
 				<div className="mt-8 flex justify-center">
 					<AuthForms />

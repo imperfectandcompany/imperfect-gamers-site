@@ -18,10 +18,18 @@ export const PriceToggle = ({
 	onToggle: () => void
 }) => {
 	return (
-		<div className={price.toggle}>
-			<span className={price.toggle__label}>Monthly</span>
+		<div className={`${price.toggle} select-none`}>
+			<span
+				className={`${price.toggle__label} ${!isYearly ? price['toggle__label--active'] : ''}`}
+			>
+				Monthly
+			</span>
 			<ToggleSwitch isYearly={isYearly} onToggle={onToggle} />
-			<span className={price.toggle__label}>Annually</span>
+			<span
+				className={`${price.toggle__label} ${isYearly ? price['toggle__label--active'] : ''}`}
+			>
+				Annually
+			</span>
 		</div>
 	)
 }
