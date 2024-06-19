@@ -1,6 +1,7 @@
 // app/routes/auth/steam/callback.tsx
 
 import { type LoaderFunction } from '@remix-run/node'
+import { apiBase, checkPremiumStatus } from '~/auth/authenticator.server'
 import { directVerificationWithSteam } from '~/auth/steam.server'
 import { commitSession, getSession } from '~/auth/storage.server'
 import { verifySteamAssertion } from '~/utils/steamAuth'
@@ -32,8 +33,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 	}
 
 	// Verify the Steam assertion
-	const steamId = await verifySteamAssertion(url.toString(), url.searchParams)
-
+	const steamId = await verifySteamAssertion(url.searchParams)
 	if (!steamId) {
 		return sendErrorToParent('Steam authentication failed', 400, type || '') // Bad request
 	}
@@ -49,6 +49,37 @@ export const loader: LoaderFunction = async ({ request }) => {
 	if (!userToken) {
 		console.error('User token not found in session')
 		return sendErrorToParent('Authentication required', 401, type || '') // Unauthorized
+	}
+
+	const userId = session.get('uid') // userToken should be stored in session since logged in action
+
+	if (!userId) {
+		console.error('User ID not found in session')
+		return sendErrorToParent('Authentication required', 401, type || '') // Unauthorized
+	}
+
+	// Verify if Steam ID is already linked to another account
+	const existingUser = await fetchUserBySteamId(steamId, userToken)
+	if (existingUser) {
+		console.error('Steam ID is already linked to another account')
+		return sendErrorToParent(
+			'Steam ID is already linked to another account',
+			400,
+			type || '',
+		)
+	}
+	// Check if the user exists in the game server
+	const userExistsInGameServer = await checkSteamExistsInGameServer(
+		steamId,
+		userToken,
+	)
+	if (!userExistsInGameServer) {
+		console.error('User does not exist in game server')
+		return sendErrorToParent(
+			'User does not exist in game server',
+			400,
+			type || '',
+		)
 	}
 
 	const response = await fetch(
@@ -67,6 +98,10 @@ export const loader: LoaderFunction = async ({ request }) => {
 		console.error('Failed to link Steam ID in the database')
 		return sendErrorToParent('Failed to link Steam ID', 500, type || '') // Internal Server Error
 	}
+
+	// Check if the user is a premium member
+	const isPremium = await checkPremiumStatus(userToken, userId)
+	session.set('isPremium', isPremium)
 
 	session.set('steamId', steamId)
 
@@ -115,4 +150,86 @@ function sendErrorToParent(
 			},
 		},
 	)
+}
+
+/**
+ * Fetches a user by their Steam ID from the backend.
+ * @param steamId The Steam ID to search for.
+ * @param userToken The user's authorization token.
+ * @returns The user data if found, or null if no user is linked with the given Steam ID.
+ */
+async function fetchUserBySteamId(
+	steamId: string,
+	userToken: string,
+): Promise<Boolean | null> {
+	try {
+		const response = await fetch(
+			`${apiBase}/user/checkSteamLinked/${steamId}`,
+			{
+				method: 'GET',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: userToken,
+				},
+			},
+		)
+
+		if (!response.ok) {
+			// Handle non-200 status codes
+			const errorData = await response.json()
+			throw new Error(errorData.message || 'Failed to fetch user by Steam ID.')
+		}
+
+		const data = await response.json()
+
+		if (data.status === 'success') {
+			return data.linked // Return the linked status directly
+		} else {
+			throw new Error(data.message || 'Unexpected error occurred.')
+		}
+	} catch (error) {
+		console.error('Error fetching user by Steam ID:', error)
+		return null // Return null in case of any error
+	}
+}
+
+/**
+ * Checks if a steam ID exists in the game server.
+ * @param steamId The steam ID to check.
+ * @param userToken The user's authorization token.
+ * @returns A boolean indicating if the user exists in the game server, or null if an error occurs.
+ */
+async function checkSteamExistsInGameServer(
+	steamId: string,
+	userToken: string,
+): Promise<boolean | null> {
+	try {
+		const response = await fetch(`${apiBase}/premium/steamExists/${steamId}`, {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: userToken,
+			},
+		})
+
+		if (!response.ok) {
+			// Handle non-200 status codes
+			const errorData = await response.json()
+			throw new Error(
+				errorData.message || 'Failed to check user existence in game server.',
+			)
+		}
+
+		const data = await response.json()
+
+		if (data.status === 'success') {
+			console.log({data})
+			return data.exists // Return the existence status directly
+		} else {
+			throw new Error(data.message || 'Unexpected error occurred.')
+		}
+	} catch (error) {
+		console.error('Error checking user existence in game server:', error)
+		return null // Return null in case of any error
+	}
 }

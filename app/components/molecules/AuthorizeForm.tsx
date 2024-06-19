@@ -2,6 +2,8 @@ import { useRevalidator } from '@remix-run/react'
 import { useEffect, useRef, useState } from 'react'
 import { wait } from 'remix-utils/timers'
 import { CloseInterceptReason } from '../organism/ModalWrapper/ModalWrapper'
+import MessageContainer from '../pending/MessageContainer'
+import { useDispatch, useDispatchState } from '../pending/ProcessProvider'
 
 interface AuthorizeFormProps {
 	setCloseInterceptReason?: (reason: CloseInterceptReason) => void
@@ -27,6 +29,12 @@ const AuthorizeForm: React.FC<AuthorizeFormProps> = ({
 
 	const timerRef = useRef<NodeJS.Timeout | null>(null)
 	const transitionRef = useRef<HTMLDivElement | null>(null)
+
+	const dispatch = useDispatch()
+	const state = useDispatchState()
+
+	const currentDispatch = state.find(dispatch => dispatch.inProgress)
+	const errorMessage = currentDispatch?.message
 
 	useEffect(() => {
 		if (visible) {
@@ -68,6 +76,15 @@ const AuthorizeForm: React.FC<AuthorizeFormProps> = ({
 		}
 	}
 
+	const resetForm = () => {
+		setVisible(false)
+		setSteamPopup(null)
+		setSteamPopupOpened(false)
+		setPopupWindow?.(null)
+		setShowFallback(false)
+		setCloseInterceptReason?.(CloseInterceptReason.None)
+	}
+
 	useEffect(() => {
 		if (setCloseInterceptReason) {
 			setCloseInterceptReason(CloseInterceptReason.None)
@@ -86,12 +103,11 @@ const AuthorizeForm: React.FC<AuthorizeFormProps> = ({
 					event.data.message,
 				)
 				console.log('[AuthorizeForm.tsx] Steam Authentication Flow: Popup')
+				// Handle error and reset form
+				dispatch.send(event.data.message)
+				resetForm()
 				// TODO: implement toast in future during ui/ux enhancement related tasks
 				// alert(`Steam authentication error: ${event.data.message}`)
-				setSteamPopup(null)
-				setSteamPopupOpened(false)
-
-				setCloseInterceptReason?.(CloseInterceptReason.None)
 			} else {
 				if (event.data.type) {
 					console.log('[AuthorizeForm.tsx] Event was unknown:', event.data.type) // To see exactly which unknown event was received
@@ -112,15 +128,13 @@ const AuthorizeForm: React.FC<AuthorizeFormProps> = ({
 				console.error(
 					'[AuthorizeForm.tsx] Error during Steam authentication from redirect.',
 				)
-				console.log('[AuthorizeForm.tsx] Steam Authentication Flow: Popup')
-
+				console.log('[AuthorizeForm.tsx] Steam Authentication Flow: Redirect')
 				// console.error('[AuthorizeForm.tsx] Error during Steam authentication:', event.data.message)
 				// TODO: implement toast in future during ui/ux enhancement related tasks
 				// TODO: Update redirect flash to include error message from callback
 				// alert(`Steam authentication error: ${event.data.message}`)
-				setSteamPopup(null)
-				setSteamPopupOpened(false)
-				setCloseInterceptReason?.(CloseInterceptReason.None)
+				dispatch.send('Error during Steam authentication from redirect.')
+				resetForm()
 			} else {
 				console.log('[AuthorizeForm.tsx] Event was unknown:', event.type) // To see exactly which unknown event was received
 			}
@@ -222,6 +236,9 @@ const AuthorizeForm: React.FC<AuthorizeFormProps> = ({
 
 	return (
 		<div>
+			{errorMessage && !steamPopupOpened && !visible ? (
+				<MessageContainer message={errorMessage} />
+			) : null}
 			{!steamPopupOpened && !visible ? (
 				<div className="cta-container">
 					<div className="cta-text">Link your Steam account to continue?</div>
