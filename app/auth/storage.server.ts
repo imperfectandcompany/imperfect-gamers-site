@@ -5,9 +5,10 @@ import { z } from 'zod'
 type SessionData = {
 	uid?: number
 	userToken?: string
-	steamId?: number
+	steamId?: string
 	email?: string
 	username?: string
+	isPremium?: boolean // Track premium status
 }
 
 export const sessionStorage = createCookieSessionStorage<SessionData>({

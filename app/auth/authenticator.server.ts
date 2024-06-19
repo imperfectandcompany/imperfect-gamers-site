@@ -1,7 +1,7 @@
 // @/app/auth/authenticator.server.ts
 import { commitSession, getSession } from './storage.server'
 
-const apiBase = 'https://api.imperfectgamers.org'
+export const apiBase = 'https://api.imperfectgamers.org'
 
 type User = {
 	email: string
@@ -116,8 +116,20 @@ export async function login(request: Request) {
 			session.set('email', user.data.email)
 
 			const hasSteamAccount = await checkSteamAccount(user.data?.userToken)
+
 			if (hasSteamAccount.hasSteam) {
 				session.set('steamId', hasSteamAccount.steamId ?? undefined)
+
+				// Check if the user is a premium member
+				const isPremium = await checkPremiumStatus(
+					user.data.userToken,
+					user.data.uid,
+				) // Assuming this function exists
+				session.set('isPremium', isPremium)
+
+				if (isPremium) {
+					// Additional logic for premium users can be handled here
+				}
 			}
 
 			const onboardingDetails = await checkOnboarded(user.data?.userToken)
@@ -136,6 +148,42 @@ export async function login(request: Request) {
 	} catch (error) {
 		console.error('Login error:', error)
 		return { ok: false, error: 'An unexpected error occurred during login.' }
+	}
+}
+
+/**
+ * Checks if the user with the given token is a premium member.
+ * @param token - The user's authentication token.
+ * @param uid - The user's ID.
+ * @returns A promise that resolves to a boolean indicating whether the user is premium.
+ */
+export async function checkPremiumStatus(
+	token: string,
+	uid: number,
+): Promise<boolean> {
+	try {
+		const response = await fetch(`${apiBase}/premium/status/${uid}`, {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: token,
+			},
+		})
+
+		if (!response.ok) {
+			// The API sends a message in the response on error
+			const errorData = await response.json()
+			throw new Error(errorData.message || 'Error checking premium status.')
+		}
+
+		const data = await response.json()
+		return data.is_premium
+	} catch (error) {
+		console.error(
+			'Error checking premium status:',
+			error || 'Error checking premium status.',
+		)
+		return false // Default to non-premium if there's an error
 	}
 }
 
@@ -200,7 +248,7 @@ export async function logout(token: string) {
  */
 async function checkSteamAccount(
 	token: string,
-): Promise<{ status: string; hasSteam: boolean; steamId: number | null }> {
+): Promise<{ status: string; hasSteam: boolean; steamId: string | null }> {
 	try {
 		// Send the request to API
 		const response = await fetch(`${apiBase}/user/verifySteam`, {

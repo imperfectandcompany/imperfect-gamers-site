@@ -30,16 +30,17 @@ export type LoaderData = {
 	isAuthenticated: boolean
 	userToken: string | null
 	isSteamLinked: boolean
-	steamId: number | null
+	steamId: string | null
 	uid: number | null
 	email: string | null
 	username: string | null
 	isOnboarded: boolean
-	basketId: string | null // Assuming basketId is a string, null if not present
+	isPremium: boolean // Include premium status in the loader data
+	basketId: string | null
 	packages: BasketPackage[] | []
 	checkoutUrl: string | null
-	flashError?: { message: string; status: string; type: string } // include the flash message
-	flashSuccess?: { message: string; status: string; type: string } // include the flash message
+	flashError?: { message: string; status: string; type: string }
+	flashSuccess?: { message: string; status: string; type: string }
 }
 
 export const meta: MetaFunction = () => {
@@ -160,6 +161,7 @@ async function getData(cookieHeader: string | null): Promise<LoaderData> {
 		steamId: session.get('steamId') ?? null,
 		isOnboarded: session.has('username'),
 		username: session.get('username') ?? null,
+		isPremium: session.get('isPremium') ?? false, // Fetch and return the premium status
 		basketId: basketId ?? null,
 		packages: packages ?? [],
 		checkoutUrl: checkoutUrl ?? null,

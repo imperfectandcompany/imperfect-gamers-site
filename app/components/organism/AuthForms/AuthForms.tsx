@@ -28,8 +28,14 @@ enum PageTitle {
 }
 
 const AuthForms: React.FC = () => {
-	const { isAuthenticated, isSteamLinked, username, flashSuccess, flashError } =
-		useLoaderData<LoaderData>()
+	const {
+		isPremium,
+		isAuthenticated,
+		isSteamLinked,
+		username,
+		flashSuccess,
+		flashError,
+	} = useLoaderData<LoaderData>()
 	const [shouldOpenModal, setShouldOpenModal] = useState(false)
 	const revalidator = useRevalidator()
 	const [shouldRenderCheckoutProcess, setShouldRenderCheckoutProcess] =
@@ -290,6 +296,10 @@ const AuthForms: React.FC = () => {
 							<UsernameForm />
 						) : !isSteamLinked ? (
 							<AuthorizeForm />
+						) : isPremium ? (
+							<div className="premium-banner-#TODO">
+								Welcome, Premium Member!
+							</div>
 						) : (
 							<CheckoutProcess />
 						)
@@ -301,6 +311,7 @@ const AuthForms: React.FC = () => {
 							username={username || undefined}
 							isInitial={isInitial}
 							isLoginForm={isLoginForm}
+							isPremium={isPremium}
 						/>
 					}
 					isResponsive={
@@ -311,19 +322,19 @@ const AuthForms: React.FC = () => {
 								: true
 					} // Set true only if showing WelcomeScreen
 				>
-					<Button>Join Now</Button>
+					<Button>{isPremium ? 'Manage Pass' : 'Join Now'}</Button>
 				</ModalWrapper>
 			</ProcessProvider>
 		</>
 	)
 }
 
-// Define FooterProps Interface
 interface FooterProps {
 	isAuthenticated: boolean
 	username?: string
 	isLoginForm: boolean
 	isInitial: boolean
+	isPremium: boolean // New property to indicate premium status
 }
 
 const Footer: React.FC<FooterProps> = ({
@@ -331,19 +342,21 @@ const Footer: React.FC<FooterProps> = ({
 	username,
 	isLoginForm,
 	isInitial,
+	isPremium, // Use the new isPremium prop
 }) => (
 	<div className="mx-auto mt-4 flex flex-col text-sm text-white">
 		<div>
-			{isAuthenticated && username ? (
+			{isAuthenticated && isPremium ? (
+				<>
+					<p className="premium-footer">
+						Thank you for being a Premium Member!
+					</p>
+					<p className="premium-footer">Enjoy your exclusive benefits.</p>
+				</>
+			) : isAuthenticated && username ? (
 				<>You are currently signed in{username ? ' as ' + username : ''}.</>
 			) : !isInitial && !isAuthenticated && isLoginForm ? (
-				<>
-					{/* commented out until design decision is finalized */}
-					{/* Don&apos;t have an account?{' '}
-          <button onClick={handleNewUser} className="ml-2 underline">
-            Sign up
-          </button> */}
-				</>
+				<>{/* Placeholder for future content */}</>
 			) : !isInitial && !isAuthenticated ? (
 				<>
 					<p className="mt-4 select-none text-xs text-stone-500">
@@ -375,7 +388,7 @@ const Footer: React.FC<FooterProps> = ({
 							Imprint
 						</a>
 						.
-					</p>{' '}
+					</p>
 				</>
 			) : isInitial && !isAuthenticated ? (
 				<p className="flex select-none justify-center text-xs text-stone-500">

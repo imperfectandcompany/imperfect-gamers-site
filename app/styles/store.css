@@ -1081,15 +1081,15 @@ nav {
 }
 
 .list__item:not(:last-child) {
-  border-bottom: 2px solid #23282e;
+  border-bottom: 2px solid #3a3a3a;
 }
 
 .list__icon:first-child {
-  border-bottom: 2px solid #23282e;
+  border-bottom: 2px solid #3a3a3a;
 }
 
 .list__item:last-child {
-  border-bottom: 2px solid #23282e;
+  border-bottom: 2px solid #3a3a3a;
 }
 
 .list__item:hover, .list__icon:hover, .list__item.active, .menu-toggle {
@@ -1119,15 +1119,10 @@ nav {
   padding: 15px;
   width: 100%;
   background-color: #1a1a1a;
-
   color: #ffffff;
   transition: background-color 0.3s, color 0.3s, transform 0.3s, opacity 0.3s;
   transform: translateY(-20px);
   opacity: 0;
-
-
-
-
   padding: 15px;
   margin: 0;
   cursor: pointer;
@@ -1137,10 +1132,6 @@ nav {
   height: 50px;
   line-height: 50px;
   width: 100%;
-
-
-
-
 }
 
 .redirecting .redirect-message {
@@ -1156,7 +1147,7 @@ nav {
   }
 
   .list__item {
-      border-right: 2px solid #23282e;
+      border-right: 2px solid #3a3a3a;
       border-bottom: none;
   }
 
@@ -1165,19 +1156,14 @@ nav {
   }
 }
 
-/* Specific styles for the STATS item */
-.stats-item {
-  border-top: 2px solid #23282e; /* Default to top border for mobile */
-}
-
 .list__icon:first-child {
-  border-top: 2px solid #23282e;
+  border-top: 2px solid #3a3a3a;
 }
 
 @media (min-width: 768px) {
   .stats-item {
       border-top: none;
-      border-left: 2px solid #23282e; /* Left border for desktop */
+      border-left: 2px solid #3a3a3a; /* Left border for desktop */
   }
   .list__icon:first-child {
       border-top: none;

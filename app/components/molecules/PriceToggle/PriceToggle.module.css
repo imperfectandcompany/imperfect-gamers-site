@@ -1,3 +1,5 @@
+/** ~/app/components/molecules/PriceToggle/PriceToggle.module.css **/
+
 .toggle {
 	display: flex;
 	align-items: center;
@@ -6,7 +8,12 @@
 }
 
 .toggle__label {
-	color: #fff;
+	color: #808080; /* Dark gray */
 	font-size: 0.9rem;
 	margin: 0 10px;
+	transition: color 0.3s ease-in-out; /* Add transition effect */
+}
+
+.toggle__label--active {
+	color: #ff7f7f; /* Light red */
 }
