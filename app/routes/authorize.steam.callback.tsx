@@ -223,7 +223,7 @@ async function checkSteamExistsInGameServer(
 		const data = await response.json()
 
 		if (data.status === 'success') {
-			console.log({data})
+			console.log({ data })
 			return data.exists // Return the existence status directly
 		} else {
 			throw new Error(data.message || 'Unexpected error occurred.')

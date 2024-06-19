@@ -37,27 +37,28 @@ export function generateSteamLoginURL(
  * @returns A number representing the user's identity, or null if the verification fails.
  */
 export async function verifySteamAssertion(
-    query: URLSearchParams,
-): Promise<string | null> { // Return type changed to string to handle large IDs as strings
-    try {
-        if (!query.get('openid.mode') || query.get('openid.mode') !== 'id_res') {
-            console.error('Invalid mode in Steam response')
-            return null
-        }
+	query: URLSearchParams,
+): Promise<string | null> {
+	// Return type changed to string to handle large IDs as strings
+	try {
+		if (!query.get('openid.mode') || query.get('openid.mode') !== 'id_res') {
+			console.error('Invalid mode in Steam response')
+			return null
+		}
 
-        const claimedId = query.get('openid.claimed_id')
-        if (!claimedId) throw new Error('Claimed ID not found in Steam response')
+		const claimedId = query.get('openid.claimed_id')
+		if (!claimedId) throw new Error('Claimed ID not found in Steam response')
 
-        // Use a RegExp to extract the numeric part of the Steam ID
-        const steamIdMatch = claimedId.match(
-            /^https:\/\/steamcommunity\.com\/openid\/id\/(\d+)$/
-        )
-        if (!steamIdMatch) throw new Error('Invalid Steam ID format')
+		// Use a RegExp to extract the numeric part of the Steam ID
+		const steamIdMatch = claimedId.match(
+			/^https:\/\/steamcommunity\.com\/openid\/id\/(\d+)$/,
+		)
+		if (!steamIdMatch) throw new Error('Invalid Steam ID format')
 
-        // Use BigInt to handle large integers safely
-        return steamIdMatch[1] // Return the Steam ID as a string
-    } catch (error) {
-        console.error('Error verifying Steam assertion:', error)
-        return null // Return null to signify that verification has failed
-    }
+		// Use BigInt to handle large integers safely
+		return steamIdMatch[1] // Return the Steam ID as a string
+	} catch (error) {
+		console.error('Error verifying Steam assertion:', error)
+		return null // Return null to signify that verification has failed
+	}
 }

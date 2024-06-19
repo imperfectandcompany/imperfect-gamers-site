@@ -1,7 +1,7 @@
-import type React from 'react'
-import MembershipTier from '../../organism/MembershipTier'
 import { useLoaderData } from '@remix-run/react'
-import { LoaderData } from '~/routes/_index'
+import type React from 'react'
+import type { LoaderData } from '~/routes/_index'
+import MembershipTier from '../../organism/MembershipTier'
 
 const basicFeatures = [{ name: 'Access to all public servers', included: true }]
 

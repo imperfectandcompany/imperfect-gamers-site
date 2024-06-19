@@ -90,7 +90,7 @@ const MembershipTier: React.FC<MembershipTierProps> = ({
 				</div>
 			) : null}
 			<h3
-				className={`bg-gradient-to-br bg-clip-text text-2xl font-bold select-none text-transparent ${planType === 'Basic' ? 'from-gray-200 via-gray-200 to-gray-300' : 'from-gray-200 via-red-200 to-red-300'}`}
+				className={`select-none bg-gradient-to-br bg-clip-text text-2xl font-bold text-transparent ${planType === 'Basic' ? 'from-gray-200 via-gray-200 to-gray-300' : 'from-gray-200 via-red-200 to-red-300'}`}
 			>
 				{planName}
 			</h3>
@@ -116,7 +116,9 @@ const MembershipTier: React.FC<MembershipTierProps> = ({
 						</div>
 					))}
 				</div>
-				<div className="mt-10 select-none text-xs text-gray-500">{additionalInfo}</div>
+				<div className="mt-10 select-none text-xs text-gray-500">
+					{additionalInfo}
+				</div>
 			</div>
 		</div>
 	</>

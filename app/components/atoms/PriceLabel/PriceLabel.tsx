@@ -1,8 +1,8 @@
 // Atoms/PriceLabel/PriceLabel.tsx
-import { useEffect, useState } from 'react'
-import price from './PriceLabel.module.css'
 import { useLoaderData } from '@remix-run/react'
-import { LoaderData } from '~/routes/_index'
+import { useEffect, useState } from 'react'
+import type { LoaderData } from '~/routes/_index'
+import price from './PriceLabel.module.css'
 
 /**
  * Renders a price label component.
@@ -15,12 +15,8 @@ import { LoaderData } from '~/routes/_index'
  * @returns {JSX.Element} The rendered price label component.
  */
 export const PriceLabel = ({ isYearly }: { isYearly: boolean }) => {
-	const {
-		isPremium,
-		isAuthenticated,
-		isSteamLinked,
-		username
-	} = useLoaderData<LoaderData>()
+	const { isPremium, isAuthenticated, isSteamLinked, username } =
+		useLoaderData<LoaderData>()
 
 	const isMember = isAuthenticated && username && isSteamLinked && isPremium
 	const [animationClass, setAnimationClass] = useState('')
@@ -43,5 +39,9 @@ export const PriceLabel = ({ isYearly }: { isYearly: boolean }) => {
 		}
 	}, [isYearly])
 
-	return <p className={`${price.label} mt-2 ${animationClass}`}>{isMember ? username : priceText}</p>
+	return (
+		<p className={`${price.label} mt-2 ${animationClass}`}>
+			{isMember ? username : priceText}
+		</p>
+	)
 }
