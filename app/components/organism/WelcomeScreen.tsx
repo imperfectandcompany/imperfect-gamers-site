@@ -1,5 +1,5 @@
 import type React from 'react'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import ImperfectGamersLogo from '../atoms/ImperfectGamersLogo'
 import UserCard from '../molecules/UserCard/UserCard'
 import { CloseInterceptReason } from '../organism/ModalWrapper/ModalWrapper'
@@ -34,7 +34,7 @@ const WelcomeScreen: React.FC<
 				</h1>
 				<div className="flex flex-row items-center justify-center space-x-4 md:space-x-4 md:space-y-0">
 					<div>
-					<UserCard
+						<UserCard
 							onClick={onNewUser}
 							title="First Timer"
 							subtitle="New here"
