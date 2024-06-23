@@ -3,11 +3,12 @@ import LottieAnimation from '~/components/atoms/LottieAnimation'
 
 interface UserCardProps {
 	onClick: () => void
-	title: string
+	title?: string
 	subtitle: string
 	description: string
 	animationUrl: string
-	hoverAnimationUrl: string // new prop
+	hoverAnimationUrl: string
+	styleType?: 'primary' | 'secondary'
 }
 
 const UserCard: React.FC<UserCardProps> = ({
@@ -17,15 +18,16 @@ const UserCard: React.FC<UserCardProps> = ({
 	description,
 	animationUrl,
 	hoverAnimationUrl,
+	styleType = 'secondary'
 }) => {
 	const [isHovered, setIsHovered] = useState(false)
-	const titleWords = title.split(' ')
+	const titleWords = title ? title.split(' ') : ('')
 	const formattedTitle =
 		titleWords.length > 1 ? (
 			<>
 				{titleWords[0]}
 				<br />
-				{titleWords.slice(1).join(' ')}
+				{Array.isArray(titleWords) ? titleWords.slice(1).join(' ') : titleWords}
 			</>
 		) : (
 			title
@@ -41,9 +43,12 @@ const UserCard: React.FC<UserCardProps> = ({
 		setIsHovered(false)
 	}
 
+	const subtitleColor = styleType === 'primary' ? 'text-yellow-500' : 'text-red-500'
+	const borderColor = styleType === 'primary' ? 'hover:border-yellow-500' : 'hover:border-rose-500'
+
 	return (
 		<div
-			className="relative cursor-pointer border-2 border-white transition duration-300 ease-in-out hover:-translate-y-1 hover:border-red-500"
+		className={`relative cursor-pointer border-2 border-l-red-400 border-r-orange-500 border-t-red-500 border-b-orange-600 transition duration-300 ease-in-out hover:-translate-y-1 ${borderColor}`}
 			onClick={onClick}
 			onMouseEnter={handleMouseEnter}
 			onMouseLeave={handleMouseLeave}
@@ -62,10 +67,11 @@ const UserCard: React.FC<UserCardProps> = ({
 					loop={!isHovered}
 				/>
 				<div className="absolute inset-x-0 bottom-0 select-none bg-gradient-to-t from-black to-transparent p-4">
-					<h2 className="font-bold text-white md:text-xl lg:text-4xl">
-						{formattedTitle}
-					</h2>
-					<p className="font-semibold text-red-500 md:text-lg lg:text-xl">
+
+					{(isHovered && styleType=='primary' || styleType=='secondary') && title ? (
+						<h2 className="font-bold text-white md:text-xl transition ease-in-out duration-300 lg:text-4xl">{formattedTitle}</h2>
+					) : null}
+					<p className={`font-semibold ${subtitleColor} md:text-lg lg:text-xl`}>
 						{subtitle}
 					</p>
 					{/* <p className="text-white">{description}</p>
