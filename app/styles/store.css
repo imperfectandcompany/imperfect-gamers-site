@@ -560,6 +560,7 @@ input::placeholder {
   #modal {
       /* Adjust modal position when on mobile */
       transform: translateY(-50px); /* Example value, adjust based on actual cookie banner height */
+      z-index: 1100; /* Higher than the cookie banner */
   }
 }
 

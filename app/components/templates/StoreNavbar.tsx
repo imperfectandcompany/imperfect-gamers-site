@@ -108,11 +108,11 @@ const StoreNavbar: React.FC = () => {
 					<button
 						className="list__item"
 						onClick={() =>
-							handleRedirect('https://imperfectgamers.org/discord')
+							handleRedirect('https://support.imperfectgamers.org')
 						}
 						onKeyUp={event => {
 							if (event.key === 'Enter')
-								handleRedirect('https://imperfectgamers.org/discord')
+								handleRedirect('https://support.imperfectgamers.org')
 						}}
 						tabIndex={0}
 					>
